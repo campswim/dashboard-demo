@@ -1,0 +1,65 @@
+.error-message-unpushed {
+  display: none;
+}
+.error-message-unpulled {
+  display: none;
+}
+.unpushed-error-message {
+  white-space: pre-wrap;
+  font-size: 1.4rem;
+}
+
+.x-close-container {
+  display: flex;
+  justify-content: flex-end;
+
+  :hover {
+    cursor: default;
+  }
+  
+  .x-close {
+    font-size: 1rem;
+    text-align: center;
+    width: 1rem;
+    padding: 0.2rem;
+  }
+}
+
+.show-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: lightgray;
+  padding: 0 .3rem .3rem .3rem;
+  font-size: 2rem;
+  border: 2px solid cornflowerblue;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  transition: ease .5s;
+  color: black;
+}
+
+// -------------------- Media Queries ----------
+@media (hover: hover) {
+  .error-message-button.true:hover {
+    color: whitesmoke;
+    cursor: default;
+  }
+  
+  x-close-container:hover {
+    color: black;
+    border: 1px solid black;
+    transition: ease .5s;
+    cursor: pointer;
+  }
+  
+  .error-message.true:hover {
+    color: orange;
+    cursor: pointer;
+  }
+}

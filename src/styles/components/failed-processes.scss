@@ -1,0 +1,26 @@
+.order-actions.unprocessed {
+  justify-content: flex-start;
+}
+
+.order-actions.unprocessed.justify-center, .order-actions.user.justify-center {
+  justify-content: center;
+
+  .tabs-container {
+    .tab-icon.left {
+      left: 0.3rem;
+    }
+    .tab-icon.right {
+      right: 0.3rem;
+    }
+  }
+}
+
+.order-actions.unprocessed.flex-end, .order-actions.user.flex-end {
+  justify-content: flex-end;
+
+  .tabs-container {
+    .tab-icon.left {
+      left: .3rem;
+    }
+  }
+}

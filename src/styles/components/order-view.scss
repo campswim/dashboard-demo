@@ -1,0 +1,158 @@
+.order-view-parent {
+  margin-top: 3rem;
+}
+.order-view-header {
+  display: flex;
+  align-items: flex-end;
+  margin-top: 5rem;
+  margin-bottom: .5rem;
+}
+.order-view-header > h3 {
+  text-align: bottom;
+  margin: 0;
+}
+
+.order-view-container {
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 4px solid black;
+  border-radius: 0 0 0 15px;
+}
+.order-view-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.order-summary-table-2-container {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+.order-details-tables {
+  display: flex;
+  align-items: flex-end;
+}
+.order-details-container {
+  border-top: 2px solid white;
+}
+.order-details-table-header {
+  display: flex;
+  align-items: center;
+  background-color: whitesmoke;
+  border-radius: 7px;
+  margin-top: 1rem;
+  padding: .5rem;
+
+  h4 {
+    margin: 0;
+    margin-right: 1rem;
+    padding: 0;
+    font-weight: normal;
+    font-size: 1.5rem;
+  }
+
+  .expand-order-details-icon {
+    padding: 0 1rem 0 1rem;
+    border: 1px solid lightgray;
+    border-radius: 25px;
+    font-size: 2rem;
+    min-width: 2rem;
+    text-align: center;
+  }
+}
+.order-details-table-header:hover {
+  background-color: cornflowerblue;
+  color: whitesmoke;
+  cursor: pointer;
+  transition: ease .5s;
+
+  .expand-order-details-icon:hover {
+    border: 1px solid whitesmoke;
+    color: orange;
+    transition: ease .5s;
+    cursor: pointer;
+  }
+}
+.order-view-summary-col-header {
+  position: relative;
+}
+.order-view-summary-col-header:hover {
+  color: cornflowerblue;
+  background-color: lightgray;
+  cursor: default;
+}
+
+.expand-order-details-header {
+  display: flex;
+}
+.order-details-tables.false, .payment-details.false, .expand-order-details-header.true {
+  display: none;
+}
+
+.error-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  bottom: 0;
+  left: 0;
+}
+.error-link-container {
+  margin: auto;
+  margin-left: 0;
+}
+.error-link-container > .action-links > .link > a {
+  border: 1px solid orange;
+}
+.error-message {
+  max-width: 45rem;
+}
+#line-number {
+  display: none;
+}
+.no-order-id {
+  margin: 15% 0;
+  font-size: 4rem;
+}
+.no-order-details {
+  font-size: 1.4rem;
+}
+
+// -------------------- Media Queries ---------------
+@media all and (max-width: 1280px) {
+  td.error-message {
+    min-width: 100%;
+  }
+  .order-summary-table-2-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+}
+@media all and (max-width: 1023px) {
+  .order-view-parent {
+    margin-top: 10rem;
+  }
+}
+@media all and (max-width: 925px) {
+  th.order-details-header {
+    font-size: 1.2rem;
+    white-space: pre-wrap;
+  }
+}
+@media all and (max-width: 768px) {
+  .order-view-header {
+    margin-top: 1rem;
+  }
+  th.order-details-header {
+    font-size: 1.2  rem;
+  }
+  .expand-order-details-header > h4 {
+    font-size: 1.2rem;
+  }
+  #od {
+    display: none;
+  }
+  #line-number {
+    display: flex;
+  }
+}

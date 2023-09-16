@@ -1,0 +1,94 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-container > form, .signin-container > form {
+  display: flex;
+  flex-direction: column;
+  min-width: 25rem;
+
+  input, select, .select-container {
+    padding: 1rem 0 1rem .5rem;
+    margin: 1rem 0 0 0;
+    border: none;
+    border-radius: 7px 7px 0 0;
+  }
+
+  button {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  button:active {
+    color: cornflowerblue;
+  }
+
+  button.reset-color {
+    color: whitesmoke;
+  }
+  
+  .add-user {
+    background-color: white;
+    color: gray;
+
+    p {
+      font-size: 1.2rem;
+      -webkit-transition: all 500ms ease;
+      -moz-transition: all 500ms ease;
+      -ms-transition: all 500ms ease;
+      -o-transition: all 500ms ease;
+      transition: all 500ms ease;
+    }
+
+    p.highlight-option {
+      color: cornflowerblue;
+      font-weight: bolder;
+      -webkit-transition: all 500ms ease;
+      -moz-transition: all 500ms ease;
+      -ms-transition: all 500ms ease;
+      -o-transition: all 500ms ease;
+      transition: all 500ms ease;
+    }
+  }
+}
+
+.sign-in-error {
+  width: 90%;
+  margin: auto;
+  white-space: pre-wrap;
+  text-align: center;
+}
+
+@media (hover: hover) {
+  button:hover {
+    color: cornflowerblue;
+    cursor: pointer;
+  }
+
+  .signup-container {
+    form {
+      .add-user {
+        p:hover {
+          cursor: pointer;
+          color: cornflowerblue;
+          font-weight: bolder;
+          -webkit-transition: all 500ms ease;
+          -moz-transition: all 500ms ease;
+          -ms-transition: all 500ms ease;
+          -o-transition: all 500ms ease;
+          transition: all 500ms ease;
+        }
+
+        p.role-option.default:hover {
+          transition: none;
+          color: gray;
+          cursor: default;
+          font-weight: normal;          
+        }
+      }
+    }
+  }
+}
