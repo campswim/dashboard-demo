@@ -24,7 +24,6 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
   const handleSignIn = event => {
     event.preventDefault();
     document.getElementById('sign-in-button').innerText = 'Signing in . . . ';
-    // document.getElementById('sign-in-button').classList.add('reset-color');
     userAction.current = 'Sign In';
     user.email = username;
     setError(null);
@@ -33,8 +32,10 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
       // See if the user already exists in the db.
       user.getUserByEmail().then(
         res => {
-          if (res.data) {
-            const id = res.data?.userByEmail?.Id;
+          console.log({res});
+
+          if (res.data.userByEmail) {
+            const id = res.data.userByEmail.Id;
             
             if (id) { // We have a user.
               const activeUser = res.data?.userByEmail?.Active;
@@ -158,7 +159,26 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
                 }
               );
             }
-          } else {
+          } else if (res.errors) {
+            const errors = res.errors;
+            let errorString = 'Server error: ';
+
+            errors.forEach((err, idx) => {
+              const errorMessage = err.message;
+              if (errors.length === 1) errorString = errorMessage + '.\nPlease contact technical support.';
+              else {
+                if (idx === errors.length - 1) errorString += errorMessage + '.\nPlease contact technical support';
+                else errorString += errorMessage + '\n';
+              }
+            });
+
+            setError(errorString);
+            setTimeout(() => {
+              document.getElementById('sign-in-button').innerText = 'Sign in';
+              userAction.current = 'Sign In';
+            }, 3000);
+          }
+          else {
             if (!res.response) {
               setError('Network error. Check that the API is up and running');
               document.getElementById('sign-in-button').innerText = 'Sign In';
