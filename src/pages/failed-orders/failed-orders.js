@@ -38,18 +38,7 @@ const FailedOrders = () => {
     const chosenPage = event.target.value;
     let activeButton, inactiveButton;
 
-    setClick(true);
-
-    // setDate([
-    //   new Date().getDate(),
-    //   new Date().getMonth(),
-    //   new Date().getFullYear(),
-    //   new Date().getHours(),
-    //   new Date().getMinutes(),
-    //   new Date().getSeconds(),
-    // ]);    
-    // formatDate(date);
-    
+    setClick(true);    
     setCurrentPage(chosenPage);
 
     if (chosenPage) {
@@ -87,7 +76,6 @@ const FailedOrders = () => {
       // Set the active tab.
       if (!click) {
         // if (state) {
-        //   console.log({action});
         //   if (action === 'Repush') setGetQuery('failedPushes'); // Failed pushes.
         //   else if (action === 'Repull' || action === 'RepullAllowMismatch') setGetQuery('failedPulls'); // Failed pulls.
         // }

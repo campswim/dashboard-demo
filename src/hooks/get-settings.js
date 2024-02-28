@@ -3,7 +3,7 @@ import apiCall from './api-call';
 export async function getSettings(path) {
   const operation = `${path}`;
   let query = `query ${operation} {${operation} `;
-  query += 'maps' === operation ? `{Id IsoCountryCode ErpCompanyId SourceWarehouse SourceShipMethod DestinationWarehouse IsoCurrencyCode ErpCurrencyCode ProcessingSequence ActivatedAt DeactivatedAt ModifiedAt ModifiedBy Error {name code message}}}` : `{Name Value Category SubCategory ValueTypeId ValueType Notes EnabledDate ModifiedAt ModifiedBy UserId Error {name code message}}}`;
+  query += 'maps' === operation ? `{Id IsoCountryCode ErpCompanyId SourceWarehouse SourceShipMethod DestinationWarehouse IsoCurrencyCode ErpCurrencyCode ProcessingSequence ActivatedAt DeactivatedAt ModifiedAt ModifiedBy Error {name code message}}}` : `{Name Value ProcessJobIds Category SubCategory ValueTypeId ValueType Notes EnabledDate ModifiedAt ModifiedBy UserId Error {name code message}}}`;
   
   const result = await apiCall(operation, query).then(
     res => { return res; },

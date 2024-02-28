@@ -87,6 +87,7 @@ const Map = props => {
                         element.textContent = newVal ? newVal : 'None';
                         items[row][column] = newVal ? newVal : 'None';
                         setNewValue({ id: parseInt(id), row, column, prevVal, newVal });
+                        updated.current = false;
                       } else {
                         element.setAttribute('style', 'color: red');
                         element.textContent = 'There is html in the new value. Please revise your input and resubmit.';
@@ -138,7 +139,7 @@ const Map = props => {
         // Update the settings's value.
         updateSettings('maps', parseInt(newValue.id), newValue.column, newValue.newVal).then(
           res => {
-            if (res.data) {
+            if (res?.data?.mapsUpdate) {
               let value = res.data?.mapsUpdate[newValue.column];
               value = null === value ? '' : value;
               const error = res.data?.mapsUpdate?.Error;
@@ -179,6 +180,23 @@ const Map = props => {
               } else if (error && null !== error.message) {
                 element.textContent = error.message + ' Please correct your input.';
                 element.setAttribute('style', 'color:red');
+              }
+            } else if (res?.errors) {
+              let errorString = '';
+
+              if (res.errors.length > 0 && res.errors.length < 2) {
+                errorString = res.errors[0].message;
+              } else if (res.errors.length >= 2) {
+                res.errors.forEach((error, idx) => {
+                  if (idx === 0) errorString += error.message;
+                  else if (idx === res.errors.length - 1) errorString += ', ' + error.message;
+                  else errorString += ', ' + error.message;
+                });
+              }
+
+              if (errorString) {
+                element.textContent = errorString + ' Please correct your input.';
+                element.setAttribute('style', 'color:red; white-space:pre-wrap');
               }
             }
           },

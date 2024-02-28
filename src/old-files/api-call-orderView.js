@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import RenderOrderTable from './render-table';
+import RenderOrderTable from '../pages/order-view/render-table';
 import axios from 'axios';
 
 const Api = props => {

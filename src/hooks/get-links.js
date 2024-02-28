@@ -4,7 +4,7 @@ import { ListItem } from '@mui/material';
 
 const useLinks = (routes, inputId, linkId, handleClick) => {
   const links = (
-    routes.map((route, key) => {
+    routes.map((route, key) => {      
       return route.path === '/order-view' ? // Not currently an active feature.
         (
           <NavLink
@@ -15,7 +15,7 @@ const useLinks = (routes, inputId, linkId, handleClick) => {
               },
             }}
             key={key}
-            className='nav-link'
+            className={`nav-link ${route.layout}`}
             activeStyle={{ border: '1px solid cornflowerblue', borderRadius: '20px', margin: '0', color: 'orange' }}
           >
             <ListItem style={{ padding: '0 1rem 0 1.5rem', margin: '0' }}>

@@ -6,7 +6,7 @@ const useSort = (items, caller) => {
   if (items['data'] && items['data']['failedPushes']) items = items.data.failedPushes;
   
   const [sortConfig, setSortConfig] = useState({
-    key: caller === 'params' || caller === 'users' ? 'Name' : caller === 'map' ? 'Id' : caller === 'unpulled' || caller === 'unpushed' || caller === 'ignored' ? 'OrderNumber' : caller === 'order-details' ? 'lineNumber' : caller === 'jobs' ? 'OrderNumber' : caller === 'jobs-summary' ? 'Count' : caller === 'staged' ? 'market' : 'missing-items' ? 'itemCode' : null,
+    key: caller === 'params' || caller === 'users' ? 'Name' : caller === 'map' ? 'Id' : caller === 'unpulled' || caller === 'unpushed' || caller === 'ignored' ? 'OrderNumber' : caller === 'order-details' ? 'lineNumber' : caller === 'jobs' || caller === 'payments' ? 'OrderNumber' : caller === 'jobs-summary' ? 'Count' : caller === 'staged' ? 'market' : 'missing-items' ? 'itemCode' : null,
     direction: 'ascending',
   });
 

@@ -27,7 +27,7 @@ const Signup = ({ caller }) => {
         else setId(res.data.signup.Id);
       },
       err => {
-        console.log({err});
+        console.error({err});
       }
     )
   };

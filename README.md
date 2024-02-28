@@ -7,7 +7,7 @@ Chad Larson (<chad@ncompass.org>)
 
 ## Description
 
-The nCompass order-staging dashboard tracks orders through their full lifecycle, from origination to database storage, with built-in error tracking and resolution, authentication, and authorization.
+The nCompass order-staging dashboard tracks orders through their full lifecycle, from origination to database storage, with built-in error tracking and resolution, and user authentication and authorization.
 
 ## Locations
 
@@ -39,7 +39,7 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
 
 1. Frontend
   
-    - With the right environment variables extant in the .env file, run `npm run build` from the command line.
+    - With `REACT_APP_ENV` property in the .env file set to 'production-manual', run `npm run build` from the command line.
     - Copy the build folder.
     - RDP into the Hulk server and delete the current build folder.
     - Paste the new build folder into the same directory.
@@ -67,10 +67,6 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
 
   - Pushed Orders (currently hidden)
 
-    [ ] As a user, I want to see a list of orders pushed into the storage database.  
-    [ ] As a user, I want to be able to choose the number of days back the list(s) will display.
-    [ ] As a user, I want my above choice(s) to persist across sessions.
-
   - Staged Orders
 
     [x] As a user, I want to see a list of all pending orders by market (pulled but not pushed).  
@@ -82,7 +78,7 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
     [x] As a user, I want to see a summary of failed processes.
     [x] As a user, I want to be able to click on the name of the failed process and be redirected to its full list on its respective tab of the failed-processes page.
 
-  - Missing CRM Items
+  - Missing CRM Items (currently hidden)
 
     [x] As a user, I want to have the option to generate a market-specific list of CRM items that are missing from the ERP.
     [x] As a user, I want to be able to indicate the number of days back to be used in generating the list.
@@ -135,6 +131,8 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
   [x] As a user, I want to be shown a list of failed processes categorized by process, and some details.
     [x] Full detail on desktop (> 1280px).
     [x] Partial detail with modal on mobile (< 1280px).
+  [x] As a user, I want to be able to choose to view include dismissed errors in the list or otherwise.
+  [x] As an administrator, I want to be able to dismiss an error or reinstate it.
 
 - Settings page
 
@@ -172,6 +170,7 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
   [ ] As an adminstrator, I'd like:
     [x] any changes made to editable fields to be logged in the database;
     [ ] to see a list of changes made to the editable fields and be able to determine how far back to generate the list.
+  [ ] As a developer, I'd like the app to be deployed automatically whenever I make a pull request into the main branch.
 
 ## Sources
 

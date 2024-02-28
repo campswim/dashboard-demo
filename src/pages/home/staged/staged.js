@@ -33,10 +33,10 @@ const Staged = props => {
                   {header}
                 </th>
               ))
-            ) : (
-              <>
-                <th></th>
-              </>
+            ) 
+            : 
+            (
+              null
             )}
           </tr>
         </thead>
@@ -61,7 +61,7 @@ const Staged = props => {
             ) 
             : 
             (
-              null
+              <tr><td>None</td></tr>
             )}
           </tbody>
       </table>

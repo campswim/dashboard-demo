@@ -65,8 +65,6 @@ export async function getAllFailedProcesses() {
 
         return jobs;
       } else if (errors) {
-        const errors = res?.errors;
-
         if (Array.isArray(errors)) {
           errors.forEach((error, idx) => {
             jobs.errors = { [idx]: error.message };
@@ -78,7 +76,50 @@ export async function getAllFailedProcesses() {
         return jobs;
       }
     },
-    err => { 
-      return err; }
+    err => { return err }
+  );
+}
+
+export async function getAllFailedPaymentsSummary() {
+  const operation = 'getAllFailedPayments';
+  const query = `query ${operation} {${operation} {PaymentId, OrderNumber, PaymentType, PaymentAmount, PaymentDate, CardNumber, AttemptedAt, ErrorReason, CurrencyCode}}`;
+  const failedPayments = {};
+
+  return await apiCall(operation, query).then(
+    res => {
+      const results = res?.data?.getAllFailedPayments;
+      const errors = res?.errors;
+      let id;
+
+      if (results.length === 1) {
+        const result = results[0];
+        id = result.PaymentId;
+      }
+            
+      if (results && id) {
+        results.forEach(result => {
+          if (!failedPayments[result.PaymentType]) {
+            failedPayments[result.PaymentType] = {
+              Type: result.PaymentType,
+              Count: 1,
+              AggregateAmount: result.PaymentAmount,
+              CurrencyCode: result.CurrencyCode,
+              ErrorReasons: [result.ErrorReason]
+            }
+          } else {
+            let count = failedPayments[result.PaymentType].Count;
+            let aggregateAmount = failedPayments[result.PaymentType].AggregateAmount;
+
+            failedPayments[result.PaymentType].Count = count + 1;
+            failedPayments[result.PaymentType].AggregateAmount = aggregateAmount + result.PaymentAmount;
+          }
+        });
+        
+        return failedPayments;
+      } else if (errors) {
+        return errors;
+      }
+    },
+    err => { return err; }
   );
 }

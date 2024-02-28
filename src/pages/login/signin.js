@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {  Redirect } from 'react-router-dom';
 import User from '../../hooks/get-user';
 
-const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, signUp }) => {
+const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
   const [username, setUsername] = useState(profile && profile.email ? profile.email : '');
   const [password, setPassword] = useState(profile && profile.password ? profile.password : '');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -31,11 +31,9 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
     if (!changePassword) {
       // See if the user already exists in the db.
       user.getUserByEmail().then(
-        res => {
-          console.log({res});
-
-          if (res.data.userByEmail) {
-            const id = res.data.userByEmail.Id;
+        res => {          
+          if (res.data) {
+            const id = res.data?.userByEmail?.Id;
             
             if (id) { // We have a user.
               const activeUser = res.data?.userByEmail?.Active;
@@ -53,9 +51,11 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
                         const id = res?.data?.changePassword?.Id;
                         const error = res?.data?.changePassword?.Error;
                         if (id && !error) {
+                          const signInButton = document.getElementById('sign-in-button');
                           setChangePassword(true);
                           document.getElementById('new-password-first-field').focus();
-                          document.getElementById('sign-in-button').textContent('Update');
+
+                          if (signInButton) signInButton.innerText = 'Update';
                           setError('');
                           setId(id);
                           setPassword('');
@@ -69,19 +69,19 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
                   );
                 } else { // Make the API call to validate the user and generate/sign her token.
                   user.signIn().then(
-                    res => {
+                    res => {                      
                       if (res.data) {
                         const userData = res.data?.signin;
                         const error = userData?.Error;
                         setId(id);
-                        setError(error ? error : '');
-
+                        
                         if (error) { // Print the error and reset the sign-in button's text.
+                          setError(error);
                           document.getElementById('sign-in-button').innerText = 'Sign In';
                         } else {
                           if (userData) { // Get user restrictions from the db and add them to the user object in local storage.
                             user.getUserRestrictions(userData.RoleId).then(
-                              res => {
+                              res => {                                
                                 if (res) {
                                   const roleProfile = res?.data?.getUserRestrictions;
                                   const error = roleProfile?.Error;
@@ -97,10 +97,10 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
                                         actions: roleProfile.RestrictedActions
                                       }
                                     };
-        
-                                    localStorage.setItem('user', JSON.stringify(userObject));
+                                            
+                                    localStorage.setItem('user', JSON.stringify(userObject));                                  
                                     userInfo.current = userObject;
-                                    liftData(!error ? true : false, 'signin', false, 39);
+                                    liftData(!error ? true : false, 'signin', false, 103);
                                     liftUser(userObject);
                                     setLoggedIn(!error ? 1 : 0);
                                     setRenderSignUp(false);
@@ -146,7 +146,7 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
                       userAction.current = 'Add User';
                     } else if (id && !error) {
                       setError('There is no user associated with this email address.\n\nPlease ensure you\'ve entered the correct email address or ask the site\'s administrator for access.');                      
-                      liftData(false, 'signin', true, 61); // Args => boolean, caller, error (boolean).
+                      liftData(false, 'signin', true); // Args => boolean, caller, error (boolean).
                       document.getElementById('sign-in-button').innerText = 'Sign in';
                       document.getElementById('sign-in-button').classList.remove('reset-color');
                     }
@@ -159,26 +159,7 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
                 }
               );
             }
-          } else if (res.errors) {
-            const errors = res.errors;
-            let errorString = 'Server error: ';
-
-            errors.forEach((err, idx) => {
-              const errorMessage = err.message;
-              if (errors.length === 1) errorString = errorMessage + '.\nPlease contact technical support.';
-              else {
-                if (idx === errors.length - 1) errorString += errorMessage + '.\nPlease contact technical support';
-                else errorString += errorMessage + '\n';
-              }
-            });
-
-            setError(errorString);
-            setTimeout(() => {
-              document.getElementById('sign-in-button').innerText = 'Sign in';
-              userAction.current = 'Sign In';
-            }, 3000);
-          }
-          else {
+          } else {
             if (!res.response) {
               setError('Network error. Check that the API is up and running');
               document.getElementById('sign-in-button').innerText = 'Sign In';
@@ -384,7 +365,7 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
     let mounted = true;
     if (mounted) {
       if (userAction.current === 'Add User' && profile.action === 'Add User') {
-        liftData(true, 'signup', false, 130);
+        liftData(true, 'signup', false);
         setRenderSignUp(true);
       } else if (profile.action === 'Sign Out' && userAction.current === 'Sign Out') {
         const user = new User();
@@ -394,7 +375,7 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
               if (res.data) {
                 setLoggedIn(0);
                 userAction.current = 'Sign In';
-                liftData(false, 'signin', false, 140);
+                liftData(false, 'signin', false);
                 setError(null);
                 setRenderSignUp(false);
                 liftUser(null);
@@ -502,7 +483,7 @@ const Signin = ({ profile, message, liftData, liftUser, clearError, signedIn, si
                 className='role-option default' 
                 id='default' value='default' 
                 onClick={() => toggleSelect()}
-                onFocus={() => openDropdown()}
+                onKeyUp={() => openDropdown()}
                 tabIndex='0'
               >
                 {roleName ? roleName : 'Role'}

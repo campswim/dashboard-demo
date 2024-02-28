@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Redirect, useLocation } from 'react-router-dom';
-import apiCall from '../../hooks/api-call';
-import Unprocessed from './unprocessed';
+import { getAllFailedPayments } from '../../hooks/get-payments';
+import FailedPayment from './failed-payment';
 
-const FailedProcesses = () => {
-  const [failedProcesses, setFailedProcesses] = useState([]);
+const FailedPayments = () => {
+  const [failedPayments, setFailedPayments] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [loggedIn, setloggedIn] = useState(localStorage.getItem('loggedIn') ? parseInt(localStorage.getItem('loggedIn')) : 0);
@@ -15,8 +15,7 @@ const FailedProcesses = () => {
   // Get the state values passed on the user's clicking of a redirect link.
   const params = useLocation();
   const state = params?.state;
-  let job, action, orderNum;  
-  if (state) ({ job, action, orderNum } = state);
+  const { type, action, orderNum } = state ? state : '';
 
   // Handle the user choosing another tab on this page.
   const handleClick = (callerId) => {
@@ -24,33 +23,37 @@ const FailedProcesses = () => {
       setCurrentTab(null);
       // setIsLoaded(false);
     } else setCurrentTab(callerId);
-  }
+  };
 
-  // Get the unprocessed jobs from the DB.
+  const reload = (tab) => {
+    setCurrentTab(null);
+    setCurrentTab(tab);
+  };
+
+  // Get the failed payments from the DB.
   useEffect(() => {
     let mounted = true;
-    if (mounted) {
-      const operation = 'getAllProcessingErrors';
-      const query = `query ${operation} {${operation} {Id Name OrderNumber LineNumber Category ExternalSystem DataDirection At Message Exception AdditionalData DismissedAt DismissedBy}}`;
-      const variables = {};
-      
-      apiCall(operation, query, variables)
-      .then(
+    if (mounted) {      
+      getAllFailedPayments().then(
         res => {
-          if (res.data) {
-            setFailedProcesses(res.data.getAllProcessingErrors);
+
+          console.log({res});
+          
+          if (res?.errors) {
+            const errors = Object.values(res.errors);
+            errors.forEach(error => setError(`${error}\n`));
+          } else {            
+            setFailedPayments(res);
             setError(null);
-            setIsLoaded(true);
-          } else if (res.name) {
-            setError({code: res.name, message: res.message});
             setIsLoaded(true);
           }
         },
         err => {
-          setError(err.response.data.errors);
+          setError(`Error: ${err.message}`);
           setIsLoaded(false);
         }
       );
+  
     }
     
     return () => mounted = false;
@@ -68,7 +71,6 @@ const FailedProcesses = () => {
   
   return !loggedIn ?
   (
-    // <div className="signin-error">You must sign in to access this resource.</div>
     <Redirect to={
         {
           pathname: '/login',
@@ -86,16 +88,18 @@ const FailedProcesses = () => {
   )
   :
   (
-    loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Processes')) ?
+    loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Payments')) ?
     (
-      <Unprocessed 
-        jobs={failedProcesses} 
-        error={error} 
-        isLoaded={isLoaded} 
-        handleClick={handleClick} 
-        activeTab={currentTab ? currentTab : job ? job : null} restrictedActions={restrictedActions.current} 
-        order={orderNum} 
-        action={action} 
+      <FailedPayment
+        payments={failedPayments}
+        error={error}
+        isLoaded={isLoaded}
+        handleClick={handleClick}
+        activeTab={currentTab ? currentTab : type ? type : null} 
+        restrictedActions={restrictedActions.current}
+        order={orderNum}
+        action={action}
+        reload={reload}
       />
     )
     :
@@ -105,4 +109,4 @@ const FailedProcesses = () => {
   )
 };
 
-export default FailedProcesses;
+export default FailedPayments;

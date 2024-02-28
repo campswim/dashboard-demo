@@ -6,9 +6,10 @@ import getActions from '../../hooks/get-actions';
 import OrderDetails from '../../components/order-details';
 import Tabs from '../../components/tabs';
 import formatHeaders from '../../hooks/format-headers';
+import formatCurrency from '../../hooks/format-currency';
 import { userAction } from '../../hooks/get-order';
 
-const Unprocessed = props => {
+const FailedPayment = props => {  
   const [allChecked, setAllChecked] = useState(false);
   const [isChecked, setIsChecked] = useState([]);
   const [isCheckedOrderNums, setIsCheckedOrderNums] = useState([]);
@@ -19,7 +20,7 @@ const Unprocessed = props => {
   const [activeLink, setActiveLink] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
   const [showDetails, setShowDetails] = useState(false);
-  const [jobNamesUnique, setJobNamesUnique] = useState([]);
+  const [jobNamesUnique, setJobNamesUnique] = useState(['All']);
   const [vpWidth, setVpWidth] = useState(window.innerWidth);
   const [error, setError] = useState(null);
   const [displayDismissed, setDisplayDismissed] = useState(true);
@@ -29,17 +30,18 @@ const Unprocessed = props => {
   const toggleAll = useRef(0);
   const dismissedCount = useRef(0);
   const queryPath = useRef('');
+  const itemsFiltered = useRef([]);
 
   // The following two constants handle the sorting algorithm.
-  const { items, requestSort, sortConfig } = useSort(props.jobs, 'jobs');
+  const { items, requestSort, sortConfig } = useSort(props.payments, 'payments');  
   const getClassNamesFor = name => {
     if (!sortConfig) return;
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
   
   // Format the headers.
-  const headers = items && items.length > 0 ? formatHeaders(Object.keys(items[0]), ['Id', 'Name']) : '';
-
+  const headers = items && items.length > 0 ? formatHeaders(Object.keys(items[0]), ['CurrencyCode']) : '';
+  
   // Handles the selection and formatting of the page's tabs.
   const handleClick = (event, next) => {
     let chosenButtonValue;
@@ -55,8 +57,8 @@ const Unprocessed = props => {
     props.handleClick(chosenButtonValue);
   };
   
-  // Handles the action chosen by the user, if applicable.
-  const takeAction = (path, item) => {
+  // Handles the action chosen by the user.
+  const takeAction = (path, item) => {    
     //Store a flag in storage to indicate that a new action has been initiated.
     sessionStorage.setItem('action', true);
     queryPath.current = path;
@@ -68,19 +70,43 @@ const Unprocessed = props => {
     } else if (isChecked.length > 0) {
       if (path) {
         if (activeTabCount === isChecked.length) {
-          if (path === 'reinstateJobError') dismissedCount.current = 0;
+          if (path === 'reinstatePaymentError') dismissedCount.current = 0;
         }
-        if (path === 'dismissJobError') dismissedCount.current = isChecked.length;
+        if (path === 'dismissPaymentError') dismissedCount.current = isChecked.length;
         
-        userAction('failedProcesses', path, isChecked).then(
+        userAction('failedPayments', path, isChecked).then(
           res => {
             if (res?.data[path]) {
+              const result = res.data[path];
+
               setError(null);
               
-              if (path === 'reinstateJobError') dismissedCount.current = dismissedCount.current - res.data[path].length;
-              else if (path === 'dismissJobError') dismissedCount.current = dismissedCount.current + res.data[path].length;
+              if (path === 'reinstatePaymentError') {
+                item.forEach(id => {
+                  const dismissedAtTableCell = document.getElementById(`${id}-dismissed-at`);
+                  const dismissedByTableCell = document.getElementById(`${id}-dismissed-by`);
 
-            } else if (res.errors) {
+                  dismissedAtTableCell.textContent = 'N/A';
+                  dismissedByTableCell.textContent = 'N/A';
+                });
+
+                dismissedCount.current = dismissedCount.current - res.data[path].length;
+                props.reload(props.activeTab);
+              } else if (path === 'dismissPaymentError') {
+                item.forEach(id => {
+                  const dismissedAtTableCell = document.getElementById(`${id}-dismissed-at`);
+                  const dismissedByTableCell = document.getElementById(`${id}-dismissed-by`);
+                  const dismissed = result.filter(item => item.PaymentId === id);
+                  
+                  dismissedAtTableCell.textContent = new Date(parseInt(dismissed[0].DismissedAt)).toISOString().split('T')[0];
+                  dismissedByTableCell.textContent = dismissed[0].DismissedBy;
+                })
+
+                dismissedCount.current = dismissedCount.current + res.data[path].length;
+                props.reload(props.activeTab);
+              }
+
+            } else if (res?.errors) {
               let errorString = '';
               res.errors.forEach((error, idx) => {
                 if (res.errors.length === 1) errorString = error.message;
@@ -111,27 +137,29 @@ const Unprocessed = props => {
 
   // Handle the toggling of the select-all checkbox.
   const handleSelectAll = () => {
-    const tabItems = items.filter(item => formatHeaders(item.Name) === formatHeaders(activeTab));
+    const tabItems = itemsFiltered.current.filter(item => formatHeaders(item.PaymentType) === formatHeaders(activeTab) || activeTab === 'All');
     const dismissedTabItems = tabItems.filter(item => item.DismissedAt);
     const notDismissedTabItems = tabItems.filter(item => !item.DismissedAt);
     
     showMessage.current = false;
     dismissedCount.current = dismissedTabItems.length;
 
+    // Set the toggleAll reference variable.
     if (displayDismissed && isChecked.length > 0 && toggleAll.current === 0) toggleAll.current = 1;
     if (displayDismissed && tabItems.length === dismissedTabItems.length && toggleAll.current === 2) toggleAll.current = 0;
     if (displayDismissed && tabItems.length === dismissedTabItems.length && !allChecked) toggleAll.current = 1;
+
     if (dismissedTabItems.length > 0 && displayDismissed) {
       toggleAll.current++;
 
       if (toggleAll.current === 2) {
-        setIsChecked(dismissedTabItems.map(item => item.Id));
-        setDismissed(dismissedTabItems.map(item => item.Id));
+        setIsChecked(dismissedTabItems.map(item => item.PaymentId));
+        setDismissed(dismissedTabItems.map(item => item.PaymentId));
         setIsCheckedOrderNums(dismissedTabItems.map(item => item.OrderNumber));
       }
       else if (toggleAll.current === 1) {
-        setIsChecked(notDismissedTabItems.map(item => item.Id));
-        setIsCheckedOrderNums(notDismissedTabItems.map(item => item.Number));
+        setIsChecked(notDismissedTabItems.map(item => item.PaymentId));
+        setIsCheckedOrderNums(notDismissedTabItems.map(item => item.OrderNumber));
       } else {
         setIsChecked([]);
         setDismissed([]);
@@ -143,7 +171,7 @@ const Unprocessed = props => {
         setIsChecked([]);
         setIsCheckedOrderNums([]);
       } else {
-        setIsChecked(dismissedTabItems.map(item => item.Id));
+        setIsChecked(dismissedTabItems.map(item => item.PaymentId));
         setIsCheckedOrderNums(dismissedTabItems.map(item => item.OrderNumber));
       }
     } else {
@@ -151,7 +179,7 @@ const Unprocessed = props => {
         setIsChecked([]);
         setIsCheckedOrderNums([]);
       } else {
-        setIsChecked(tabItems.filter(item => !item.DismissedAt).map(item => item.Id));
+        setIsChecked(tabItems.filter(item => !item.DismissedAt).map(item => item.PaymentId));
         setIsCheckedOrderNums(tabItems.filter(item => !item.DismissedAt).map(item => item.OrderNumber));
       }
     }
@@ -200,7 +228,8 @@ const Unprocessed = props => {
     let pastTenseVerb = null;
     if (action) {
       if (action === 'Dismiss') pastTenseVerb = 'dismissed';
-      else if (action === 'Reinstate') pastTenseVerb = 'reinstated';
+      if (action === 'Reinstate') pastTenseVerb = 'reinstated';
+      // else if (action === 'Reinstate') pastTenseVerb = 'reinstated';
     }
     return pastTenseVerb;
   };
@@ -216,19 +245,21 @@ const Unprocessed = props => {
     return () => mounted = false;
   }, [activeTab, props.activeTab]);
     
-  // Create the page's tabs for each unique job.
+  // Create the page's tabs for each unique payment type.
   useEffect(() => {
     let mounted = true;
-
     if (mounted) {
-      if (props && props.jobs) {
-        props.jobs.forEach(job => {
-          const jobsName = formatHeaders(job.Name);
-          if (!jobNamesUnique.includes(jobsName)) setJobNamesUnique([...jobNamesUnique, jobsName]);
+      if (props && props.payments) {        
+        props.payments.forEach(type => {
+          let paymentType = type.PaymentType.split(' ').join('');
+          const parenthetical = paymentType.includes('(') ? paymentType.split('(')[1] : '';
+          paymentType = formatHeaders(paymentType.split('(')[0]);
+          paymentType += parenthetical ? ` (${parenthetical}` : '';
+          
+          if (!jobNamesUnique.includes(paymentType)) setJobNamesUnique([...jobNamesUnique, paymentType]);
         });
       }
     }
-
     return () => mounted = false;
   }, [jobNamesUnique, props, activeTab]);
 
@@ -242,16 +273,18 @@ const Unprocessed = props => {
         setActiveTab(jobNamesUnique[0]);
       }
         
-      if (props.jobs) {
+      if (props.payments) {
         let counter = 0;
 
-        props.jobs.forEach(job => {
-          if (formatHeaders(job.Name) === formatHeaders(activeTab)) {
-            counter++;
-          }
-        });
-        
-        setActiveTabCount(!displayDismissed ? counter - hiddenRowCount : counter);
+        if (itemsFiltered.current.length > 0) {
+          itemsFiltered.current.forEach(payment => {
+            if (formatHeaders(payment.PaymentType) === formatHeaders(activeTab) || activeTab === 'All') {
+              counter++;
+            }
+          });
+
+          setActiveTabCount(!displayDismissed ? counter - hiddenRowCount : counter);
+        }
       }
   
       const activeTabKeyValue = Object.entries(jobNamesUnique).filter(job => job[1] === formatHeaders(activeTab));
@@ -259,7 +292,7 @@ const Unprocessed = props => {
     }
 
     return () => mounted = false;
-  }, [activeTab, activeTabIndex, jobNamesUnique, props.jobs, displayDismissed]);
+  }, [activeTab, activeTabIndex, jobNamesUnique, props.payments, displayDismissed]);
   
   // Update the vpWidth variable.
   useEffect(() => {
@@ -299,7 +332,7 @@ const Unprocessed = props => {
   useEffect(() => {
     let mounted = true;
     if (mounted) {
-
+      
       if (isChecked.length === activeTabCount && activeTabCount > 0) setAllChecked(true);
       else setAllChecked(false);
     }
@@ -336,6 +369,19 @@ const Unprocessed = props => {
     return () => mounted = false;
   });
   
+  // Filter out duplicate-payment errors. (This is mainly for the PaymentTrackingHistory, which is being used for development only.)
+  useEffect(() => {
+    let mounted = true;
+    if (mounted) {
+      if (items && items.length > 0) {
+        itemsFiltered.current = items.filter((item, index, self) => 
+          index === self.findIndex(t => t.PaymentId === item.PaymentId)
+        );
+      }
+    }
+    return () => mounted = false;
+  }, [items]);
+    
   return props.error ?
   (
     <div className="signin-error">{props.error.message}</div>
@@ -347,9 +393,22 @@ const Unprocessed = props => {
   : props ? 
   (
     <div className="unprocessed-jobs-container">
-      <div className="order-actions unprocessed">
-        <Tabs activeTab={activeTab} tabIndex={activeTabIndex} tabs={jobNamesUnique} handleClick={handleClick} caller='unprocessed' />
-      </div>
+      {items.length > 0 ? 
+      (
+        <div className="order-actions unprocessed">
+          <Tabs 
+            activeTab={activeTab} 
+            tabIndex={activeTabIndex} 
+            tabs={jobNamesUnique.sort()}
+            handleClick={handleClick} 
+            caller='payments' 
+          />
+        </div>
+      )
+      :
+      (
+        null
+      )}
       {dismissedCount.current > 0 ? 
       (
         <div className="toggle-link">
@@ -388,7 +447,7 @@ const Unprocessed = props => {
         (
           <div className='action-links'>
             <form className='link'>
-              {props && props.restrictedActions ? getActions('jobError', props.restrictedActions, isChecked, takeAction, isCheckedOrderNums, dismissed) : null}
+              {props && props.restrictedActions ? getActions('paymentError', props.restrictedActions, isChecked, takeAction, isCheckedOrderNums, dismissed) : null}
             </form>
           </div>
         ) 
@@ -508,14 +567,14 @@ const Unprocessed = props => {
               headers.map((header, key) => (
                 vpWidth < 1280 ?
                 (
-                  header !== 'Line Number' && header !== 'At' & header !== 'Message' && header !== 'Exception' && header !== 'Additional Data' && header !== 'Data Direction' && header !== 'Dismissed By' ?
+                  header !== 'Payment Id' && header !== 'Payment Type' & header !== 'Attempted At' && header !== 'Card Number' && header !== 'Payment Date' && header !== 'Dismissed At' && header !== 'Dismissed By' ?
                   (
                     <th
                       key={key}
                       onClick={() => requestSort(header.split(' ').join(''))}
                       className={getClassNamesFor(header.split(' ').join(''))}
                     >
-                      {header === 'Order Number' ? 'Order' : header === 'Category' ? 'Cat' : header === 'External System' ? 'Sys' : header === 'Dismissed At' ? 'Dismissed' : header}
+                      {header === 'Order Number' ? 'Order' : header === 'Payment Amount' ? 'Amount' : header === 'Error Reason' ? 'Error' : header}
                     </th>
                   )
                   : 
@@ -525,13 +584,57 @@ const Unprocessed = props => {
                 )
                 :
                 (
-                  <th
-                    key={key}
-                    onClick={() => requestSort(header.split(' ').join(''))}
-                    className={getClassNamesFor(header.split(' ').join(''))}
-                  >
-                    {header === 'Order Number' ? 'Order' : header === 'Line Number' ? 'Line' : header === 'External System' ? 'System' : header === 'Data Direction' ? 'Data' : header === 'Message' ? 'Error' : header === 'Additional Data' ? 'Additional' : header === 'Dismissed At' ? 'Dismissed' : header === 'Dismissed By' ? 'By' : header}
-                  </th>
+                  activeTab === 'Credit Card' ?
+                  (
+                    header !== 'Payment Type' ?
+                    (
+                      <th
+                        key={key}
+                        onClick={() => requestSort(header.split(' ').join(''))}
+                        className={getClassNamesFor(header.split(' ').join(''))}
+                      >
+                        {header}
+                      </th>
+                    )
+                    :
+                    (
+                      null
+                    )
+                  )
+                  : activeTab === 'All' ?
+                  (
+                    header !== 'Card Number' ?
+                    (
+                      <th
+                        key={key}
+                        onClick={() => requestSort(header.split(' ').join(''))}
+                        className={getClassNamesFor(header.split(' ').join(''))}
+                      >
+                        {header}
+                      </th>
+                    )
+                    :
+                    (
+                      null
+                    )
+                  )
+                  :
+                  (
+                    header !== 'Card Number' && header !== 'Payment Type' ? 
+                    (
+                      <th
+                        key={key}
+                        onClick={() => requestSort(header.split(' ').join(''))}
+                        className={getClassNamesFor(header.split(' ').join(''))}
+                      >
+                        {header}
+                      </th>
+                    )
+                    :
+                    (
+                      null
+                    )
+                  )
                 )
               ))
             )
@@ -542,8 +645,8 @@ const Unprocessed = props => {
         </thead>
         <tbody>
           {items.length > 0 ? (
-            items.map((item, key) => {
-              return formatHeaders(item.Name) === formatHeaders(activeTab) ? 
+            itemsFiltered.current.map((item, key) => {
+              return formatHeaders(item.PaymentType) === formatHeaders(activeTab) || activeTab === 'All' ? 
               (
                 <tr key={key} className={!displayDismissed && item.DismissedAt ? 'hide-dismissed' : '' }>
                   {props.restrictedActions && props.restrictedActions === 'All' ?
@@ -556,10 +659,10 @@ const Unprocessed = props => {
                       <Checkbox
                         type='checkbox'
                         name={item.OrderNumber}
-                        value={item.Id}
+                        value={item.PaymentId}
                         dismissed={item.DismissedAt}
                         handleClick={handleSelect}
-                        isChecked={isChecked.includes(item.Id)}
+                        isChecked={isChecked.includes(item.PaymentId)}
                       />
                     </td>
                     )}
@@ -575,18 +678,31 @@ const Unprocessed = props => {
                       item.OrderNumber ? item.OrderNumber : 'None'
                     )}
                   </td>
-                  <td className="line-number desktop">{item.LineNumber ? item.LineNumber : 'N/A'}</td>
-                  <td className="order-category">{item.Category ? item.Category : 'N/A'}</td>
-                  <td className="external-system">{item.ExternalSystem}</td>
-                  <td className="data-direction desktop">{item.DataDirection}</td>
-                  <td className="order-date desktop">{new Date(parseInt(item.At)).toISOString().split('T')[0]}</td>
-                  <td className="order-message desktop">{item.Message ? item.Message : 'None'}</td>
-                  <td className="order-exception desktop">{item.Exception ? item.Exception : 'None'}</td>
-                  <td className="order-additional-data desktop">{item.AdditionalData ? item.AdditionalData : 'None'}</td>
-                  <td className="order-error-dismissed-at">
+                  <td className="payment-id desktop">{item.PaymentId ? item.PaymentId : 'N/A'}</td>
+                  {activeTab === 'All' ?
+                  (
+                    <td className="payment-type desktop">{item.PaymentType ? item.PaymentType : 'N/A'}</td>
+                  )
+                  :
+                  (
+                    null
+                  )}
+                  <td className="payment-amount">{formatCurrency(item.PaymentAmount, item.CurrencyCode)}</td>
+                  <td className="payment-date desktop">{new Date(parseInt(item.PaymentDate)).toISOString().split('T')[0]}</td>
+                  <td className="payment-attempt-date desktop">{new Date(parseInt(item.AttemptedAt)).toISOString().split('T')[0]}</td>
+                  {activeTab === 'Credit Card' ? <td className="payment-card-number desktop">{item.CardNumber ? item.CardNumber : 'None'}</td> : null}
+                  {vpWidth < 1280 ?
+                  (
+                    <td className="payment-error">{item.ErrorReason && item.ErrorReason.length > 24? item.ErrorReason.slice(0,25) + '...' : item.ErrorReason && item.ErrorReason.length <= 24 ? item.ErrorReason : 'None'}</td>
+                  )
+                  :
+                  (
+                    <td className="payment-error">{item.ErrorReason ? item.ErrorReason : 'None'}</td>
+                  )}
+                  <td className="order-error-dismissed-at desktop" id={`${item.PaymentId}-dismissed-at`}>
                     {item.DismissedAt ? new Date(parseInt(item.DismissedAt)).toISOString().split('T')[0] : 'N/A'}
                   </td>
-                  <td className="order-error-dismissed-by desktop">{item.DismissedBy ? item.DismissedBy : 'N/A'}</td>
+                  <td className="order-error-dismissed-by desktop" id={`${item.PaymentId}-dismissed-by`}>{item.DismissedBy ? item.DismissedBy : 'N/A'}</td>
                 </tr>
               ) : 
               (
@@ -607,4 +723,4 @@ const Unprocessed = props => {
   )
 };
 
-export default Unprocessed;
+export default FailedPayment;

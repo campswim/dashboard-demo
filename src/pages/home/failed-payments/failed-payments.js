@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { getAllFailedProcesses } from '../../../hooks/get-dashboard';
-import FailedJobs from './failed-jobs';
+import { getAllFailedPaymentsSummary } from '../../../hooks/get-dashboard';
+import FailedPayments from './failed-payment';
 
-const FailedProcesses = () => {
-  const [failedProcesses, setFailedProcesses] = useState({});
+const FailedPaymentsSummary = () => {
+  const [failedPayments, setFailedPayments] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(null);
   
   // Get the data from the db.
   useEffect(() => {
-    getAllFailedProcesses().then(
-      res => {
+    getAllFailedPaymentsSummary().then(
+      res => {        
         if (res?.errors) {
           const errors = Object.values(res.errors);
           errors.forEach(error => setError(`${error}\n`));
         } else {
-          setFailedProcesses(res);
+          setFailedPayments(res);
           setIsLoaded(true);
         }
       },
@@ -33,10 +33,10 @@ const FailedProcesses = () => {
   :
   (
     <>
-      <h3 className='section-title'>Failed Processes</h3>
-      <FailedJobs data={failedProcesses} isLoaded={isLoaded} error={error} />
+      <h3 className='section-title'>Failed Payments</h3>
+      <FailedPayments data={failedPayments} isLoaded={isLoaded} error={error} />
     </>
   )
 };
 
-export default FailedProcesses;
+export default FailedPaymentsSummary;

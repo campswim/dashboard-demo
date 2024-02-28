@@ -334,7 +334,7 @@ const UnPushed = props => {
                 : 
                 (
                     <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>There was a "{error}" error when the following orders were {message(props.action)}:</p>
+                      <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
                     <div className='orders-in-array'>
                       {props.order.map((id, key) => (
                         props.order.length === 1 ? 

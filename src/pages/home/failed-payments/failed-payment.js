@@ -2,17 +2,18 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import useSort from '../../../hooks/sort-data';
 import formatHeaders from '../../../hooks/format-headers';
+import formatCurrency from '../../../hooks/format-currency';
 
-const FailedJobs = props => {
+const FailedJobs = props => {  
   // Get the table's headers from the data's keys.
-  const headers = props.data && JSON.stringify(props.data) !== '{}' ? formatHeaders(Object.keys(Object.values(props.data)[0])) : [];
+  const headers = props.data && JSON.stringify(props.data) !== '{}' ? formatHeaders(Object.keys(Object.values(props.data)[0]), 'CurrencyCode') : [];
   // The following two constants handle the sorting algorithm.
   const { items, requestSort, sortConfig } = useSort(props.data && JSON.stringify(props.data) !== '{}' ? Object.values(props.data) : [], 'jobs-summary');
   const getClassNamesFor = name => {
     if (!sortConfig) return;
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
-  
+    
   return props.error ? 
   (
     <div className="signin-error">{props.error}</div>
@@ -56,16 +57,19 @@ const FailedJobs = props => {
                     <Link
                       to={{
                         pathname: '/failed-processes',
-                        state: { job: item.Name },
+                        state: { job: item.Type },
                       }}
                     >
-                      {item.Name}
+                      {item.Type}
                     </Link>
                   </td>
                   <td>{item.Count}</td>
-                  <td>{item.Direction}</td>
-                  <td>{item.ExternalSystem}</td>
-                  <td>{item.Categories}</td>
+                  <td>{formatCurrency(item.AggregateAmount, item.CurrencyCode)}</td>
+                  <td>
+                    {item.ErrorReasons.map((reason, idx) => {
+                      return item.ErrorReasons.length === 1 || idx === item.ErrorReasons.length - 1 ? reason : `${reason}, `;
+                    }
+                  )}</td>
                 </tr>
               )) 
             )
@@ -88,7 +92,7 @@ const FailedJobs = props => {
                 (
                   headers.map((header, j) => (
                     <tr key={j}>
-                      <th>{header}</th>
+                      <th >{header}</th>
                         {header !== 'Name' ? 
                       (
                         <td>
@@ -100,9 +104,9 @@ const FailedJobs = props => {
                         <td className='jobs-link'>
                           <Link
                             to={{
-                              pathname: '/failed-processes',
+                              pathname: '/failed-payments',
                               state: { 
-                                job: item.Name,
+                                type: item.Name,
                               },
                             }}
                           >
@@ -123,11 +127,7 @@ const FailedJobs = props => {
         )
         :
         (
-          <table>
-            <tbody>
-              <tr><td>None</td></tr>
-            </tbody>
-          </table>
+          null
         )}
       </div>
     </>

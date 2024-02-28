@@ -1,12 +1,19 @@
 import axios from 'axios';
 
 export default async function apiCall(operation, query, variables, token) {
-  const url = window.location.href.includes('localhost:3000') ? process.env.REACT_APP_API_DEV : window.location.href.includes('localhost:3001') ? process.env.REACT_APP_API_LOCAL : process.env.REACT_APP_ENV === 'development' ? process.env.REACT_APP_API_MANUAL : process.env.REACT_APP_API_AUTO;
+  const url = process.env.REACT_APP_ENV === 'production-manual' ? 
+      process.env.REACT_APP_API_MANUAL 
+    : process.env.REACT_APP_ENV === 'production-auto' ? 
+      process.env.REACT_APP_API_AUTO 
+    : window.location.href.includes('localhost:3001') ? 
+      process.env.REACT_APP_API_LOCAL 
+    : process.env.REACT_APP_API_DEV;
   const graphQlQuery = {
     operation,
     query,
     variables
   };
+  
   const options = {
     method: 'POST',
     url: url,

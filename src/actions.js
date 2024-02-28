@@ -52,6 +52,42 @@ const actions = {
       onClickArg: 'unignoreOrder',
       title: 'Unignore'
     }
+  ],
+  jobError: [
+    {
+      pathname: '/failed-processes',
+      postPath: '',
+      action: 'Dismiss',
+      actionId: 'dismissed',
+      onClickArg: 'dismissJobError',
+      title: 'Dismiss'
+    },
+    {
+      pathname: '/failed-processes',
+      postPath: '',
+      action: 'Reinstate',
+      actionId: 'reinstated',
+      onClickArg: 'reinstateJobError',
+      title: 'Reinstate'
+    }
+  ],
+  paymentError: [
+    {
+      pathname: 'failed-payments',
+      postPath: '',
+      action: 'Dismiss',
+      actionId: 'dismissed',
+      onClickArg: 'dismissPaymentError',
+      title: 'Dismiss'
+    },
+    {
+      pathname: 'failed-payments',
+      postPath: '',
+      action: 'Reinstate',
+      actionId: 'reinstated',
+      onClickArg: 'reinstatePaymentError',
+      title: 'Reinstate'
+    }
   ]
 };
 

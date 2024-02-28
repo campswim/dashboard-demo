@@ -115,6 +115,7 @@ const Ignored = props => {
     clickCount.current = 0;
   };
   
+  // Set the ignored variable from props.data.ignoredOrders.
   useEffect(() => {
     let mounted = true;
     if (mounted) {
@@ -315,7 +316,7 @@ const Ignored = props => {
                 </div>
               ) : (
                   <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>There was a "{error}" error when the following orders were {message(props.action)}:</p>
+                    <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
                   <div className='orders-in-array'>
                     {props.order.map((id, key) => (
                       props.order.length === 1 ? 

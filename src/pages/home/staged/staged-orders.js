@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Staged from './staged';
 import { getUnpushedOrders } from '../../../hooks/get-order';
 
-const StagedOrders = () => {
+const StagedOrders = props => {
   const [unpushed, setUnpushed] = useState(null);
   const [unpushedError, setUnpushedError] = useState(null);
   const [unpushedIsLoaded, setUnpushedIsLoaded] = useState(false);
@@ -96,6 +96,9 @@ const StagedOrders = () => {
             }
           } else if (res.name) {
             setApiError(res.message);
+
+            // If the token has expired or for whatever reason no longer exists, delete the user in storage and redirect to the sign-in page.
+            if (res.message === 'You must sign in to access this resource.' && props.loggedIn) props.deleteUser();
           } else if (errors) {
             if (Array.isArray(res.errors)) {
               res.errors.forEach(error => setApiError(`${error.message}\n`));
@@ -111,7 +114,7 @@ const StagedOrders = () => {
       );
     }
     return () => mounted = false;
-  }, []);
+  }, [props]);
   
   return apiError ? 
     (
@@ -120,7 +123,7 @@ const StagedOrders = () => {
     :
     (  
       <>
-        <h3 className='section-title'>Staged Orders Summary</h3>
+        <h3 className='section-title'>Staged Orders</h3>
         <div className='dash-staged'>
           <Staged data={unpushed} error={unpushedError} isLoaded={unpushedIsLoaded} subheader='Unpushed' />
           <Staged data={failedPushes} error={failedPushesError} isLoaded={failedPushesIsLoaded} subheader='Failed Pushes' />

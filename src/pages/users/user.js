@@ -105,7 +105,7 @@ const Users = (props) => {
               setShowMessage(true);
 
               // Log the user out if all users are deleted or if the signed-in user is deleted.
-              if (res.data.deleteUser.length === users.length) { // All users were deleted.
+              if (res.data?.deleteUser?.length === users.length) { // All users were deleted.
                 user.signOut().then(
                   () => {
                     localStorage.setItem('user', null);
@@ -224,6 +224,7 @@ const Users = (props) => {
                       if (!/<\/?[a-z][\s\S]*>/i.test(newValue)) { // Check that no html is being introduced.
                         items[row][column] = newValue ? newValue : 'None'; 
                         setNewValue({ id: userId, row, column, prevValue, newValue: newValue, idx });
+                        updated.current = false;
 
                         if (element) {
                           element.textContent = newValue ? newValue : 'None';
@@ -349,6 +350,8 @@ const Users = (props) => {
                     setTimeout(() => {
                       element.classList.toggle('edited');
                       updated.current = true;
+
+                      if ('Role' === newValue.column) props.recall(); // Recall the API to get the right user tabs after a role change.
                     }, 2000);
                   }
 
@@ -372,6 +375,23 @@ const Users = (props) => {
               }
             } else if (res.name) {
               setError(res.name);
+            } else if (res?.errors) {
+              let errorString = '';
+
+              if (res.errors.length > 0 && res.errors.length < 2) {
+                errorString = res.errors[0].message;
+              } else if (res.errors.length >= 2) {
+                res.errors.forEach((error, idx) => {
+                  if (idx === 0) errorString += error.message;
+                  else if (idx === res.errors.length - 1) errorString += ', ' + error.message;
+                  else errorString += ', ' + error.message;
+                });
+              }
+
+              if (errorString) {
+                element.textContent = errorString + ' Please correct your input.';
+                element.setAttribute('style', 'color:red; white-space:pre-wrap');
+              }
             }
           },
           err => { console.error({err}) }
@@ -380,7 +400,7 @@ const Users = (props) => {
     }
     
     return () => mounted = false;
-  }, [loggedInUser, newValue, userRoles]);
+  }, [loggedInUser, newValue, userRoles, props]);
 
   // Get the tabs for the page.
   useEffect(() => {

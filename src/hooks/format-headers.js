@@ -1,6 +1,6 @@
 export default function formatHeaders(headers, ignore = '') {
   if (!headers || headers.length <= 0) return;
-  
+
   if (Array.isArray(headers)) {
     const formattedHeaders = [];
     headers.forEach(header => {    

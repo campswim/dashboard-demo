@@ -3,7 +3,8 @@ import { useLocation, Redirect } from 'react-router-dom';
 // import PushedOrders from './pushed/pushed-orders';
 import StagedOrders from './staged/staged-orders';
 import FailedProcessesSummary from './failed-processes/failed-processes';
-import BcMissingItems from './missing/bc-missing-items';
+import FailedPaymentsSummary from './failed-payments/failed-payments';
+// import BcMissingItems from './missing/bc-missing-items';
 
 const Home = () => {
   const [user, setUser] = useState({});
@@ -11,7 +12,12 @@ const Home = () => {
   const [loggedInUser, setLoggedInUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
   const params = useLocation();
   const userFromState = params?.state?.user;
-    
+  
+  const deleteUser = () => {    
+    localStorage.setItem('loggedIn', 0);
+    localStorage.setItem('user', null);
+  };
+
   // Set the userFromState and loggedIn and loggedInUser variables.
   useEffect(() => {
     let mounted = true;
@@ -23,16 +29,17 @@ const Home = () => {
     return () => mounted = false;
   }, [user?.action, userFromState]);
   
-  return loggedIn ?
+  return loggedIn && loggedInUser ?
   (
     loggedInUser && (loggedInUser?.restrictions?.pages === 'None' || !loggedInUser?.restrictions?.pages.includes('Dashboard')) ?
     (
       <div className='dashboard-container'>
         <h3 className='welcome-user'>{`${loggedInUser.name ? `Welcome, ${loggedInUser.name}` : ''}`}</h3>
         {/* <PushedOrders /> */}
-        <StagedOrders />
+        <StagedOrders loggedIn={loggedIn} deleteUser={deleteUser}/>
         <FailedProcessesSummary />
-        <BcMissingItems />
+        <FailedPaymentsSummary />
+        {/* <BcMissingItems /> */}
       </div>
     )
     :

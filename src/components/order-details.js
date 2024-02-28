@@ -165,6 +165,13 @@ const OrderDetails = props => {
                     <p>{detail[1] ? new Date(parseInt(detail[1])).toISOString().split('T')[0] : 'N/A'}</p>
                   </div>
                 )
+                : detail[0] === 'ProcessJobIds' ?
+                (
+                  <div className='order-details-detail-container'>
+                    <p>{formatHeaders(detail[0])}</p>
+                    <p>{detail[1] ? detail[1].split(',').join(', ') : null}</p>
+                  </div>
+                )  
                 :
                 (
                   <div className='order-details-detail-container'>
@@ -173,7 +180,7 @@ const OrderDetails = props => {
                   </div>
                 )
               )
-              : detail[0] === 'ActivatedAt' || detail[0] === 'DeactivatedAt' || detail[0] === 'ModifiedAt' || detail[0] === 'At' || detail[0] === 'DateRegistered' || detail[0] === 'LastLogin' || detail[0] === 'OrderDate' || detail[0] === 'IgnoredAt' || detail[0] === 'StagingImportDate' || detail[0] === 'IgnoredDate' ?
+              : detail[0] === 'ActivatedAt' || detail[0] === 'DeactivatedAt' || detail[0] === 'ModifiedAt' || detail[0] === 'At' || detail[0] === 'DateRegistered' || detail[0] === 'LastLogin' || detail[0] === 'OrderDate' || detail[0] === 'IgnoredAt' || detail[0] === 'StagingImportDate' || detail[0] === 'IgnoredDate' || detail[0] === 'DismissedAt' ?
               (
                 <div className='order-details-detail-container'>
                   <p>{formatHeaders(detail[0])}</p>

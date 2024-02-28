@@ -56,8 +56,8 @@
 
 @media all and (min-width: 1536px) {// MacBook Pro 16" viewport width.
   .params-table {
-    td:nth-child(2), td:nth-child(6) {
-      white-space: nowrap;
+    td:nth-child(2), td:nth-child(5), td:nth-child(7) {
+      white-space: pre;
     }
   }
 }

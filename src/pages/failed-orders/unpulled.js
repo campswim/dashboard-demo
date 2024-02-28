@@ -87,7 +87,7 @@ const UnPulled = props => {
 
   // Handle the toggling of a single item's checkbox.
   const handleSelect = event => {
-    const { value, checked } = event.target;
+    const { value, checked } = event.target;    
     setIsChecked([...isChecked, value]);
     if (!checked) setIsChecked(isChecked.filter(item => item !== value));
   };
@@ -200,7 +200,6 @@ const UnPulled = props => {
   // Hide checkboxes if a user is not allowed any actions.
   useEffect(() => {
     let mounted = true;
-
     if (mounted) {
       if (props?.restrictedActions) {
         if (props.restrictedActions === 'All') { // Hide the checkboxes, so that a user can't choose any items, thereby blocking her from taking any action on the items.      
@@ -217,7 +216,6 @@ const UnPulled = props => {
         } 
       }
     }
-
     return () => mounted = false;
   }, [props?.restrictedActions, items]);
   
@@ -287,17 +285,21 @@ const UnPulled = props => {
           (
             <div>Error: {error}</div>
           ) : (
-            ''
+            null
           )}
           {props.callerId === 'unpulled' ? (
             !error ? (
               props.order ? (
-                showMessage.current && props.action && !activeLink && props.restrictedActions !== 'All' && (props.action === 'Repull' || props.action === 'Ignore' || props.action === 'Delete') ? (
-                  typeof props.order === 'number' || props.order.length === 1 ? (
+                showMessage.current && props.action && !activeLink && props.restrictedActions !== 'All' && (props.action === 'Repull' || props.action === 'Ignore' || props.action === 'Delete') ? 
+                (
+                  typeof props.order === 'number' || props.order.length === 1 ? 
+                  (
                     <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                       <p>Order {props.order} has been {message(props.action)}.</p>
                     </div>
-                    ) : (
+                  ) 
+                  : 
+                  (
                     <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                       <p>The following orders have been {message(props.action)}:&nbsp;</p>
                       <div className='orders-in-array'>
@@ -317,46 +319,59 @@ const UnPulled = props => {
                         ))}
                       </div>
                     </div>
-                    )
-                  ) : (
+                  )
+                ) 
+                : 
+                (
                   ''
-                  ) 
-              ) : (
+                ) 
+              ) 
+              : 
+              (
                 ''
               )
-            ) : (
-              props.order ? (
+            ) 
+            : 
+            (
+              props.order ? 
+              (
                 typeof props.order === 'number' || props.order.length === 1 ? (
                 <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                   The following error occurred when order {props.order} was {message(props.action)}: {error}.
                 </div>
-                ) : (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                  <p>There was a "{error}" error when the following orders were {message(props.action)}:</p>
+              ) 
+              : 
+              (
+                <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                  <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
                   <div className='orders-in-array'>
-                  {props.order.map((id, key) => (
-                          props.order.length === 1 ? 
-                          ( 
-                            <p key={key}>{id}</p>
-                          )
-                          : key === props.order.length - 1 ?
-                          (
-                            <p key={key}>{id}.</p>
-                          )
-                          :
-                          (
-                            <p key={key}>{id},<span>&nbsp;</span></p>
-                          )                          
-                        ))}
+                    {props.order.map((id, key) => (
+                      props.order.length === 1 ? 
+                      ( 
+                        <p key={key}>{id}</p>
+                      )
+                      : key === props.order.length - 1 ?
+                      (
+                        <p key={key}>{id}.</p>
+                      )
+                      :
+                      (
+                        <p key={key}>{id},<span>&nbsp;</span></p>
+                      )                          
+                    ))}
                   </div>
                 </div>
-                )
-              ) : (
+              )
+              ) 
+              : 
+              (
                 ''
               )
             )
-          ) : (
-            ''
+          ) 
+          : 
+          (
+            null
           )}
         </div>
         <table className="unpulled-table-large" id="tab">

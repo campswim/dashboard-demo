@@ -20,8 +20,8 @@ const Users = (props) => {
   }
 
   // Refresh the users page.
-  const recall = () => {
-   setIsLoaded(false);
+  const recall = path => {
+  if (path) setIsLoaded(false);
    setRerender(!rerender);
   }
 
@@ -84,7 +84,20 @@ const Users = (props) => {
       !props.clearId ?
       (
         props.role !== 'User' ?
-          <User users={users} isLoaded={isLoaded} error={error} handleClick={handleClick} activeTab={currentTab.current} recall={recall} role={props.role} action={state?.action} id={state?.id} message={state?.message} liftData={props.liftData} liftUser={props.liftUser} />
+          <User 
+            users={users} 
+            isLoaded={isLoaded} 
+            error={error} 
+            handleClick={handleClick} 
+            activeTab={currentTab.current} 
+            recall={recall} 
+            role={props.role} 
+            action={state?.action} 
+            id={state?.id} 
+            message={state?.message} 
+            liftData={props.liftData} 
+            liftUser={props.liftUser} 
+          />
         : <div className="role-denied">Your profile's assigned role of "{props.role}" does not allow you to access this page.</div>
       )
       : 

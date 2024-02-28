@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import Home from '../pages/home/home';
 import FailedOrders from '../pages/failed-orders/failed-orders';
-// import OrderView from '../pages/order-view/order-view';
+import OrderSummary from '../pages/order-view/order-summary';
 import Settings from '../pages/settings/settings';
 import FailedProcesses from '../pages/failed-processes/failed-processes';
+import FailedPayments from '../pages/failed-payments/failed-payments';
 import Users from '../pages/users/users';
 import Login from '../pages/login/login';
 import MobileLinksModal from './mobile-links-modal';
@@ -17,8 +18,7 @@ import LinearScaleIcon from '@mui/icons-material/LinearScale';
 
 const NavBar = () => {
   // const [linkId, setLinkId] = useState(null);
-  // const [inputId, setInputId] = useState(null);
-  // const [inputDisplay, setInputDisplay] = useState(null);
+  const [orderId, setOrderId] = useState(null);
   const [signUp, setSignUp] = useState(false);
   const [error, setError] = useState(null);
   const [routes, setRoutes] = useState([]);
@@ -28,12 +28,12 @@ const NavBar = () => {
   const [reRender, setReRender] = useState(false);
   const loggedInUser = useRef(null);
   const links = useLinks(routes, null, null, handleClick);
-
+  const logoLink = process.env.REACT_APP_ENV === 'production-manual' ? process.env.REACT_APP_HOME_MANUAL : process.env.REACT_APP_ENV === 'production-auto' ? process.env.REACT_APP_HOME_AUTO : window.location.href.includes('localhost:3001') ? process.env.REACT_APP_HOME_LOCAL : process.env.REACT_APP_HOME_DEV;
+  
   // (Hoisted function.) If the user logs out, this function causes the user's token to expire.
   function handleClick(event) {
     const id = event.target.id;
     
-    // setInputDisplay(null); // For the search-order field, which isn't being used.
     setRenderMobileLinksModal(false);
     document.getElementsByTagName('body')[0].classList.remove('no-scroll');
 
@@ -74,7 +74,7 @@ const NavBar = () => {
   //   if (typeof inputDisplay === 'number') {
   //       setInputId(inputDisplay);
   //       setLinkId(null);
-  //       setRedirect(true);
+  //       // setRedirect(true);
   //   } else setInputDisplay('Need a number.');
   // };
 
@@ -84,38 +84,21 @@ const NavBar = () => {
   //   typeof id === 'number' ? setInputDisplay(id) : setInputDisplay('Enter a number.');
   // };
 
-  // // Retrieves the ID from params.state. 
-  // const getIdOnClick = num => {
-  //   let id;
-  //   if (num) id = parseInt(num);
-  //   if (id) {
-  //     if (inputDisplay) {
-  //       if (inputDisplay !== id) {
-  //         setLinkId(id);
-  //         setInputDisplay(id);
-  //         setInputId(null);
-  //       } else {
-  //         // console.log('id === inputDisplay');
-  //       }
-  //     } else {
-  //       if(id !== inputId) {
-  //         setLinkId(id);
-  //         setInputDisplay(id);
-  //         setInputId(null);
-  //       } else {
-  //         setInputDisplay(inputId);
-  //       }
-  //     }
-  //   }
-  // };
+  // Retrieves the ID from its children. 
+  const getIdOnClick = num => {
+    if (num) {
+      setOrderId(num);
+    }
+  };
 
   const liftUser = user => {
     loggedInUser.current = user;
-    if (!user) setLoggedIn(0);
+    
+    if (!user || user === 'null') setLoggedIn(0);
   };
 
   // Relays an action taken via submit on a page down river.
-  const liftData = (boolean, caller, error = false, line = 0) => {
+  const liftData = (boolean, caller, error = false, line) => {
     if (caller === 'signin') {
       if (!error) {
         setLoggedIn(boolean ? 1 : 0);
@@ -150,12 +133,28 @@ const NavBar = () => {
     return () => mounted = false;
   }, [loggedIn, signUp, reRender]);
   
+  // Reset loggedIn to false if there is no user in local storage.
+  useEffect(() => {
+    let mounted = true;
+      if (mounted) {
+        const user = localStorage.getItem('user');
+
+        if (!user || user === 'null') {
+          setLoggedIn(0);
+        } else {
+          loggedInUser.current = user;
+          setLoggedIn(1);
+        }
+      }
+    return () => mounted = false;
+  }, [loggedIn]);
+
   return (
     <Router>
       <nav className='navbar'>
         <div className='logo-links mobile'>
           <div className="logo-container">
-            <a href={process.env.REACT_APP_HOME ? process.env.REACT_APP_HOME : 'https://hulk.yoli.net:3002/'}><Logo /></a>
+            <a href={logoLink}><Logo /></a>
             {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
             <h1>Orders</h1>
           </div>
@@ -180,7 +179,7 @@ const NavBar = () => {
             </div>
           </div>
           <div className='logo-container'>
-            <a href={process.env.REACT_APP_HOME ? process.env.REACT_APP_HOME : 'https://hulk.yoli.net:3002/'}><Logo /></a>
+            <a href={logoLink}><Logo /></a>
             {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
             <h1>Orders</h1>
           </div>
@@ -195,7 +194,7 @@ const NavBar = () => {
         </div>
         <div className='logo-links desktop'>
           <div className="logo-container">
-            <a href={process.env.REACT_APP_HOME ? process.env.REACT_APP_HOME : 'https://hulk.yoli.net:3002/'}><Logo /></a>
+            <a href={logoLink}><Logo /></a>
             {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
             <h1>Orders</h1>
           </div>
@@ -231,9 +230,15 @@ const NavBar = () => {
           <Route exact path='/failed-processes'>
             <FailedProcesses />
           </Route>
-          {/* <Route exact path='/order-view'>
-            <OrderView getId={getIdOnClick}/>
-          </Route> */}
+          <Route exact path= '/failed-payments'>
+            <FailedPayments />
+          </Route>
+          <Route exact path='/order-summary'>
+            <OrderSummary 
+              getId={getIdOnClick}
+              orderId={orderId}
+            />
+          </Route>
           <Route exact path='/settings'>
             <Settings />
           </Route>

@@ -44,19 +44,24 @@ const Params = props => {
     clickCount.current++;
     clickLocation.current = event.id;
 
-    if ('Name' !== column) { // Editing the Name column is not allowed, it being the PK in the db table.
+    if ('Name' !== column) { // Editing the Name column is not allowed, it being the PK in the db table.      
       if (defaultValue !== currentValue) { // Replace errors in entries with the previous text; also, check unchecked boxes for the DateEnabled field.
         element.textContent = defaultValue;
         element.removeAttribute('style');
+
+        if ('EnabledDate' === column) element.setAttribute('style', 'color:green');
       } else {
         if ('EnabledDate' !== column) element.setAttribute('contentEditable', 'true');
-        else element.textContent = 'No';
+        else {
+          element.textContent = 'X';
+          element.setAttribute('style', 'color:red');
+        }
       }
     }
     
     if ('EnabledDate' === column) { // Update the EnabledDate in the db with today's date/time (in YYYY-MM-DD HH:MM:SS).
-      currentValue = 'No' === currentValue ? new Date().toISOString() : 'disable';
-      defaultValue = 'disable' || 'No' === currentValue ? `checkmark-${row}` : defaultValue;
+      currentValue = 'X' === currentValue ? new Date().toISOString() : 'disable';
+      defaultValue = 'disable' || 'X' === currentValue ? `checkmark-${row}` : defaultValue;
       setNewValue({ id, row, column, prevVal: defaultValue, newVal: currentValue, enabledDate, idx });
 
       if (vpWidth < 1280) {
@@ -67,7 +72,7 @@ const Params = props => {
   }
 
   // Handle user edits.
-  const handleBlur = (id, row, column, event, idx) => {    
+  const handleBlur = (id, row, column, event, idx) => {
     const prevValue = event.target.dataset.defaultValue ? event.target.dataset.defaultValue : 'None';
     const newVal = event.target.textContent ? event.target.textContent : 'None';
     const table = 'AppParams';
@@ -97,13 +102,14 @@ const Params = props => {
                   if (dataType.current.MaxLength > newVal.length || !dataType.current.MaxLength) {
                     if (prevValue !== newVal) {
                       if (!/<\/?[a-z][\s\S]*>/i.test(newVal)) { // Check that no html is being introduced.
-                        if (vpWidth > 1280) {                   
+                        if (vpWidth > 1280) {          
                           items[row][column] = newVal ? newVal : 'None'; // For desktop.
                         } else {
                           if (idx) items[idx][column] = newVal ? newVal : 'None'; // For edits in the modal.
-                        }      
+                        }
                         element.textContent = newVal;
                         setNewValue({ id, row, column, prevValue, newVal, idx });
+                        updated.current = false;
                       } else {
                         element.setAttribute('style', 'color: red');
                         element.textContent = 'There is html in the new value. Please revise your input and resubmit.';
@@ -164,7 +170,7 @@ const Params = props => {
     let mounted = true;
     if (mounted) {
       const element = document.getElementById(`${newValue.column}-${newValue.row}`);
-            
+      
       if (JSON.stringify(newValue) !== '{}' && !updated.current) {
         // Get the parameter's previous value.
         getParamByName(newValue.id).then(
@@ -174,7 +180,7 @@ const Params = props => {
   
             // Update the parameter's value in the AppParams table.
             updateSettings('params', newValue.id, newValue.column, newValue.newVal).then(
-              res => {                
+              res => {
                 let value = res?.data?.paramsUpdate[newValue.column];
                 const valueType = res?.data?.paramsUpdate?.ValueTypeId;
                 const error = res?.data?.paramsUpdate?.Error;
@@ -200,7 +206,6 @@ const Params = props => {
                       element.classList.toggle('edited');
                       updated.current = true;
                     }, 2000);
-
                   }
                     
                   // Log the change to the database.
@@ -218,6 +223,23 @@ const Params = props => {
                 } else if (error && null !== error.message) {
                   element.textContent = error.message + ' Please correct your input.';
                   element.setAttribute('style', 'color:red');
+                } else if (res?.errors) {
+                  let errorString = '';
+    
+                  if (res.errors.length > 0 && res.errors.length < 2) {
+                    errorString = res.errors[0].message;
+                  } else if (res.errors.length >= 2) {
+                    res.errors.forEach((error, idx) => {
+                      if (idx === 0) errorString += error.message;
+                      else if (idx === res.errors.length - 1) errorString += ', ' + error.message;
+                      else errorString += ', ' + error.message;
+                    });
+                  }
+    
+                  if (errorString) {
+                    element.textContent = errorString + ' Please correct your input.';
+                    element.setAttribute('style', 'color:red; white-space:pre-wrap');
+                  }
                 } else { // Special logging for the date-enabled column.
                   if (newValue.column === 'EnabledDate' & !paramByNameError) {
                     logChange('AppParams', newValue.column, userId, prevEnabledDate ? new Date(parseInt(prevEnabledDate)).toISOString() : null, enabledDate ? new Date(parseInt(enabledDate)).toISOString() : null, 8).then(
@@ -278,7 +300,7 @@ const Params = props => {
                     {headers.map((header, key) => (
                       vpWidth < 1280 ?
                       (
-                        header !== 'Value' && header !== 'Category' && header !== 'Sub Category' && header !== 'Value Type' && header !== 'Notes' && header !== 'Idx' && header !== 'User Id' ?
+                        header !== 'Value' && header !== 'Process Job Ids' && header !== 'Category' && header !== 'Sub Category' && header !== 'Value Type' && header !== 'Notes' && header !== 'Idx' && header !== 'User Id' ?
                         (
                           <th
                             key={key}
@@ -300,7 +322,7 @@ const Params = props => {
                           onClick={() => requestSort(header.split(' ').join(''))}
                           className={getClassNamesFor(header.split(' ').join(''))}
                         >
-                          {header === 'Modified At' ? 'Modified' : header === 'Modified By' ? 'By' : header === 'Value Type' ? 'Type' : header}
+                          {header === 'Process Job Ids' ? 'Job Ids' : header === 'Modified At' ? 'Modified' : header === 'Modified By' ? 'By' : header === 'Value Type' ? 'Type' : header}
                         </th>
                       )
                     ))}
@@ -323,8 +345,9 @@ const Params = props => {
                         id={`checkmark-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'EnabledDate', e)} // params: id, row, column, event
                         onClick={(e) => handleClick(e.target, key, 'EnabledDate', item.Name, item.EnabledDate, item )} // params: event, row, column, id, enabled date
+                        style={item.EnabledDate ? {color:'green'} : {color:'red'}}
                       >
-                        {item.EnabledDate ? <>&#10003;</> : 'No'}
+                        {item.EnabledDate ? <>&#10003;</> : 'X'}
                       </td>
                       <td className='params-id'>
                         {vpWidth < 1280 ?
@@ -338,74 +361,40 @@ const Params = props => {
                           item.Name
                         )}
                       </td>
-                      {item.Value && item.Value.includes('|') ? 
-                        (
-                          <td
-                            className="editable desktop"
-                            suppressContentEditableWarning="true" 
-                            data-default-value={item.Value.split('\n').map(val => {
-                              const setting = val.split('|');
-                              const key = setting[0];
-                              let value = setting[1], result;
-                              if (value && value.includes('~')) value = value.replace('~', ', ');                  
-                              if (value) value = value.trimEnd();
-                              if (value && value[value.length - 1] === ',') value = value.substring(0, value.length - 1);
-                              result = key && value ? `${key}: ${value}\n` : '';
-                              return result;
-                            })}
-                            // id={`${item.Value}-${key}`}
-                            id={`Value-${key}`}
-                            onBlur={(e) => handleBlur(item.Name, key, 'Value', e)}
-                            onClick={(e) => handleClick(e.target, key, 'Value', item.Name)}
-                          >
-                            {item.Value.split('\n').map(val => {
-                              const setting = val.split('|');
-                              const key = setting[0];
-                              let value = setting[1];
-                              let result;
-                              if (value && value.includes('~')) value = value.replace('~', ', ');                  
-                              if (value) value = value.trimEnd();
-                              if (value && value[value.length - 1] === ',') value = value.substring(0, value.length - 1);
-                              result = key && value ? `${key}: ${value}\n` : '';
-                              return result;
-                            })}
-                          </td>
-                        ) : (
-                          <td
-                            className="editable desktop"
-                            suppressContentEditableWarning="true" 
-                            data-default-value={item.Value}
-                            // id={`${item.Value}-${key}`}
-                            id={`Value-${key}`}
-                            onBlur={(e) => handleBlur(item.Name, key, 'Value', e)}
-                            onClick={(e) => handleClick(e.target, key, 'Value', item.Name)}
-                          >{item.Value}
-                          </td>
-                        )
-                      }
                       <td
                         className="editable desktop"
                         suppressContentEditableWarning="true" 
-                        data-default-value={item.Category}
+                        data-default-value={item.Value ? item.Value : 'None'}
+                        // id={`${item.Value}-${key}`}
+                        id={`Value-${key}`}
+                        onBlur={(e) => handleBlur(item.Name, key, 'Value', e)}
+                        onClick={(e) => handleClick(e.target, key, 'Value', item.Name)}
+                      >{item.Value ? item.Value : 'None'}
+                      </td>
+                      {vpWidth < 1280 ? null : <td className='process-job-ids'>{item.ProcessJobIds ? item.ProcessJobIds.split(',').join(', ') : 'None'}</td>}
+                      <td
+                        className="editable desktop"
+                        suppressContentEditableWarning="true" 
+                        data-default-value={item.Category ? item.Category : 'None'}
                         // id={`${item.Category}-${key}`}
                         id={`Category-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'Category', e)}
                         onClick={(e) => handleClick(e.target, key, 'Category', item.Name)}
-                      >{item.Category}</td>
+                      >{item.Category ? item.Category : 'None'}</td>
                       <td
                         className="editable desktop"
                         suppressContentEditableWarning="true" 
-                        data-default-value={item.SubCategory}
+                        data-default-value={item.SubCategory ? item.SubCategory : 'None'}
                         // id={`${item.SubCategory}-${key}`}
                         id={`SubCategory-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'SubCategory', e)}
                         onClick={(e) => handleClick(e.target, key, 'SubCategory', item.Name)}                  
-                      >{item.SubCategory}</td>
+                      >{item.SubCategory ? item.SubCategory : 'None'}</td>
                       <td className='desktop'>{item.ValueType}</td>
                       <td 
                         className="notes editable desktop"
                         suppressContentEditableWarning="true" 
-                        data-default-value={item.Notes}
+                        data-default-value={item.Notes ? item.Notes : 'None'}
                         // id={`${item.Notes}-${key}`}
                         id={`Notes-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'Notes', e)}

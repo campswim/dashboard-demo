@@ -2,18 +2,20 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import SmsFailedIcon from '@mui/icons-material/SmsFailed';
 import RunningWithErrorsIcon from '@mui/icons-material/RunningWithErrors';
+import CreditCardOffIcon from '@mui/icons-material/CreditCardOff';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import PeopleIcon from '@mui/icons-material/People';
 import LoginIcon from '@mui/icons-material/Login';
 // import LogoutIcon from '@mui/icons-material/Logout';
-// import DetailsIcon from '@mui/icons-material/Details';
+import InfoIcon from '@mui/icons-material/Info';
 // import LanguageIcon from '@mui/icons-material/Language';
 
 // core components/pages for Admin layout
 import Home from './pages/home/home.js';
 import FailedOrders from './pages/failed-orders/failed-orders.js';
 import FailedProcesses from './pages/failed-processes/failed-processes.js';
-// import OrderView from './pages/order-view/order-view.js';
+import FailedPayments from './pages/failed-payments/failed-payments.js';
+import OrderSummary from './pages/order-view/order-summary.js';
 import Settings from './pages/settings/settings.js';
 import Users from './pages/users/users.js';
 import Login from './pages/login/login.js';
@@ -46,14 +48,22 @@ const dashboardRoutes = [
     component: FailedProcesses,
     layout: 'user',
   },
-  // {
-  //   path: '/order-view',
-  //   name: 'Order View',
-  //   rtlName: 'Заказ в подробностях',
-  //   icon: DetailsIcon,
-  //   component: OrderView,
-  //   layout: '/admin',
-  // },
+  {
+    path: '/failed-payments',
+    name: 'Failed Payments',
+    rtlName: 'Неуспешные платежи',
+    icon: CreditCardOffIcon,
+    component: FailedPayments,
+    layout: 'user',
+  },
+  {
+    path: '/order-summary',
+    name: 'Order Summary',
+    rtlName: 'Заказ в подробностях',
+    icon: InfoIcon,
+    component: OrderSummary,
+    layout: 'user',
+  },
   {
     path: '/settings',
     name: 'Settings',

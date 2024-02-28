@@ -24,3 +24,60 @@
     }
   }
 }
+
+// .unprocessed-jobs-container {
+//   .tabs {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: flex-start;
+//     justify-content: space-between;
+//   }
+// }
+
+.hide-dismissed {
+  display: none;
+}
+
+.toggle-link > a {
+  color: white;
+  padding-bottom: 1rem;
+  font-size: 1.1rem;
+  -webkit-transition: all 500ms ease;
+  -moz-transition: all 500ms ease;
+  -ms-transition: all 500ms ease;
+  -o-transition: all 500ms ease;
+  transition: all 500ms ease;  
+}
+.toggle-link > a:hover {
+  color: cornflowerblue;
+  -webkit-transition: all 500ms ease;
+  -moz-transition: all 500ms ease;
+  -ms-transition: all 500ms ease;
+  -o-transition: all 500ms ease;
+  transition: all 500ms ease;  
+}
+
+@media screen and (min-width: 1280px) {
+  .toggle-link {
+    margin-bottom: 1rem;
+  }
+  .toggle-link > a {
+    font-size: 1.5rem;
+    -webkit-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+    -ms-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    transition: all 500ms ease;  
+  }
+
+  @media (hover: hover) {
+    .toggle-link > a:hover {
+      border-bottom: 1px solid white;
+      -webkit-transition: all 500ms ease;
+      -moz-transition: all 500ms ease;
+      -ms-transition: all 500ms ease;
+      -o-transition: all 500ms ease;
+      transition: all 500ms ease;
+    }
+  }  
+}

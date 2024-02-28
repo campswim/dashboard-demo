@@ -1,6 +1,6 @@
 import React, {useCallback, useState } from 'react';
 import RenderDetails from './order-details';
-import formatCurrency from '../../hooks/format-currency';
+import formatCurrency from '../hooks/format-currency';
 
 const RenderOrderTable = props => {
   const [actionType, setActionType] = useState(null);
