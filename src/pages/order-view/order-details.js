@@ -23,10 +23,10 @@ const OrderDetails = props => {
 		}
 	}
 
+	// Send the orderId back up to the parent.
 	useEffect(() => {
 		let mounted = true;
 		if (mounted) {
-			// Send the orderId back up to the parent.
 			props.getId(props.orderId);
 		}
 	}, [props]);
@@ -42,7 +42,40 @@ const OrderDetails = props => {
 							<thead>
 								<tr className='header-row'>
 									{headers.map((header, key) => {
-										return !erpHeaders.includes(header) ? <th key={key} className="order-view-summary-col-header">{header}</th> : null;
+										return !erpHeaders.includes(header) && header !== 'Currency Code' ? 
+										<th key={key} className="order-view-summary-col-header">
+											{
+												header === 'Customer Number' ?
+												(
+													'Customer #'
+												)
+												:	header === 'Order Type Description' ? 
+												(
+													'Order Type'
+												) 
+												: header === 'Reference Order Number' ?
+												(
+													'Ref Order #'
+												)
+												: header === 'Order Total Amount' ?
+												(
+													'Total'
+												)
+												: header === 'Tax Amount' ?
+												(
+													'Tax'
+												)
+												: header === 'Freight Amount' ?
+												(
+													'Freight'
+												)
+												: header === 'Freight Tax Amount' ?
+												(
+													'Freight Tax'
+												)
+												: header
+											}
+										</th> : null;
 								})}
 								</tr>
 							</thead>
@@ -52,7 +85,16 @@ const OrderDetails = props => {
 										const property = Object.keys(val)[0];
 										const value = Object.values(val)[0];
 
-										return <td key={key}>{(value || value === 0) && currencyRelated.includes(property) ? formatCurrency(value, formattedOrder.CurrencyCode) : value && dateRelated.includes(property) ? new Date(parseInt(value)).toISOString().split('T')[0] : !value ? 'N/A' : value}</td>
+										return property !== 'CurrencyCode' ?
+										(
+											<td class={property === 'OrderTypeDescription' || property === 'ShipMethod' ? 'whitespace-prewrap' : ''} key={key}>
+												{(value || value === 0) && currencyRelated.includes(property) ? formatCurrency(value, formattedOrder.CurrencyCode) : value && dateRelated.includes(property) ? new Date(parseInt(value)).toISOString().split('T')[0] : !value ? 'N/A' : value}
+											</td>
+										)
+										:
+										(
+											null
+										)
 									})}
 								</tr>
 							</tbody>
@@ -95,10 +137,17 @@ const OrderDetails = props => {
 						<table>
 							<thead>
 								{headers.map((header, j) => (
-									<tr key={j}>
-										<th>{header}</th>
-										<td>{formattedOrder[header.split(' ').join('')]}</td>
-									</tr>
+									!erpHeaders.includes(header) && header !== 'Currency Code' ? 
+									(
+										<tr key={j}>
+											<th>{header === 'Customer Number' ? 'Customer #' : header === 'Order Type Description' ? 'Order Type' : header === 'Reference Order Number' ? 'Ref Order #' : header === 'Order Total Amount' ? 'Total' : header === 'Frieght Amount' ? 'Freight' : header === 'Freight Tax Amount' ? 'Freight Tax' : header}</th>
+											<td>{formattedOrder[header.split(' ').join('')] ? formattedOrder[header.split(' ').join('')] : 'None'}</td>
+										</tr>
+									)
+									:
+								(
+									null
+								)
 								))}
 							</thead>
 						</table>
@@ -114,7 +163,7 @@ const OrderDetails = props => {
 								{erpHeaders.map((header, j) => (
 									<tr key={j}>
 										<th>{header}</th>
-										<td>{formattedOrder[header.split(' ').join('')]}</td>
+										<td>{formattedOrder[header.split(' ').join('')] ? formattedOrder[header.split(' ').join('')] : 'None'}</td>
 									</tr>
 								))}
 							</thead>

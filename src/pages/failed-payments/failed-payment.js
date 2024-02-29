@@ -693,11 +693,11 @@ const FailedPayment = props => {
                   {activeTab === 'Credit Card' ? <td className="payment-card-number desktop">{item.CardNumber ? item.CardNumber : 'None'}</td> : null}
                   {vpWidth < 1280 ?
                   (
-                    <td className="payment-error">{item.ErrorReason && item.ErrorReason.length > 24? item.ErrorReason.slice(0,25) + '...' : item.ErrorReason && item.ErrorReason.length <= 24 ? item.ErrorReason : 'None'}</td>
+                    <td className="payment-error whitespace-prewrap">{item.ErrorReason && item.ErrorReason.length > 24? item.ErrorReason.slice(0,25) + '...' : item.ErrorReason && item.ErrorReason.length <= 24 ? item.ErrorReason : 'None'}</td>
                   )
                   :
                   (
-                    <td className="payment-error">{item.ErrorReason ? item.ErrorReason : 'None'}</td>
+                    <td className="payment-error whitespace-prewrap">{item.ErrorReason ? item.ErrorReason : 'None'}</td>
                   )}
                   <td className="order-error-dismissed-at desktop" id={`${item.PaymentId}-dismissed-at`}>
                     {item.DismissedAt ? new Date(parseInt(item.DismissedAt)).toISOString().split('T')[0] : 'N/A'}

@@ -146,6 +146,11 @@ td.notes {
   min-width: 1rem;
 }
 
+.whitespace-prewrap {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 // ------------------ Media Queries ---------------
 @media (hover: hover) {
   th:hover, th.header-editable:hover {

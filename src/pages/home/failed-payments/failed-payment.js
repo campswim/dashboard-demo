@@ -65,7 +65,7 @@ const FailedJobs = props => {
                   </td>
                   <td>{item.Count}</td>
                   <td>{formatCurrency(item.AggregateAmount, item.CurrencyCode)}</td>
-                  <td>
+                  <td className='whitespace-prewrap'>
                     {item.ErrorReasons.map((reason, idx) => {
                       return item.ErrorReasons.length === 1 ? reason : <p key={idx}>({idx+1}) {reason}</p>;
                     }
