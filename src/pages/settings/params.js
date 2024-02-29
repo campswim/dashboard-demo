@@ -78,7 +78,7 @@ const Params = props => {
     const table = 'AppParams';
     const element = document.getElementById(`${column}-${row}`);
 
-    if (prevValue === newVal) {
+    if (prevValue === newVal && prevValue !== 'None') {
       element.removeAttribute('contentEditable');
       return;
     }
@@ -100,22 +100,20 @@ const Params = props => {
 
                 if (type === typeNewValue) {
                   if (dataType.current.MaxLength > newVal.length || !dataType.current.MaxLength) {
-                    if (prevValue !== newVal) {
-                      if (!/<\/?[a-z][\s\S]*>/i.test(newVal)) { // Check that no html is being introduced.
-                        if (vpWidth > 1280) {          
-                          items[row][column] = newVal ? newVal : 'None'; // For desktop.
-                        } else {
-                          if (idx) items[idx][column] = newVal ? newVal : 'None'; // For edits in the modal.
-                        }
-                        element.textContent = newVal;
-                        setNewValue({ id, row, column, prevValue, newVal, idx });
-                        updated.current = false;
+                    if (!/<\/?[a-z][\s\S]*>/i.test(newVal)) { // Check that no html is being introduced.
+                      if (vpWidth > 1280) {          
+                        items[row][column] = newVal ? newVal : 'None'; // For desktop.
                       } else {
-                        element.setAttribute('style', 'color: red');
-                        element.textContent = 'There is html in the new value. Please revise your input and resubmit.';
-                        element.scrollIntoViewIfNeeded({behavior:'smooth', inline:'start'});
+                        if (idx) items[idx][column] = newVal ? newVal : 'None'; // For edits in the modal.
                       }
-                    } 
+                      element.textContent = newVal;
+                      setNewValue({ id, row, column, prevValue, newVal, idx });
+                      updated.current = false;
+                    } else {
+                      element.setAttribute('style', 'color: red');
+                      element.textContent = 'There is html in the new value. Please revise your input and resubmit.';
+                      element.scrollIntoViewIfNeeded({behavior:'smooth', inline:'start'});
+                    }
                   }
                 } else {
                   element.setAttribute('style', 'color: red');
@@ -181,7 +179,7 @@ const Params = props => {
             // Update the parameter's value in the AppParams table.
             updateSettings('params', newValue.id, newValue.column, newValue.newVal).then(
               res => {
-                let value = res?.data?.paramsUpdate[newValue.column];
+                let value = res?.data?.paramsUpdate[newValue.column] ? res?.data?.paramsUpdate[newValue.column] : 'None';
                 const valueType = res?.data?.paramsUpdate?.ValueTypeId;
                 const error = res?.data?.paramsUpdate?.Error;
                 const userId = JSON.parse(localStorage.getItem('user')).id;
