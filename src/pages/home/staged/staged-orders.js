@@ -22,7 +22,7 @@ const StagedOrders = props => {
         res => {          
           const results = res?.data?.unpushed;
           const errors = res?.errors;
-
+                    
           if (results) {
             const error = results[0]?.Error;
             

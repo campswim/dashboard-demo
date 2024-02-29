@@ -52,6 +52,9 @@ const UnPulled = props => {
       if (path) {
         userAction('unpulled', path, isChecked).then(
           res => {
+
+            console.log({res, path});
+
             if (res) {
               setResponse(res.data[path]);
               setStatus(res.status);
@@ -120,38 +123,6 @@ const UnPulled = props => {
     const element = document.getElementById(id);
     if (element) element.classList.toggle('show-error');
   };
-
-  // Display long or short versions of the date based on browser width.
-  // const shortOrderDates = document.getElementsByClassName('unpulled order-dates true');
-  // const longOrderDates = document.getElementsByClassName('unpulled order-dates false');
-  // const shortAttemptedDates = document.getElementsByClassName('attempted-dates true');
-  // const longAttemptedDates = document.getElementsByClassName('attempted-dates false');
-
-  // if (items.length > 0) {
-  //   if (shortenDates && shortOrderDates.length > 0 && shortAttemptedDates.length > 0) {
-  //     for (let i = 0; i < items.length; i++) {
-  //       const cell = shortOrderDates[i];
-  //       const orderDate = new Date(parseInt(items[i].OrderDate)).toISOString();
-  //       if (cell) cell.textContent = orderDate.split('T')[0];
-  //     };
-  //     for (let i = 0; i < items.length; i++) {
-  //       const cell = shortAttemptedDates[i];
-  //       const orderDate = new Date(parseInt(items[i].OrderDate)).toISOString();
-  //       if (cell) cell.textContent = orderDate.split('T')[0];
-  //     };
-  //   } else if (!shortenDates && longOrderDates.length > 0 && longAttemptedDates.length > 0 ) {
-  //     for (let i = 0; i < items.length; i++) {
-  //       const cell = longOrderDates[i];
-  //       const orderDate = new Date(parseInt(items[i].OrderDate)).toISOString();
-  //       if (cell) cell.textContent = items[i].OrderDate ? `${orderDate.split('T')[0]} at ${orderDate.split('T')[1].substring(0, 5)}` : 'None';
-  //     };
-  //     for (let i = 0; i < items.length; i++) {
-  //       const cell = longAttemptedDates[i];
-  //       const at = new Date(parseInt(items[i].At)).toISOString();
-  //       if (cell) cell.textContent = items[i].At ? `${at.split('T')[0]} at ${at.split('T')[1].substring(0, 5)}` : 'None';
-  //     };
-  //   }
-  // }
 
   // Set the unpulled state variable with props.
   useEffect(() => {
