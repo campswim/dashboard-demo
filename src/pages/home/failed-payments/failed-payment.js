@@ -67,7 +67,6 @@ const FailedJobs = props => {
                   <td>{formatCurrency(item.AggregateAmount, item.CurrencyCode)}</td>
                   <td>
                     {item.ErrorReasons.map((reason, idx) => {
-                      console.log({idx, reason});
                       return item.ErrorReasons.length === 1 ? reason : <p key={idx}>({idx+1}) {reason}</p>;
                     }
                   )}</td>
