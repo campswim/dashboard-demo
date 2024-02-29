@@ -35,10 +35,7 @@ const FailedPayments = () => {
     let mounted = true;
     if (mounted) {      
       getAllFailedPayments().then(
-        res => {
-
-          console.log({res});
-          
+        res => {          
           if (res?.errors) {
             const errors = Object.values(res.errors);
             errors.forEach(error => setError(`${error}\n`));

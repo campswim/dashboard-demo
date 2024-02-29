@@ -50,6 +50,7 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
                       if (res) {
                         const id = res?.data?.changePassword?.Id;
                         const error = res?.data?.changePassword?.Error;
+                        
                         if (id && !error) {
                           const signInButton = document.getElementById('sign-in-button');
                           setChangePassword(true);
@@ -173,6 +174,9 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
         setError('The passwords do not match; please re-enter them.');
         setPassword('');
         setConfirmPassword('');
+        const signInButton = document.getElementById('sign-in-button');
+        document.getElementById('new-password-first-field').focus();
+        if (signInButton) signInButton.innerText = 'Update';
       } else { // The passwords match, so send it to the db and sign the user in.
         setError(null);
         user.id = id;
