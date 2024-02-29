@@ -9,7 +9,7 @@ export async function getAllFailedPayments() {
       const results = res?.data?.getAllFailedPayments;
       const errors = res?.errors;
       const empty = results.length === 1 && !results?.PaymentId ? true : false;
-      
+            
       if (!empty) {
         if (results) return results;
         else return errors;

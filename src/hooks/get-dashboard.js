@@ -89,14 +89,8 @@ export async function getAllFailedPaymentsSummary() {
     res => {
       const results = res?.data?.getAllFailedPayments;
       const errors = res?.errors;
-      let id;
 
-      if (results.length === 1) {
-        const result = results[0];
-        id = result.PaymentId;
-      }
-            
-      if (results && id) {
+      if (results && results.length > 0) {
         results.forEach(result => {
           if (!failedPayments[result.PaymentType]) {
             failedPayments[result.PaymentType] = {
@@ -107,11 +101,13 @@ export async function getAllFailedPaymentsSummary() {
               ErrorReasons: [result.ErrorReason]
             }
           } else {
-            let count = failedPayments[result.PaymentType].Count;
-            let aggregateAmount = failedPayments[result.PaymentType].AggregateAmount;
+            const failedPayment = failedPayments[result.PaymentType];
+            let count = failedPayment.Count;
+            let aggregateAmount = failedPayment.AggregateAmount;
 
-            failedPayments[result.PaymentType].Count = count + 1;
-            failedPayments[result.PaymentType].AggregateAmount = aggregateAmount + result.PaymentAmount;
+            failedPayment.Count = count + 1;
+            failedPayment.AggregateAmount = aggregateAmount + result.PaymentAmount;
+            if (!failedPayment.ErrorReasons.includes(result.ErrorReason)) failedPayment.ErrorReasons.push(result.ErrorReason);
           }
         });
         

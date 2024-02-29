@@ -188,7 +188,7 @@ const Params = props => {
                 const enabledDate = res?.data?.paramsUpdate?.EnabledDate;
                 
                 if (typeof value === 'number') value = JSON.stringify(value);
-                if (value === newValue.newVal || newValue.column === 'EnabledDate') {
+                if (value === newValue.newVal) {
                   if (element) {
                     const modifiedAtElement = document.getElementById(`ModifiedAt-${newValue.row}`);
                     const modifiedByElement = document.getElementById(`ModifiedBy-${newValue.row}`);
@@ -209,7 +209,7 @@ const Params = props => {
                   }
                     
                   // Log the change to the database.
-                  logChange('AppParams', newValue.column, userId, newValue.prevValue, newValue.newVal, valueType).then(
+                  logChange('AppParams', newValue.id, newValue.column, userId, newValue.prevValue, newValue.newVal, valueType).then(
                     res => {
                       if (res.data) {
                         const changeDateTime = res.data?.logChange?.DateTime;
@@ -242,7 +242,7 @@ const Params = props => {
                   }
                 } else { // Special logging for the date-enabled column.
                   if (newValue.column === 'EnabledDate' & !paramByNameError) {
-                    logChange('AppParams', newValue.column, userId, prevEnabledDate ? new Date(parseInt(prevEnabledDate)).toISOString() : null, enabledDate ? new Date(parseInt(enabledDate)).toISOString() : null, 8).then(
+                    logChange('AppParams', newValue.id, newValue.column, userId, prevEnabledDate ? new Date(parseInt(prevEnabledDate)).toISOString() : null, enabledDate ? new Date(parseInt(enabledDate)).toISOString() : null, 8).then(
                       res => {
                         const changeDateTime = res?.logChange?.DateTime;
                         changeDate.current = changeDateTime;
@@ -344,7 +344,7 @@ const Params = props => {
                         data-default-value="&#10003;"
                         id={`checkmark-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'EnabledDate', e)} // params: id, row, column, event
-                        onClick={(e) => handleClick(e.target, key, 'EnabledDate', item.Name, item.EnabledDate, item )} // params: event, row, column, id, enabled date
+                        onClick={(e) => handleClick(e.target, key, 'EnabledDate', item.Name, item.EnabledDate, item, key)} // params: event, row, column, id, enabled date
                         style={item.EnabledDate ? {color:'green'} : {color:'red'}}
                       >
                         {item.EnabledDate ? <>&#10003;</> : 'X'}
@@ -368,7 +368,7 @@ const Params = props => {
                         // id={`${item.Value}-${key}`}
                         id={`Value-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'Value', e)}
-                        onClick={(e) => handleClick(e.target, key, 'Value', item.Name)}
+                        onClick={(e) => handleClick(e.target, key, 'Value', item.Name, null, item, key)}
                       >{item.Value ? item.Value : 'None'}
                       </td>
                       {vpWidth < 1280 ? null : <td className='process-job-ids'>{item.ProcessJobIds ? item.ProcessJobIds.split(',').join(', ') : 'None'}</td>}
@@ -379,7 +379,7 @@ const Params = props => {
                         // id={`${item.Category}-${key}`}
                         id={`Category-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'Category', e)}
-                        onClick={(e) => handleClick(e.target, key, 'Category', item.Name)}
+                        onClick={(e) => handleClick(e.target, key, 'Category', item.Name, null, item, key)}
                       >{item.Category ? item.Category : 'None'}</td>
                       <td
                         className="editable desktop"
@@ -388,7 +388,7 @@ const Params = props => {
                         // id={`${item.SubCategory}-${key}`}
                         id={`SubCategory-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'SubCategory', e)}
-                        onClick={(e) => handleClick(e.target, key, 'SubCategory', item.Name)}                  
+                        onClick={(e) => handleClick(e.target, key, 'SubCategory', item.Name, null, item, key)}                  
                       >{item.SubCategory ? item.SubCategory : 'None'}</td>
                       <td className='desktop'>{item.ValueType}</td>
                       <td 
@@ -398,7 +398,7 @@ const Params = props => {
                         // id={`${item.Notes}-${key}`}
                         id={`Notes-${key}`}
                         onBlur={(e) => handleBlur(item.Name, key, 'Notes', e)}
-                        onClick={(e) => handleClick(e.target, key, 'Notes', item.Name)}                  
+                        onClick={(e) => handleClick(e.target, key, 'Notes', item.Name, null, item, key)}                  
                       >
                         {item.Notes ? item.Notes : 'None'}
                       </td>

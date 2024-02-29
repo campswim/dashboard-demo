@@ -166,7 +166,7 @@ const Map = props => {
                 }
                                 
                 // Log the change to the database.
-                logChange('AppParams', newValue.column, userId, newValue.prevVal, newValue.newVal, dataType.current.DataType).then(
+                logChange('AppParams', `${newValue.id}`, newValue.column, userId, newValue.prevVal, newValue.newVal, dataType.current.DataType).then(
                   res => {
                     if (res.data) {
                       const changeDateTime = res.data?.logChange?.DateTime;

@@ -104,7 +104,7 @@ const OrderDetails = props => {
                         suppressContentEditableWarning="true"
                         data-default-value="&#10003;"
                         id={`checkmark-${key}`}
-                        onBlur={(e) => props.handleBlur(caller === 'maps' ? item.Id : item.Name, key, detail[0], e, caller === 'params' ? item.idx : null)}
+                        onBlur={(e) => props.handleBlur(caller === 'maps' ? item.Id : item.Name, key, detail[0], e, caller === 'params' ? item.idx : null, item.Email)}
                         onClick={(e) => props.handleClick(e.target, key, detail[0], item.Name, item.EnabledDate, item, item.idx)}
                         onPaste={(e) => {handlePaste(e, `${detail[1] ? detail[1] : 'None'}-${key}`)}}
                       >
@@ -148,7 +148,7 @@ const OrderDetails = props => {
                           suppressContentEditableWarning="true"
                           data-default-value={detail[1]}
                           id={`${detail[0] ? detail[0] : 'None'}-${key}`}
-                          onBlur={(e) => props.handleBlur(caller === 'maps' || caller === 'user' ? item.Id : item.Name, caller === 'user' ? item.idx : key, detail[0], e, caller === 'params' || caller === 'user' ? item.idx : null)}
+                          onBlur={(e) => props.handleBlur(caller === 'maps' || caller === 'user' ? item.Id : item.Name, caller === 'user' ? item.idx : key, detail[0], e, caller === 'params' || caller === 'user' ? item.idx : null, item.Email)}
                           onClick={(e) => props.handleClick(e.target, key, detail[0])}
                           onPaste={(e) => {handlePaste(e, `${detail[1] ? detail[1] : 'None'}-${key}`)}}
                         >

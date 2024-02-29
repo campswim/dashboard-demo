@@ -193,7 +193,7 @@ const Users = (props) => {
   };
 
   // Handles user edits.
-  const handleBlur = (userId, row, column, event, idx) => {
+  const handleBlur = (userId, row, column, event, idx, rowName) => {
     let prevValue = 'Role' !== column ? event?.target?.dataset?.defaultValue : prevElement.current;
     const newValue = 'Role' !== column ? event?.target?.textContent : event?.target?.textContent;
     const table = 'Users';
@@ -223,7 +223,15 @@ const Users = (props) => {
                     if (prevValue !== newValue) {
                       if (!/<\/?[a-z][\s\S]*>/i.test(newValue)) { // Check that no html is being introduced.
                         items[row][column] = newValue ? newValue : 'None'; 
-                        setNewValue({ id: userId, row, column, prevValue, newValue: newValue, idx });
+                        setNewValue({ 
+                          id: userId, 
+                          row, 
+                          column, 
+                          prevValue, 
+                          newValue: newValue, 
+                          idx,
+                          rowName
+                        });
                         updated.current = false;
 
                         if (element) {
@@ -297,7 +305,7 @@ const Users = (props) => {
 
     setRoleName({key, roleName});
     prevElement.current = item.Role;
-    handleBlur(item.Id, caller === 'modal' ? idx : key, 'Role', event, idx);
+    handleBlur(item.Id, caller === 'modal' ? idx : key, 'Role', event, idx, item.Email);
   };
   
   // Send updates to the db for edited fields.
@@ -355,8 +363,10 @@ const Users = (props) => {
                     }, 2000);
                   }
 
+                  console.log({newValue});
+
                   // Log the change to the database.
-                  logChange('Users', newValue.column, newValue.id, newValue.prevValue, newValue.newValue, valueType).then(
+                  logChange('Users', newValue.rowName, newValue.column, newValue.id, newValue.prevValue, newValue.newValue, valueType).then(
                     res => {
                       if (res.data) {
                         const changeDateTime = res.data?.logChange?.DateTime;
@@ -782,7 +792,7 @@ const Users = (props) => {
                     suppressContentEditableWarning="true"
                     data-default-value={item.Name}
                     id={`Name-${key}`}
-                    onBlur={(e) => handleBlur(item.Id, key, 'Name', e)}
+                    onBlur={(e) => handleBlur(item.Id, key, 'Name', e, null, item.Email)}
                     onClick={(e) => handleClick(e.target, key, 'Name')}
                   >
                     {item.Name}
