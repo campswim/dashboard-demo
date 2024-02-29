@@ -15,7 +15,8 @@ const FailedPayments = () => {
   // Get the state values passed on the user's clicking of a redirect link.
   const params = useLocation();
   const state = params?.state;
-  const { type, action, orderNum } = state ? state : '';
+  let type, action, orderNum;  
+  if (state) ({ type, action, orderNum } = state);
 
   // Handle the user choosing another tab on this page.
   const handleClick = (callerId) => {

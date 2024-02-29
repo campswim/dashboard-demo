@@ -56,8 +56,8 @@ const FailedJobs = props => {
                   <td>
                     <Link
                       to={{
-                        pathname: '/failed-processes',
-                        state: { job: item.Type },
+                        pathname: '/failed-payments',
+                        state: { type: item.Type },
                       }}
                     >
                       {item.Type}

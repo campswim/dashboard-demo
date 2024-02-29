@@ -93,7 +93,8 @@ const FailedProcesses = () => {
         error={error} 
         isLoaded={isLoaded} 
         handleClick={handleClick} 
-        activeTab={currentTab ? currentTab : job ? job : null} restrictedActions={restrictedActions.current} 
+        activeTab={currentTab ? currentTab : job ? job : null} 
+        restrictedActions={restrictedActions.current} 
         order={orderNum} 
         action={action} 
       />
