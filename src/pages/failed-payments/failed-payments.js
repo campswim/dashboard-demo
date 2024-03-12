@@ -41,7 +41,7 @@ const FailedPayments = () => {
             const errors = Object.values(res.errors);
             errors.forEach(error => setError(`${error}\n`));
           } else {            
-            setFailedPayments(res);
+            setFailedPayments(res.data.getAllFailedPayments);
             setError(null);
             setIsLoaded(true);
           }

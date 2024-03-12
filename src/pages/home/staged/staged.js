@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import useSort from '../../../hooks/sort-data';
 import formatCurrency from '../../../hooks/format-currency';
 import formatHeaders from '../../../hooks/format-headers';
@@ -18,7 +19,29 @@ const Staged = props => {
   : 
   (
     <div className='dash-staged-tableset'>
-      {!props.isLoaded ? <div className='loading'>Loading . . . </div> : <div className="subheader">{props.subheader}</div>}
+      {!props.isLoaded ? 
+      (
+        <div className='loading'>Loading . . . </div>
+      ) 
+      : props.subheader !== 'Unpushed' ?
+      (
+        <div className="subheader">
+          <Link
+            to={{
+              pathname: '/failed-orders',
+              state: {
+                type: props.subheader
+              }
+            }}
+          >
+            {props.subheader}
+          </Link>*
+        </div>
+      )
+      :
+      (
+        <div className="subheader">{props.subheader}</div>
+      )}
       <table>
         <thead>
           <tr className="header-row">

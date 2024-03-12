@@ -8,13 +8,13 @@ import Ignored from './ignored';
 const FailedOrders = () => {
   // Get state when passed from a link or redirect component.
   const params = useLocation();
-  let state = null;
-  if (params) state = params.state;
-  if (state) var { order, postPath, action, id } = state; // This is for user-initiated actions, not the get-all-failed called.
+  const state = params?.state;
+  const { order, postPath, action, id, type } = state; // This is for user-initiated actions, not the get-all-failed called.
   
   const [getQuery, setGetQuery] = useState('failedPulls');
   const [click, setClick] = useState(false);
   const [currentPage, setCurrentPage] = useState('');
+  const [tab, setTab] = useState('');
   const [unpushed, setUnpushed] = useState([]);
   const [unpulled, setUnpulled] = useState([]);
   const [ignored, setIgnored] = useState([]);
@@ -71,19 +71,16 @@ const FailedOrders = () => {
   useEffect(() => {
     let mounted = true;
     if (mounted && loggedIn) {
-      // setFormattedDate(formatDate(date));
-
       // Set the active tab.
       if (!click) {
-        // if (state) {
-        //   if (action === 'Repush') setGetQuery('failedPushes'); // Failed pushes.
-        //   else if (action === 'Repull' || action === 'RepullAllowMismatch') setGetQuery('failedPulls'); // Failed pulls.
-        // }
+        if (tab && tab !== getQuery) setGetQuery(tab);
         if (getQuery) {
           document.getElementById(getQuery).setAttribute('class', 'active-button');
           document.getElementById(getQuery === 'failedPulls' ? 'failedPushes' : 'failedPulls').setAttribute('class', 'inactive-button');
         }
       } else {
+        setTab('');
+
         if (!getQuery) setGetQuery(currentPage);
         if (getQuery) {
           document.getElementById(getQuery).setAttribute('class', 'active-button');
@@ -94,38 +91,55 @@ const FailedOrders = () => {
       if (sessionStorage.getItem('action')) setClick(false);
     }
     return () => mounted = false;
-  }, [action, click, currentPage, getQuery, loggedIn, state]);
+  }, [action, click, currentPage, getQuery, loggedIn, state, tab]);
   
+  // Set the tab state variable when a user clicks on a redirect link from the homepage.
+  useEffect(() => {
+    let mounted = true;
+    if (mounted) {
+      if (!click) {
+        if (type && tab !== null) {
+          if (type.includes('Failed')) setTab('failedPushes');
+          else setTab('ignoredOrders');  
+        }
+      } else {
+        setTab(null);
+      }
+    }
+    return () => mounted = false;
+}, [type, tab, getQuery, click]);
+
   // Get data from the db.
   useEffect(() => {
     let mounted = true;
     if (mounted) {
       getOrders(getQuery).then(
         res => {
-          if (res) {
-            if (res.data) {
-              if (getQuery === 'failedPushes') {
-                setUnpushed(res.data);
-                setUnpushedIsLoaded(true);
-                setUnpulledIsLoaded(false);
-                setIgnoredIsLoaded(false);
-                setError(null);
-              } else if (getQuery === 'failedPulls') {
-                setUnpulled(res.data);
-                setUnpulledIsLoaded(true);
-                setUnpushedIsLoaded(false);
-                setIgnoredIsLoaded(false);
-                setError(null);
-              } else if (getQuery === 'ignoredOrders') {
-                setIgnored(res.data);
-                setIgnoredIsLoaded(true);
-                setUnpulledIsLoaded(false);
-                setUnpushedIsLoaded(false);
-                setError(null);
-              }
-            } else if (res.name) {
-              setError({name: res.name, message: res.message});
+
+          // console.log({res});
+
+          if (res?.data) {
+            if (getQuery === 'failedPushes') {
+              setUnpushed(res.data);
+              setUnpushedIsLoaded(true);
+              setUnpulledIsLoaded(false);
+              setIgnoredIsLoaded(false);
+              setError(null);
+            } else if (getQuery === 'failedPulls') {
+              setUnpulled(res.data);
+              setUnpulledIsLoaded(true);
+              setUnpushedIsLoaded(false);
+              setIgnoredIsLoaded(false);
+              setError(null);
+            } else if (getQuery === 'ignoredOrders') {
+              setIgnored(res.data);
+              setIgnoredIsLoaded(true);
+              setUnpulledIsLoaded(false);
+              setUnpushedIsLoaded(false);
+              setError(null);
             }
+          } else if (res.name) {
+            setError({name: res.name, message: res.message});
           }
         },
         err => {
@@ -161,20 +175,16 @@ const FailedOrders = () => {
     }
     return () => mounted = false;
   }, []);
-  
+    
   return !loggedIn ? 
   ( // Redirect the user to the sign-in page when not logged in.
-    // <div className="signin-error">You must sign in to access this resource.</div>
-    <Redirect to={
-      {
+    <Redirect to={{
         pathname: '/login',
         state: {
-          // id,
           action: 'Sign In',
           message: 'Please sign in.'
         },
-      }
-    }
+      }}
     />
   )
   : error ?
@@ -203,11 +213,6 @@ const FailedOrders = () => {
                 Ignored Orders
               </button>
             </form>
-            {/* <p>
-              as of {formattedDate.day} {formattedDate.month} {formattedDate.year} at{' '}
-              {formattedDate.hour}:{formattedDate.minutes}:{formattedDate.seconds}{' '}
-              {formattedDate.amOrPm}
-            </p> */}
           </div>
           {getQuery === 'failedPulls' ? 
           (
@@ -238,6 +243,7 @@ const FailedOrders = () => {
               callerId={id}
               click={click}
               restrictedActions={restrictedActions.current}
+              tab={type}
             />
           ) : getQuery === 'ignoredOrders' ?
           (
@@ -253,6 +259,7 @@ const FailedOrders = () => {
               callerId={id}
               click={click}
               restrictedActions={restrictedActions.current}
+              tab={type}
             />
           ) : (
             ''

@@ -16,6 +16,7 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
   const [loggedIn, setLoggedIn] = useState(0);
   const [renderSignUp, setRenderSignUp] = useState(signUp);
   const [changePassword, setChangePassword] = useState(false);
+  const [buttonText, setButtonText] = useState('Sign In');
   const userAction = useRef(profile?.action);
   const userInfo = useRef(null);
   const user = new User();
@@ -23,7 +24,8 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
   // Handle the clicking of the sign-in button.
   const handleSignIn = event => {
     event.preventDefault();
-    document.getElementById('sign-in-button').innerText = 'Signing in . . . ';
+    // document.getElementById('sign-in-button').innerText = 'Signing in . . . ';
+    setButtonText('Signing in . . .');
     userAction.current = 'Sign In';
     user.email = username;
     setError(null);
@@ -42,7 +44,9 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
               user.password = password;
               
               if (!activeUser) { // The user has been deactivated and should not be given access to the site.
-                setError('This user profile has been deactivated.');
+                setError('This user profile has been deactivated.\nContact your supervisor to gain access to this resource.');
+                // document.getElementById('sign-in-button').innerText = 'Sign In';
+                setButtonText('Sign In');
               } else { // The user is active.
                 if (!firstSignin) { // Make the user change her password.
                   user.changePassword(true).then(  // arg => firstSignin
@@ -52,11 +56,12 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
                         const error = res?.data?.changePassword?.Error;
                         
                         if (id && !error) {
-                          const signInButton = document.getElementById('sign-in-button');
+                          // const signInButton = document.getElementById('sign-in-button');
                           setChangePassword(true);
                           document.getElementById('new-password-first-field').focus();
 
-                          if (signInButton) signInButton.innerText = 'Update';
+                          // if (signInButton) signInButton.innerText = 'Update';
+                          setButtonText('Update');
                           setError('');
                           setId(id);
                           setPassword('');
@@ -78,7 +83,8 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
                         
                         if (error) { // Print the error and reset the sign-in button's text.
                           setError(error);
-                          document.getElementById('sign-in-button').innerText = 'Sign In';
+                          // document.getElementById('sign-in-button').innerText = 'Sign In';
+                          setButtonText('Sign In');
                         } else {
                           if (userData) { // Get user restrictions from the db and add them to the user object in local storage.
                             user.getUserRestrictions(userData.RoleId).then(
@@ -139,20 +145,23 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
               // If there are no users at all in the database, render the signup page.
               user.getAllUsersSansToken().then(
                 res => {
-                  if (res.data) {
+                  if (res.data && res.data?.users) {
                     const id = res.data?.users[0].Id;
                     const error = res.data?.users[0].Error;
+
                     if (!id && !error) {
                       setRenderSignUp(true);
                       userAction.current = 'Add User';
                     } else if (id && !error) {
-                      setError('There is no user associated with this email address.\n\nPlease ensure you\'ve entered the correct email address or ask the site\'s administrator for access.');                      
+                      setError('There is no user associated with this email address.\nPlease ensure you\'ve entered the correct email address or ask the site\'s administrator for access.');                      
                       liftData(false, 'signin', true); // Args => boolean, caller, error (boolean).
-                      document.getElementById('sign-in-button').innerText = 'Sign in';
+                      // document.getElementById('sign-in-button').innerText = 'Sign in';
+                      setButtonText('Sign In');
                       document.getElementById('sign-in-button').classList.remove('reset-color');
                     }
-                  } else if (res.name) {
-                    setError(res.message);
+                  } else if (res.errors) {
+                    res.errors.forEach(err => setError(`${err.message}\n`));
+                    setButtonText('Sign In');
                   }
                 },
                 err => {
@@ -163,7 +172,8 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
           } else {
             if (!res.response) {
               setError('Network error. Check that the API is up and running');
-              document.getElementById('sign-in-button').innerText = 'Sign In';
+              // document.getElementById('sign-in-button').innerText = 'Sign In';
+              setButtonText('Sign In');
             }
           }
         },
@@ -174,9 +184,10 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
         setError('The passwords do not match; please re-enter them.');
         setPassword('');
         setConfirmPassword('');
-        const signInButton = document.getElementById('sign-in-button');
+        // const signInButton = document.getElementById('sign-in-button');
         document.getElementById('new-password-first-field').focus();
-        if (signInButton) signInButton.innerText = 'Update';
+        // if (signInButton) signInButton.innerText = 'Update';
+        setButtonText('Update');
       } else { // The passwords match, so send it to the db and sign the user in.
         setError(null);
         user.id = id;
@@ -424,7 +435,8 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
         <form onSubmit={(e) => handleSignIn(e)}>
           <input name='username' value={username} placeholder='Email' onChange={(e) => setUsername(e.target.value)} required />
           <input name='password' value={password} placeholder='Password' onChange={(e) => setPassword(e.target.value)} required type='password'/>
-          <button id='sign-in-button' name='submit' type='submit'>Sign In</button>
+          {/* <button id='sign-in-button' name='submit' type='submit'>Sign In</button> */}
+          <button id='sign-in-button' name='submit' type='submit'>{buttonText}</button>
         </form>
       </div>
       {error ?
@@ -453,7 +465,8 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
         <form onSubmit={(e) => handleSignIn(e)}>
           <input id='new-password-first-field' name='password' value={password} placeholder='Enter your new password.' onChange={(e) => setPassword(e.target.value)} type='password' required />
           <input name='password' value={confirmPassword} placeholder='Re-enter your new password.' onChange={(e) => setConfirmPassword(e.target.value)} required type='password' />
-          <button id='sign-in-button' name='submit' type='submit'>Update</button>
+          {/* <button id='sign-in-button' name='submit' type='submit'>Update</button> */}
+          <button id='sign-in-button' name='submit' type='submit'>{buttonText}</button>
         </form>
       </div>
       {error ?

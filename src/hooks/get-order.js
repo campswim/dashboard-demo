@@ -13,7 +13,7 @@ export async function getOrders(query) {
   return result;
 }
 
-export async function getUnpushedOrders(status) {
+export async function getUnpushedOrders(status) {  
   const operation = status;
   const query = `query ${operation} {${operation} {Market, OrderTotalAmount, PushStatusId, Error}}`;
   const variables = { status };
@@ -27,7 +27,7 @@ export async function getUnpushedOrders(status) {
 
 export async function userAction(tab, operation, ids) {
   if (!operation || !ids) return;
-  
+    
   const query = 
     tab === 'unpushed' ? 
       `mutation ${operation}($ids: [String]!) {${operation}(ids: $ids) {OrderNumber}}` : 

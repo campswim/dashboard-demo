@@ -53,13 +53,11 @@ const UnPushed = props => {
       if (path) {
         userAction('unpushed', path, isChecked)
         .then(
-          res => {
-            if (res) {
-              setResponse(res.data[path]);
-              setStatus(res.status);
-              setError(null);
-              showMessage.current = true;
-            }
+          res => {            
+            setResponse(res?.data[path]);
+            setStatus(res?.status);
+            setError(null);
+            showMessage.current = true;
           },
           err => {
             if (err) {
@@ -131,27 +129,7 @@ const UnPushed = props => {
     // setIsChecked([]);
     clickCount.current = 0;
   };
-  
-  // Display long or short versions of the date based on browser width.
-  // const shortOrderDates = document.getElementsByClassName('unpushed order-dates true');
-  // const longOrderDates = document.getElementsByClassName('unpushed order-dates false');
-
-  // if (items.length > 0) {
-  //   if (shortenDates && shortOrderDates.length > 0) {
-  //     for (let i = 0; i < items.length; i++) {
-  //       const cell = shortOrderDates[i];
-  //       const orderDate = new Date(parseInt(items[i].OrderDate)).toISOString();
-  //       if (cell) cell.textContent = orderDate.split('T')[0];
-  //     };
-  //   } else if (!shortenDates && longOrderDates.length > 0) {
-  //     for (let i = 0; i < items.length; i++) {
-  //       const cell = longOrderDates[i];
-  //       const stagingImportDate = new Date(parseInt(items[i].StagingImportDate)).toISOString();
-  //       if (cell) cell.textContent = `${stagingImportDate.split('T')[0]} at ${stagingImportDate.split('T')[1].substring(0, 5)}`;
-  //     };
-  //   }
-  // }
-  
+    
   useEffect(() => {
     let mounted = true;
     if (mounted) setUnpushed(props.data.failedPushes);

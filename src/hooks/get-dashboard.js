@@ -80,6 +80,43 @@ export async function getAllFailedProcesses() {
   );
 }
 
+export async function getAllUnpushedPayments() {
+  const operation = 'getAllUnpushedPayments';
+  const query = `query ${operation} {${operation} {PaymentId, OrderNumber, PaymentType, PaymentAmount, PaymentDate, CardNumber, CurrencyCode}}`;
+  const unpushedPayments = {};
+
+  return await apiCall(operation, query).then(
+    res => {
+      const results = res?.data?.getAllUnpushedPayments;
+      const errors = res?.errors;
+      
+      if (results) {
+        results.forEach(result => {
+          if (!unpushedPayments[result.PaymentType]) {
+            unpushedPayments[result.PaymentType] = {
+              Type: result.PaymentType,
+              Count: 1,
+              AggregateAmount: result.PaymentAmount,
+              CurrencyCode: result.CurrencyCode,
+            }
+          } else {
+            let count = unpushedPayments[result.PaymentType].Count;
+            let aggregateAmount = unpushedPayments[result.PaymentType].AggregateAmount;
+
+            unpushedPayments[result.PaymentType].Count = count + 1;
+            unpushedPayments[result.PaymentType].AggregateAmount = aggregateAmount + result.PaymentAmount;
+          }
+        });
+
+        return unpushedPayments;
+      } else if (errors) {
+        return errors;
+      }
+    },
+    err => { return err; }
+  );
+}
+
 export async function getAllFailedPaymentsSummary() {
   const operation = 'getAllFailedPayments';
   const query = `query ${operation} {${operation} {PaymentId, OrderNumber, PaymentType, PaymentAmount, PaymentDate, CardNumber, AttemptedAt, ErrorReason, CurrencyCode}}`;

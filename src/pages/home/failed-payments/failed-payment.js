@@ -4,7 +4,7 @@ import useSort from '../../../hooks/sort-data';
 import formatHeaders from '../../../hooks/format-headers';
 import formatCurrency from '../../../hooks/format-currency';
 
-const FailedJobs = props => {  
+const FailedPayments = props => {
   // Get the table's headers from the data's keys.
   const headers = props.data && JSON.stringify(props.data) !== '{}' ? formatHeaders(Object.keys(Object.values(props.data)[0]), 'CurrencyCode') : [];
   // The following two constants handle the sorting algorithm.
@@ -29,7 +29,6 @@ const FailedJobs = props => {
         <table className="unprocessed-jobs-table">
           <thead>
             <tr className="header-row">
-
               {headers ? 
               (
                 headers.map((header, key) => (
@@ -67,7 +66,7 @@ const FailedJobs = props => {
                   <td>{formatCurrency(item.AggregateAmount, item.CurrencyCode)}</td>
                   <td className='whitespace-prewrap'>
                     {item.ErrorReasons.map((reason, idx) => {
-                      return <p key={idx}>({idx+1}) {reason}</p>;
+                      return <p key={idx}>{`(${idx+1}) ${reason}`}</p>;
                     }
                   )}</td>
                 </tr>
@@ -92,26 +91,32 @@ const FailedJobs = props => {
                 (
                   headers.map((header, j) => (
                     <tr key={j}>
-                      <th >{header}</th>
-                        {header !== 'Name' ? 
-                      (
-                        <td>
-                          {item[header.split(' ').join('')]}
-                        </td>
-                      )
-                      :
+                      <th>{header}</th>
+                      {header === 'Type' ?
                       (
                         <td className='jobs-link'>
                           <Link
                             to={{
-                              pathname: '/failed-payments',
+                              pathname: '/failed-payments/',
                               state: { 
-                                type: item.Name,
+                                type: item.Type,
                               },
                             }}
                           >
-                            {item.Name}
+                            {item.Type}
                           </Link>
+                        </td>
+                      )
+                      : header === 'Aggregate Amount' ?
+                      (
+                        <td>
+                          {formatCurrency(item.AggregateAmount, item.CurrencyCode)}
+                        </td>
+                      )
+                      :
+                      (
+                        <td>
+                          {item[header.split(' ').join('')]}
                         </td>
                       )}
                     </tr>
@@ -134,4 +139,4 @@ const FailedJobs = props => {
   )
 }
 
-export default FailedJobs;
+export default FailedPayments;

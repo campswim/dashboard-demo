@@ -3,6 +3,7 @@ import { useLocation, Redirect } from 'react-router-dom';
 // import PushedOrders from './pushed/pushed-orders';
 import StagedOrders from './staged/staged-orders';
 import FailedProcessesSummary from './failed-processes/failed-processes';
+import UnpushedPaymentsSummary from './failed-payments/unpushed-payments';
 import FailedPaymentsSummary from './failed-payments/failed-payments';
 // import BcMissingItems from './missing/bc-missing-items';
 
@@ -38,7 +39,10 @@ const Home = () => {
         {/* <PushedOrders /> */}
         <StagedOrders loggedIn={loggedIn} deleteUser={deleteUser}/>
         <FailedProcessesSummary />
-        <FailedPaymentsSummary />
+        <div className='unpushed-payments-summary-container'>
+          <UnpushedPaymentsSummary />
+          <FailedPaymentsSummary />
+        </div>
         {/* <BcMissingItems /> */}
       </div>
     )

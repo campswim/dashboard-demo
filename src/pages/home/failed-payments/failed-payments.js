@@ -28,14 +28,14 @@ const FailedPaymentsSummary = () => {
   
   return error ? 
   (
-    <div className="signin-error">{error?.message}</div>
+    <div className="signin-error">{error}</div>
   )
   :
   (
-    <>
+    <div id='failed-payments-section'>
       <h3 className='section-title'>Failed Payments</h3>
       <FailedPayments data={failedPayments} isLoaded={isLoaded} error={error} />
-    </>
+    </div>
   )
 };
 

@@ -57,12 +57,13 @@ const Ignored = props => {
 
       userAction('ignored', path, ids).then(
         res => {
-          if (res) {
-            setResponse(res?.data[path]);
-            setStatus(res?.status);
-            setError(null);
-            showMessage.current = true;
-          }
+          
+          console.log({res});
+          
+          setResponse(res?.data[path]);
+          setStatus(res?.status);
+          setError(null);
+          showMessage.current = true;
         },
         err => {
           console.error({err});
@@ -85,7 +86,11 @@ const Ignored = props => {
   // Handle the toggling of the select-all checkbox.
   const handleSelectAll = () => {
     setAllChecked(!allChecked);
-    setIsChecked(ignored.map(item => item.OrderNumber));
+
+    if (ignored && Array.isArray(ignored)) {
+      setIsChecked(ignored.map(item => item.OrderNumber));
+    }
+
     if (allChecked) setIsChecked([]);
   };
 
@@ -285,20 +290,27 @@ const Ignored = props => {
                   <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                     <p>The following orders have been {message(props.action)}:&nbsp;</p>
                     <div className='orders-in-array'>
-                      {props.order.map((id, key) => (
-                        props.order.length === 1 ? 
-                        ( 
-                          <p key={key}>{id}</p>
-                        )
-                        : key === props.order.length - 1 ?
-                        (
-                          <p key={key}>{id}.</p>
-                        )
-                        :
-                        (
-                          <p key={key}>{id},<span>&nbsp;</span></p>
-                        )                          
-                      ))}
+                      {props.order && Array.isArray(props.order)  ? 
+                      (
+                        props.order.map((id, key) => (
+                          props.order.length === 1 ? 
+                          ( 
+                            <p key={key}>{id}</p>
+                          )
+                          : key === props.order.length - 1 ?
+                          (
+                            <p key={key}>{id}.</p>
+                          )
+                          :
+                          (
+                            <p key={key}>{id},<span>&nbsp;</span></p>
+                          )
+                        ))
+                      )
+                      :
+                      (
+                        null
+                      )}
                     </div>
                   </div>
                 )
@@ -318,20 +330,27 @@ const Ignored = props => {
                   <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                     <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
                   <div className='orders-in-array'>
-                    {props.order.map((id, key) => (
-                      props.order.length === 1 ? 
-                      ( 
-                        <p key={key}>{id}</p>
-                      )
-                      : key === props.order.length - 1 ?
-                      (
-                        <p key={key}>{id}.</p>
-                      )
-                      :
-                      (
-                        <p key={key}>{id},<span>&nbsp;</span></p>
-                      )                          
-                    ))}
+                    {props.order && Array.isArray(props.order) ? 
+                    (
+                      props.order.map((id, key) => (
+                        props.order.length === 1 ? 
+                        ( 
+                          <p key={key}>{id}</p>
+                        )
+                        : key === props.order.length - 1 ?
+                        (
+                          <p key={key}>{id}.</p>
+                        )
+                        :
+                        (
+                          <p key={key}>{id},<span>&nbsp;</span></p>
+                        )                          
+                      ))
+                    )
+                    :
+                    (
+                      null
+                    )}
                   </div>
                 </div>
               )
@@ -347,7 +366,9 @@ const Ignored = props => {
       <table className="unpushed-table-large" id="tab">
         <thead>
           <tr className='header-row'>
-            {items.length !== 0 ? (
+            {items && Array.isArray(items) ? 
+            (
+              items.length !== 0 ? (
               <th className='checkbox-th'>
                 <Checkbox
                   type='checkbox'
@@ -356,8 +377,13 @@ const Ignored = props => {
                   isChecked={allChecked}
                 />
               </th>
-            ) : (
+              ) : (
               <th className='hidden-checkbox'></th>
+              )
+            )
+            :
+            (
+              null
             )}
             {headers ? 
             (
@@ -397,8 +423,9 @@ const Ignored = props => {
           </tr>
         </thead>
         <tbody>
-        {items.length !== 0 ? (
-          items.map((item, key) => (
+        {items && Array.isArray(items) ? (
+          items.length !== 0 ? (
+            items.map((item, key) => (
               <tr key={key}>
                 <td className='select-one'>
                   <Checkbox
@@ -428,20 +455,29 @@ const Ignored = props => {
                 <td className="order-date desktop">{new Date(parseInt(item.OrderDate)).toISOString().split('T')[0]}</td>
                 <td>{formatCurrency(item.OrderTotal, item.CurrencyCode)}</td>
                 <td>{new Date(parseInt(item.IgnoredDate)).toISOString().split('T')[0]}</td>
-                <td className="ignored-by desktop">{item.User}</td>
+                <td className="ignored-by desktop">{item.User ? item.User : 'None'}</td>
                 <td className="unpushed-error-message desktop">
-                  <span className={`error-message ${noLink}`} title={item.Message.length > chars ? "Click to view the error." : null} onClick={item.Message.length > chars ? showError : null} name={item.OrderNumber}>
-                    {item.Message.includes('\r\n') ? `${item.Message.split('\r\n').join(' ').slice(0, chars)}` : `${item.Message.slice(0, chars)}`}
-                    {item.Message.length > chars ? ' (...)' : null}
+                  <span 
+                    className={`error-message ${noLink}`} 
+                    title={!item.Message ? null : item.Message.length > chars ? "Click to view the error." : null} 
+                    onClick={!item.Message ? null : item.Message.length > chars ? showError : null} 
+                    name={item.OrderNumber}
+                  >
+                    {!item.Message ? 'None' : item.Message.includes('\r\n') ? `${item.Message.split('\r\n').join(' ').slice(0, chars)}` : item.Message.length > chars ? ' (...)' : `${item.Message.slice(0, chars)}`}
                   </span>
                 </td>
               </tr>
           ))
-        ) : (
+          ) : (
             <tr>
               <td className='hidden-checkbox'></td>
               <td>None</td>
             </tr>
+          )
+        )
+        :
+        (
+          null
         )}
         </tbody>
       </table>
