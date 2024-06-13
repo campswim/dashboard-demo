@@ -13,7 +13,7 @@ const FailedPayments = props => {
     if (!sortConfig) return;
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
-    
+  
   return props.error ? 
   (
     <div className="signin-error">{props.error}</div>
@@ -29,7 +29,7 @@ const FailedPayments = props => {
         <table className="unprocessed-jobs-table">
           <thead>
             <tr className="header-row">
-              {headers ? 
+              {headers && headers.length > 0 ? 
               (
                 headers.map((header, key) => (
                   <th
@@ -66,7 +66,7 @@ const FailedPayments = props => {
                   <td>{formatCurrency(item.AggregateAmount, item.CurrencyCode)}</td>
                   <td className='whitespace-prewrap'>
                     {item.ErrorReasons.map((reason, idx) => {
-                      return <p key={idx}>{`(${idx+1}) ${reason}`}</p>;
+                      return item.ErrorReasons.length === 1 || idx === item.ErrorReasons.length - 1 ? reason : `${reason}, `;
                     }
                   )}</td>
                 </tr>
@@ -82,12 +82,12 @@ const FailedPayments = props => {
 
       { /* Display the table vertically for mobile. */ }
       <div className="dash-failed-processes mobile">
-        {items.length > 0 ? 
+        {items && items.length > 0 ? 
         (
           items.map((item, i) => (
             <table key={i}>
               <thead>
-                {headers ?
+                {headers && headers.length > 0 ? 
                 (
                   headers.map((header, j) => (
                     <tr key={j}>
@@ -132,7 +132,11 @@ const FailedPayments = props => {
         )
         :
         (
-          null
+          <table>
+            <tbody>
+              <tr><td>None</td></tr>
+            </tbody>
+          </table>
         )}
       </div>
     </>

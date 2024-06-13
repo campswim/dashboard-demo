@@ -1,6 +1,8 @@
 function selectElementContents(el) {
   if (!el) return;
+  
   let body = document.body, range, sel;
+
   if (document.createRange && window.getSelection) {
     range = document.createRange(); 
     sel = window.getSelection();

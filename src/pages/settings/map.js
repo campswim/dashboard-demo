@@ -32,7 +32,7 @@ const Map = props => {
   const headers = items && items.length > 0 ? formatHeaders(Object.keys(items[0]), 'Error') : '';
 
   // Handle a user clicking in editable fields.
-  const handleClick = (event, row, column) => {    
+  const handleClick = (event, row, column, item) => {
     let currentValue = event?.textContent;
     let defaultValue = event.dataset.defaultValue ? event.dataset.defaultValue : 'None';
     const element = document.getElementById(`${column}-${row}`);
@@ -164,7 +164,7 @@ const Map = props => {
                     updated.current = true;
                   }, 2000);
                 }
-                                
+
                 // Log the change to the database.
                 logChange('AppParams', `${newValue.id}`, newValue.column, userId, newValue.prevVal, newValue.newVal, dataType.current.DataType).then(
                   res => {

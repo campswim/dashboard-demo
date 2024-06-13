@@ -1,6 +1,6 @@
 export default function formatHeaders(headers, ignore = '') {
   if (!headers || headers.length <= 0) return;
-  
+
   if (Array.isArray(headers)) {
     const formattedHeaders = [];
     headers.forEach(header => {    
@@ -35,7 +35,7 @@ export default function formatHeaders(headers, ignore = '') {
         }
       }
     });
-
+    
     return formattedHeaders.length <= 0 ? null : formattedHeaders;
   } else { // The headers argument is a single string, not an array.
     let formattedHeader, headerArray = headers.split(' ');
@@ -43,11 +43,7 @@ export default function formatHeaders(headers, ignore = '') {
     const firstInitial = sample[0].toUpperCase();
     sample = sample.slice(1);
     const match = sample.match(/[A-Z]/g);
-    const allCapitalized = headers.match(/[A-Z]/g);
-
-    // If the whole header is capitalized, just return it as is.
-    if (allCapitalized && allCapitalized.length === headers.length) return headers;
-
+    
     if (match) {
       let formatted = sample.split('');
       const indices = [];

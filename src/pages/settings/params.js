@@ -13,6 +13,7 @@ const Params = props => {
   const [showDetails, setShowDetails] = useState(false);
   const [newValue, setNewValue] = useState({});
   const [vpWidth, setVpWidth] = useState(window.innerWidth);
+  const valueObject = useRef({});
   const dataType = useRef({}); // => dataType.current = {ColumnName, DataType, MaxLength}
   const changeDate = useRef('');
   const clickCount = useRef(0);
@@ -24,7 +25,7 @@ const Params = props => {
   const getClassNamesFor = useCallback(name => {
     if (!sortConfig) return;
 
-    let className = 'Name' !== name && 'ValueType' !== name && 'ModifiedAt' !== name && 'ModifiedBy' !== name ? 'header-editable' : '';
+    let className = 'Name' !== name && 'ProcessJobIds' !== name && 'ValueType' !== name && 'ModifiedAt' !== name && 'ModifiedBy' !== name ? 'header-editable' : '';
     className = sortConfig.key === name ? sortConfig.direction + ' ' + className : className;
     return className ? className : undefined;
   }, [sortConfig]);
@@ -32,26 +33,89 @@ const Params = props => {
   // Format the headers.
   const headers = items && items.length > 0 ? formatHeaders(Object.keys(items[0]), ['ValueTypeId', 'EnabledDate', 'CreatedAt', 'CreatedBy', 'UserId', 'Error']) : '';
 
-  const handleClick = (event, row, column, id, enabledDate = null, item, idx) => {    
+  // Used to reset long values to their truncated versions and to reset the click counter, so that the select-all feature will work.
+  const clickSniffer = event => {
+    // Get the element just clicked by the user.
+    const clickedElementId = event?.target?.id;
+    
+    if (clickedElementId || clickedElementId === '') {
+      if (clickedElementId !== clickLocation.current) {
+        const element = document.getElementById(clickLocation.current);
+        
+        if (element) { 
+          if (valueObject.current && valueObject.current[clickLocation.current]) {
+            const currentValue = element.textContent;
+            const truncatedValue = valueObject.current[clickLocation.current];
+
+            if (currentValue !== truncatedValue && clickCount.current <= 2) {
+              element.textContent = truncatedValue;
+              clickLocation.current = '';
+              clickCount.current = 0;
+              element.setAttribute('contentEditable', 'false');
+            }
+          }
+        }        
+      } 
+    }
+
+    // Unbind the event listener on clean up.
+    return () => document.removeEventListener("mousedown", clickSniffer);
+  };
+
+  // Handles the user clicking in an editable cell.
+  const handleClick = (event, row, column, id, enabledDate = null, item, idx) => {
+    // Increment the click counter.
+    clickCount.current++; 
+
+    const elementId = `${column}-${row}`;
+    const truncatedValue = elementId && valueObject?.current[elementId] ? valueObject.current[elementId] : '';
     let currentValue = event.textContent;
     let defaultValue = event.dataset.defaultValue, element;
-
-    if ('✓' === defaultValue) element = document.getElementById(`checkmark-${row}`);
-    else element = document.getElementById(`${column}-${row}`);
     
-    if (clickLocation.current !== event.id) clickCount.current = 0;
-    if (clickCount.current <= 1 && vpWidth >= 1024) selectElementContents(element); // Selects all content in the field.
-    clickCount.current++;
+    // Set the target element.
+    if ('✓' === defaultValue) element = document.getElementById(`checkmark-${row}`);
+    else element = document.getElementById(elementId);
+        
+    // Select all content in the field on the second click.
+    if (vpWidth >= 1024) {
+      if (!truncatedValue) {
+        if (clickCount.current === 2) selectElementContents(element); 
+      } else {
+        if (clickCount.current === 3) selectElementContents(element);
+      }
+    }
+    
+    // Reset the click counter.    
+    if ((clickLocation.current !== event.id) && !truncatedValue) {
+      clickCount.current = 0;
+    }
+    
+    // Set the location of the click.
     clickLocation.current = event.id;
 
-    if ('Name' !== column) { // Editing the Name column is not allowed, it being the PK in the db table.      
+    // Set the cell to be editable, if it meets the criteria.
+    if ('Name' !== column) { // Editing the Name column is not allowed, it being the PK in the db table.
+
+      // Set the cell to editable on a different click timeframe than below if it is truncated when rendered.
+      if (truncatedValue) {
+        if (clickCount.current >= 1) {
+          element.setAttribute('contentEditable', 'true');
+        }
+      }
+
       if (defaultValue !== currentValue) { // Replace errors in entries with the previous text; also, check unchecked boxes for the DateEnabled field.
         element.textContent = defaultValue;
         element.removeAttribute('style');
 
+        // Color the checkmark green.
         if ('EnabledDate' === column) element.setAttribute('style', 'color:green');
+        
+        if (truncatedValue && clickCount.current > 1) {
+        }
       } else {
-        if ('EnabledDate' !== column) element.setAttribute('contentEditable', 'true');
+        if ('EnabledDate' !== column) {
+          element.setAttribute('contentEditable', 'true');          
+        }
         else {
           element.textContent = 'X';
           element.setAttribute('style', 'color:red');
@@ -72,16 +136,18 @@ const Params = props => {
   }
 
   // Handle user edits.
-  const handleBlur = (id, row, column, event, idx) => {
+  const handleBlur = (id, row, column, event, idx) => { 
     const prevValue = event.target.dataset.defaultValue ? event.target.dataset.defaultValue : 'None';
     const newVal = event.target.textContent ? event.target.textContent : 'None';
     const table = 'AppParams';
-    const element = document.getElementById(`${column}-${row}`);
+    const elementId = `${column}-${row}`;
+    const element = document.getElementById(elementId);
+    const truncatedValue = elementId && valueObject.current[elementId] ? valueObject.current[elementId] : '';
 
-    if (prevValue === newVal && prevValue !== 'None') {
+    if ((prevValue === newVal && prevValue !== 'None') || (prevValue === 'None' && newVal === 'None') || newVal === truncatedValue) {
       element.removeAttribute('contentEditable');
       return;
-    }
+    } 
 
     // Get the column's configuration from the DB.
     if (table && column) {
@@ -93,6 +159,7 @@ const Params = props => {
           if (JSON.stringify(dataType.current) !== '{}') {
             if (newVal) {
               const columnName = dataType.current.ColumnName;
+              
               if (columnName === column) {
                 const type = dataType.current.DataType;
                 let typeNewValue = columnName === 'ValueType' ? parseInt(newVal) : newVal;
@@ -101,13 +168,19 @@ const Params = props => {
                 if (type === typeNewValue) {
                   if (dataType.current.MaxLength > newVal.length || !dataType.current.MaxLength) {
                     if (!/<\/?[a-z][\s\S]*>/i.test(newVal)) { // Check that no html is being introduced.
-                      if (vpWidth > 1280) {          
+                      if (vpWidth > 1280) {
                         items[row][column] = newVal ? newVal : 'None'; // For desktop.
                       } else {
                         if (idx) items[idx][column] = newVal ? newVal : 'None'; // For edits in the modal.
                       }
+
+                      // Update the cell's content to match the new value.
                       element.textContent = newVal;
+
+                      // Set the new-value state variable, which change should trigger the useEffect to update the db.
+
                       setNewValue({ id, row, column, prevValue, newVal, idx });
+                      clickSniffer(null); // Tell the clickSniffer not to replace the cell's content with the original's truncated version.
                       updated.current = false;
                     } else {
                       element.setAttribute('style', 'color: red');
@@ -168,14 +241,14 @@ const Params = props => {
     let mounted = true;
     if (mounted) {
       const element = document.getElementById(`${newValue.column}-${newValue.row}`);
-      
+
       if (JSON.stringify(newValue) !== '{}' && !updated.current) {
         // Get the parameter's previous value.
         getParamByName(newValue.id).then(
           res => {
             const prevEnabledDate = res?.getParamByName?.EnabledDate;
             const paramByNameError = res?.getParamByName?.Error;
-  
+              
             // Update the parameter's value in the AppParams table.
             updateSettings('params', newValue.id, newValue.column, newValue.newVal).then(
               res => {
@@ -205,13 +278,15 @@ const Params = props => {
                       updated.current = true;
                     }, 2000);
                   }
-                    
+                  
                   // Log the change to the database.
                   logChange('AppParams', newValue.id, newValue.column, userId, newValue.prevValue, newValue.newVal, valueType).then(
                     res => {
                       if (res.data) {
                         const changeDateTime = res.data?.logChange?.DateTime;
+
                         changeDate.current = changeDateTime;
+                        clickCount.current = 0;
                       } else if (res.errors) {
                         console.error(res.errors);
                       }
@@ -239,7 +314,7 @@ const Params = props => {
                     element.setAttribute('style', 'color:red; white-space:pre-wrap');
                   }
                 } else { // Special logging for the date-enabled column.
-                  if (newValue.column === 'EnabledDate' & !paramByNameError) {
+                  if (newValue.column === 'EnabledDate' & !paramByNameError) {                    
                     logChange('AppParams', newValue.id, newValue.column, userId, prevEnabledDate ? new Date(parseInt(prevEnabledDate)).toISOString() : null, enabledDate ? new Date(parseInt(enabledDate)).toISOString() : null, 8).then(
                       res => {
                         const changeDateTime = res?.logChange?.DateTime;
@@ -263,6 +338,15 @@ const Params = props => {
     return () => mounted = false;
   }, [items, newValue, props, orderDetails, vpWidth]);
     
+  // Bind or remove the event listener.
+  useEffect(() => {
+    let mounted = true;
+    if (mounted) {
+      document.addEventListener("mousedown", clickSniffer);
+    }
+    return () => mounted = false;
+  });
+    
   return props.error ? 
   ( 
     <div className="signin-error">{props.error.message}</div> 
@@ -281,7 +365,21 @@ const Params = props => {
   (
       <>
         <div className="order-info no-actions">
-        {showDetails ? <OrderDetails details={orderDetails} closeModal={closeModal} handleBlur={handleBlur} handleClick={handleClick} getClassNamesFor={getClassNamesFor} caller={{ settings: 'params' }} /> : null}
+          {showDetails ? 
+          (
+            <OrderDetails 
+              details={orderDetails} 
+              closeModal={closeModal} 
+              handleBlur={handleBlur} 
+              handleClick={handleClick} 
+              getClassNamesFor={getClassNamesFor} 
+              caller={{ settings: 'params' }} 
+            /> 
+          )
+          : 
+          (
+            null
+          )}
         </div>
         <table className="params-table">
           <thead>
@@ -332,80 +430,98 @@ const Params = props => {
           </thead>
           <tbody>
             {items.map((item, key) => {
-                return item.Name !== 'BcAccessToken' ? 
-                (
-                  <tr key={key}>
-                    <>
-                      <td 
-                        className="checkmark editable desktop"
-                        suppressContentEditableWarning="true" 
-                        data-default-value="&#10003;"
-                        id={`checkmark-${key}`}
-                        onBlur={(e) => handleBlur(item.Name, key, 'EnabledDate', e)} // params: id, row, column, event
-                        onClick={(e) => handleClick(e.target, key, 'EnabledDate', item.Name, item.EnabledDate, item, key)} // params: event, row, column, id, enabled date
-                        style={item.EnabledDate ? {color:'green'} : {color:'red'}}
-                      >
-                        {item.EnabledDate ? <>&#10003;</> : 'X'}
-                      </td>
-                      <td className='params-id'>
-                        {vpWidth < 1280 ?
-                        (
-                          <Link to='#' onClick={() => action('showDetails', item, key)} >
-                            {vpWidth < 500 && item.Name && item.Name.length > 15 ? item.Name.substring(0, 12) + '...' : vpWidth <= 768 && item.Name && item.Name.length > 31 ? item.Name.substring(0, 28) + '...' : item.Name ? item.Name : null}
-                          </Link>
-                        )
-                        :
-                        (
-                          item.Name
-                        )}
-                      </td>
-                      <td
-                        className="editable desktop"
-                        suppressContentEditableWarning="true" 
-                        data-default-value={item.Value ? item.Value : 'None'}
-                        // id={`${item.Value}-${key}`}
-                        id={`Value-${key}`}
-                        onBlur={(e) => handleBlur(item.Name, key, 'Value', e)}
-                        onClick={(e) => handleClick(e.target, key, 'Value', item.Name, null, item, key)}
-                      >{item.Value ? item.Value : 'None'}
-                      </td>
-                      {vpWidth < 1280 ? null : <td className='process-job-ids'>{item.ProcessJobIds ? item.ProcessJobIds.split(',').join(', ') : 'None'}</td>}
-                      <td
-                        className="editable desktop"
-                        suppressContentEditableWarning="true" 
-                        data-default-value={item.Category ? item.Category : 'None'}
-                        // id={`${item.Category}-${key}`}
-                        id={`Category-${key}`}
-                        onBlur={(e) => handleBlur(item.Name, key, 'Category', e)}
-                        onClick={(e) => handleClick(e.target, key, 'Category', item.Name, null, item, key)}
-                      >{item.Category ? item.Category : 'None'}</td>
-                      <td
-                        className="editable desktop"
-                        suppressContentEditableWarning="true" 
-                        data-default-value={item.SubCategory ? item.SubCategory : 'None'}
-                        // id={`${item.SubCategory}-${key}`}
-                        id={`SubCategory-${key}`}
-                        onBlur={(e) => handleBlur(item.Name, key, 'SubCategory', e)}
-                        onClick={(e) => handleClick(e.target, key, 'SubCategory', item.Name, null, item, key)}                  
-                      >{item.SubCategory ? item.SubCategory : 'None'}</td>
-                      <td className='desktop'>{item.ValueType}</td>
-                      <td 
-                        className="notes editable desktop"
-                        suppressContentEditableWarning="true" 
-                        data-default-value={item.Notes ? item.Notes : 'None'}
-                        // id={`${item.Notes}-${key}`}
-                        id={`Notes-${key}`}
-                        onBlur={(e) => handleBlur(item.Name, key, 'Notes', e)}
-                        onClick={(e) => handleClick(e.target, key, 'Notes', item.Name, null, item, key)}                  
-                      >
-                        {item.Notes ? item.Notes : 'None'}
-                      </td>
-                      <td className='date' id={`ModifiedAt-${key}`}>{item.ModifiedAt ? new Date(parseInt(item.ModifiedAt)).toISOString().split('T')[0] : 'N/A'}</td>
-                      <td className='by-user' id={`ModifiedBy-${key}`}>{item.ModifiedBy ? item.ModifiedBy : item.UserId && isNaN(parseInt(item.UserId)) ? item.UserId : 'N/A'}</td>
-                    </>
-                  </tr>
+              let value = item?.Value;
+
+              // Store the truncated values in a reference variable.
+              if (value && value.length > 100) {
+                value = value.slice(0, 94) + ' (...)';
+                valueObject.current[`Value-${key}`] = value;
+              }
+
+              return item.Name !== 'BcAccessToken' ? 
+              (
+                <tr key={key}>
+                  <>
+                    <td 
+                      className="checkmark editable desktop"
+                      suppressContentEditableWarning="true" 
+                      data-default-value="&#10003;"
+                      id={`checkmark-${key}`}
+                      onBlur={(e) => handleBlur(item.Name, key, 'EnabledDate', e)} // params: id, row, column, event
+                      onClick={(e) => handleClick(e.target, key, 'EnabledDate', item.Name, item.EnabledDate, item, key )} // params: event, row, column, id, enabled date
+                      style={item.EnabledDate ? {color:'green'} : {color:'red'}}
+                    >
+                      {item.EnabledDate ? <>&#10003;</> : 'X'}
+                    </td>
+                    <td className='params-id'>
+                      {vpWidth < 1280 ?
+                      (
+                        <Link to='#' onClick={() => action('showDetails', item, key)} >
+                          {vpWidth < 500 && item.Name && item.Name.length > 15 ? item.Name.substring(0, 12) + '...' : vpWidth <= 768 && item.Name && item.Name.length > 31 ? item.Name.substring(0, 28) + '...' : item.Name ? item.Name : null}
+                        </Link>
+                      )
+                      :
+                      (
+                        item.Name
+                      )}
+                    </td>
+                    <td
+                      className="editable desktop"
+                      suppressContentEditableWarning="true" 
+                      data-default-value={item.Value ? item.Value : 'None'}
+                      id={`Value-${key}`}
+                      onBlur={(e) => handleBlur(item.Name, key, 'Value', e)}
+                      onClick={(e) => handleClick(e.target, key, 'Value', item.Name, null, item, key)}
+                    >
+                      {value ? 
+                      (
+                        value
+                      )
+                      : 
+                      (
+                        'None'
+                      )}
+                    </td>
+                    {vpWidth < 1280 ? null : <td className='process-job-ids'>{item.ProcessJobIds ? item.ProcessJobIds.split(',').join(', ') : 'None'}</td>}
+                    <td
+                      className="editable desktop"
+                      suppressContentEditableWarning="true" 
+                      data-default-value={item.Category ? item.Category : 'None'}
+                      id={`Category-${key}`}
+                      onBlur={(e) => handleBlur(item.Name, key, 'Category', e)}
+                      onClick={(e) => handleClick(e.target, key, 'Category', item.Name, null, item, key)}
+                    >
+                      {item.Category ? item.Category : 'None'}
+                    </td>
+                    <td
+                      className="editable desktop"
+                      suppressContentEditableWarning="true" 
+                      data-default-value={item.SubCategory ? item.SubCategory : 'None'}
+                      // id={`${item.SubCategory}-${key}`}
+                      id={`SubCategory-${key}`}
+                      onBlur={(e) => handleBlur(item.Name, key, 'SubCategory', e)}
+                      onClick={(e) => handleClick(e.target, key, 'SubCategory', item.Name, null, item, key)}                  
+                    >
+                      {item.SubCategory ? item.SubCategory : 'None'}
+                    </td>
+                    <td className='desktop'>{item.ValueType}</td>
+                    <td 
+                      className="notes editable desktop"
+                      suppressContentEditableWarning="true" 
+                      data-default-value={item.Notes ? item.Notes : 'None'}
+                      // id={`${item.Notes}-${key}`}
+                      id={`Notes-${key}`}
+                      onBlur={(e) => handleBlur(item.Name, key, 'Notes', e)}
+                      onClick={(e) => handleClick(e.target, key, 'Notes', item.Name, null, item, key)}                
+                    >
+                      {item.Notes ? item.Notes : 'None'}
+                    </td>
+                    <td className='date' id={`ModifiedAt-${key}`}>{item.ModifiedAt ? new Date(parseInt(item.ModifiedAt)).toISOString().split('T')[0] : 'N/A'}</td>
+                    <td className='by-user' id={`ModifiedBy-${key}`}>{item.ModifiedBy ? item.ModifiedBy : item.UserId && isNaN(parseInt(item.UserId)) ? item.UserId : 'N/A'}</td>
+                  </>
+                </tr>
               ) : null
-                    })}
+            })}
           </tbody>
         </table>        
       </>

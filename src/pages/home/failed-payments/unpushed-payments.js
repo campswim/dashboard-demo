@@ -10,7 +10,7 @@ const UnpushedPaymentsSummary = props => {
   // Query the db for all unpushed payments.
   useEffect(() => {
     getAllUnpushedPayments().then(
-      res => {
+      res => {        
         if (res?.errors) {
           const errors = Object.values(res.errors);
           errors.forEach(error => setError(`${error}\n`));

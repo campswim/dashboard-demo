@@ -4,8 +4,16 @@ import App from './App';
 import './styles/styles.scss';
 
 ReactDOM.render(
-  <StrictMode>
+  process.env.REACT_APP_ENV.includes('development') ? 
+  (
+    <StrictMode>
+      <App />
+    </StrictMode>
+  )
+  :
+  (
     <App />
-  </StrictMode>,
+  ),
   document.getElementById('root')
 );
+ 

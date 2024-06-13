@@ -15,11 +15,11 @@ const StagedOrders = props => {
   const [apiError, setApiError] = useState(null);
 
   // Get the unpushed orders from the DB.
-  useEffect(() => {
+  useEffect(() => {    
     let mounted = true;
     if (mounted) {
-    getUnpushedOrders('unpushed').then(
-        res => {
+      getUnpushedOrders('unpushed').then(
+        res => {          
           const results = res?.data?.unpushed;
           const errors = res?.errors;
                     
@@ -129,7 +129,7 @@ const StagedOrders = props => {
           <Staged data={failedPushes} error={failedPushesError} isLoaded={failedPushesIsLoaded} subheader='Failed Pushes' />
           <Staged data={ignored} error={ignoredError} isLoaded={ignoredIsLoaded} subheader='Ignored Pushes' />
         </div>
-        <p style={{textIndent:'1rem'}}>*Returns from the last 30 days only.</p>
+        <p style={{textIndent:'1rem', fontSize:'1rem'}}>*Reflects the last 30 days only.</p>
       </>
     )
 };

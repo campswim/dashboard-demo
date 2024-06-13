@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import formatHeaders from '../hooks/format-headers';
 import formatCurrency from '../hooks/format-currency';
 
@@ -169,7 +170,7 @@ const OrderDetails = props => {
                 (
                   <div className='order-details-detail-container'>
                     <p>{formatHeaders(detail[0])}</p>
-                    <p>{detail[1] ? detail[1].split(',').join(', ') : null}</p>
+                    <p>{detail[1] ? detail[1].split(',').join(', ') : 'None'}</p>
                   </div>
                 )  
                 :
@@ -185,6 +186,24 @@ const OrderDetails = props => {
                 <div className='order-details-detail-container'>
                   <p>{formatHeaders(detail[0])}</p>
                   <p>{detail[1] ? new Date(parseInt(detail[1])).toISOString().split('T')[0] : 'None'}</p>
+                </div>
+              )
+              : detail[0] === 'OrderNumber' ?
+              (
+                <div className='order-details-detail-container'>
+                  <p className={props.getClassNamesFor(detail[0])}>{formatHeaders(detail[0])}</p>
+                  <p className='order-detail-modal order-number'>
+                    <Link
+                      to={{
+                        pathname: '/order-summary',
+                        state: {
+                          order: detail[1]
+                        },
+                      }}
+                    >
+                      {detail[1]}
+                    </Link>
+                  </p>
                 </div>
               )
               :

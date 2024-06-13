@@ -1,0 +1,466 @@
+html {
+  font-size: 62.5%;
+  background-color: lightgray;
+  min-height: 100vh;
+  position: relative;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 1.6rem;
+  padding-bottom: 10rem;
+  
+  .no-scroll {
+    overflow: hidden;
+  }
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+main {
+  min-height: 20rem;
+}
+
+h1 > a {
+  color: cornflowerblue;
+}
+h3 {
+  margin-bottom: .5rem;
+}
+p {
+  font-size: 1rem;
+  margin: 0 0 1rem 0;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.desktop {
+  display: none;
+}
+
+.signin-error, .role-denied {
+  padding-top: 4rem;
+  color: cornflowerblue;
+  font-weight: bolder;
+}
+
+.error {
+  margin: .5rem 0;
+}
+
+.connection-error {
+  margin-top: 5rem;
+  color: cornflowerblue;
+  font-weight: bolder;
+}
+
+.section-title {
+  font-size: 1.7rem;
+  margin: 0;
+  margin-bottom: .5rem;
+}
+
+.subheader, .loading {
+  font-size: 1.5rem;
+}
+
+.loading {
+  color: cornflowerblue;
+  font-weight: bolder;
+  padding: 1rem;
+}
+
+.order-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  
+  p {
+    margin-right: 3rem;
+    padding-bottom: .5rem;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    margin: .5rem 0;
+  
+    p {
+      margin: 0;
+      margin-right: 2rem;
+    }
+  }
+
+  .action-links {
+    font-size: 1.1rem;
+  }
+
+  .retried-order-set {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid whitesmoke;
+    border-radius: 7px;
+    padding: 1rem;
+    margin: 0 0 .5rem 0;
+
+    p {
+      margin: 0 0 .1rem 0;
+      padding: 0;
+    }
+
+    .orders-in-array {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      
+      p {
+        padding: 0;
+      }
+    }
+  }
+
+  .retried-order-set-hidden {
+    display: none;
+  }
+}
+
+.editable {
+  .wait-icon {
+    display: none;
+  }
+  .wait-icon.waiting {
+    animation-name: waitIcon;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: linear; 
+  }
+  
+  @keyframes waitIcon {
+    0% {
+      fill: whitesmoke;
+    }
+    25% {
+      fill: cornflowerblue;
+    }
+    50% {
+      fill: orange;
+    }
+    75% {
+      fill: cornflowerblue;
+    }
+    100% {
+      fill: black;
+    }
+  }
+}
+
+.order-actions {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+
+  form {
+    margin-top: auto;
+
+    button {
+      font-size: 1.1rem;
+    }
+  }
+
+  p {
+    margin-bottom: auto;
+    margin-left: 0;
+    font-size: 1.8rem;
+  }
+
+  .tabs-container {
+    display: flex;
+    align-items: flex-end;
+    overflow: scroll;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+
+    .page-tab {
+      form {
+        button {
+          min-width: 12rem;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .tab-icon {
+      font-size: 2.5rem;
+      color: whitesmoke;
+      position: absolute;
+    }
+  
+    .tab-icon.right {
+      right: 0.3rem;
+    }
+  }
+
+  .tabs-container::-webkit-scrollbar { /* Chrome, Safari and Opera */
+    display: none;
+  }
+}
+
+.inactive-button.hidden {
+  display: none;
+}
+
+.map-id, .params-id, .order-link, .user-link, .jobs-link, .order-link {
+  display: table-cell;
+  text-decoration: underline;
+}
+
+.subheader {
+  margin-bottom: 1rem;
+}
+
+.order-details-modal {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 50%;
+  top: 18rem;
+  transform: translate(-50%);  
+  // position: fixed;
+  // left: 50%;
+  // top: 50%;
+  // transform: translate(-50%, -50%);
+  background-color: lightgray;
+  padding: .5rem;
+  font-size: 2rem;
+  border: 2px solid cornflowerblue;
+  border-radius: 7px 7px 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  transition: ease .5s;
+  color: black;
+  min-width: 290px;
+  z-index: 2;
+  
+  p {
+    margin: .2rem;
+  }
+
+  .order-details-card {
+    margin: .5rem 0;
+
+    .order-details-detail {
+      margin: .2rem 0;
+
+      .order-details-detail-container {
+        display: flex;
+        align-items: center;
+
+        p {
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          margin: .1rem;
+          padding: .5rem;
+          color: cornflowerblue;
+          font-weight: bolder;
+          width: 60%;
+        }
+        
+        p:nth-child(2) {
+          border: 2px whitesmoke solid;
+          color: black;
+          font-weight: normal;
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          width: 100%;
+        }
+
+        .select-container {
+          border: 2px whitesmoke solid;
+          width: 102%;
+
+          p.role-option.default {
+            color: black;
+            font-weight: normal;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding: 0.5rem;
+            padding-left: 0.3rem;
+            margin: 0.1rem;
+            border: none;
+          }
+          
+          p.role-option {
+              border: none;
+              color: inherit;
+              font-weight: inherit;
+              width: 50%;
+              padding-left: 1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+.select-container {
+  text-align: left;
+
+  p {
+    margin: 0;
+  }
+  
+  .role-option {
+    display: none;
+  }
+  .role-option.default {
+    display: flex;
+  }
+  .role-option.role-selected {
+    color: black;
+  }
+  .show-option {
+    display: flex;
+    margin: .5rem;
+    border-bottom: 1px solid lightgray;
+  }
+  .fade-default {
+    opacity: 0.5;
+  }
+}
+
+.edited {
+  animation-name: successfulEdit;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: linear; 
+}
+
+@keyframes successfulEdit {
+  0% {
+    color: cornflowerblue;
+    font-weight: bolder
+  }
+  33% {
+    color: orange;
+    font-weight: bolder
+  }
+  66% {
+    color: black;
+    font-weight: bold
+  }
+  100% {
+    color: black;
+    font-weight: normal
+  }
+}
+
+// --------------- Media Queries -----------------
+@media (hover: hover) {
+  h2 > a:hover {
+    color: whitesmoke;
+  }  
+}
+
+@media all and (min-width: 500px) {
+  p {
+    font-size: 1.3rem;
+  }
+
+  .section-title {
+    text-align: left;
+  }
+
+  .order-actions {
+    form {
+      button {
+        font-size: 1.3rem;
+      }
+    }
+  }
+
+  .order-info {
+    .stats{
+      justify-content: flex-start;
+    }
+
+    .action-links {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media all and (min-width: 768px) {
+  p {
+    font-size: 1.5rem;
+  }
+
+  .order-actions {
+    form {
+      button {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  .order-details-modal {
+    min-width: 50rem;
+  }
+}
+
+@media all and (min-width: 1280px) { // Height of MacBook Pro 13" and the breakpoint between the mobile and desktop views, mainly.
+  .mobile {
+    display: none;
+  }
+  
+  .desktop {
+    display: table-cell;
+  }
+
+  .map-id, .params-id, .order-link, .user-link, .jobs-link, .order-link {
+    text-decoration: none;
+  }
+
+  .section-title {
+    margin-top: 2rem;
+    font-size: 2rem;
+  }
+
+  .order-actions {
+    form {
+      button {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .order-info {
+    flex-direction: row;
+    min-height: 5rem;
+    
+    .retried-order-set {
+      flex-direction: row;
+    }
+  }
+
+  .no-actions {
+    min-height: 0;
+  }
+
+  .loading {
+    font-size: 2rem;
+  }
+}

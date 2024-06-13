@@ -1,0 +1,263 @@
+table {
+  width: 100%;
+  font-family: 'open sans', sans-serif;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  word-break: break-word;
+}
+
+tr {
+  -webkit-transition: all 500ms ease;
+  -moz-transition: all 500ms ease;
+  -ms-transition: all 500ms ease;
+  -o-transition: all 500ms ease;
+  transition: all 500ms ease;
+}
+
+tr:nth-child(even) {
+  background: lightgray;
+}
+
+tr:nth-child(odd) {
+  background: whitesmoke;
+}
+
+tr:nth-child(even) > td > input[type=checkbox] {
+  border: 2px solid whitesmoke;
+}
+
+tr.header-row {
+  background-color: lightgray;
+}
+
+th {
+  padding: .2rem;
+  text-align: left;
+  color: cornflowerblue;
+  background-color: lightgray;
+  position: relative;
+  -webkit-transition: all 500ms ease;
+  -moz-transition: all 500ms ease;
+  -ms-transition: all 500ms ease;
+  -o-transition: all 500ms ease;
+  transition: all 500ms ease;
+}
+
+th.header-editable {
+  position: relative;
+}
+th.header-editable > span {
+  position: absolute;
+  top: -1000rem;
+  left: -1000rem;
+}
+
+@-webkit-keyframes fadeinout {
+  0%, 100% { opacity: 0; }
+  10%, 70% { opacity: 1; }
+}
+
+@keyframes fadeinout {
+  0%, 100% { opacity: 0; }
+  10%, 70% { opacity: 1; }
+}
+
+th::after {
+  content: '\270F';
+  visibility: hidden;
+  margin-left: 1rem;
+  font-size: 1.1rem;
+  font-weight: bolder;
+}
+
+th.ascending::after {
+  content: '\2191';
+  visibility: visible;
+  margin-left: 1rem;
+  font-size: 1.1rem;
+  font-weight: bolder;
+}
+
+th.descending::after {
+  content: '\2193';
+  visibility: visible;
+  margin-left: 1rem;
+  font-size: 1.1rem;
+  font-weight: bolder;
+}
+
+th.order-view-summary-col-header::after {
+  content: none;
+}
+
+.header-editable::after {
+  content: '\270F';
+  visibility: visible;
+  margin-left: 1rem;
+  font-size: 1.1rem;
+  font-weight: bolder;
+}
+
+.header-row > th > input[type=checkbox] {
+  border: 2px solid whitesmoke;
+}
+
+td {
+  // border: 1px solid lightgray;
+  border-radius: 5px;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+td.select-one {
+  position: relative;
+  min-width: 1.5rem;
+}
+
+td.error-message, td.order-message, td.order-exception, td.order-additional-data {
+  white-space: pre-wrap;
+  font-size: 1.5rem;
+  min-width: 12rem;
+}
+
+td.order-number {
+  white-space: nowrap;
+}
+
+td.error-message {
+  font-size: 1.3rem;
+  white-space: pre-wrap;
+
+  p {
+    margin: 0;
+  }
+}
+
+td.notes {
+  min-width: 15rem;
+}
+
+.money {
+  text-align: right;
+}
+
+:after {
+  display: inline-block;
+  min-width: 1rem;
+}
+
+.whitespace-prewrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+// ------------------ Media Queries ---------------
+@media (hover: hover) {
+  th:hover, th.header-editable:hover {
+    cursor: default;
+    color: orange;
+    // background-color: cornflowerblue;
+    border-radius: 7px 7px 0 0;
+    -webkit-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+    -ms-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    transition: all 500ms ease;
+    
+    .link > a {
+      color: orange;
+    }
+  }
+  
+  th:hover, .header-row:hover {
+    background-color: lightgray;
+  }
+
+  th.header-editable:hover > span {
+    animation: fadeinout 5s linear forwards;
+    -webkit-animation: fadeinout 5s linear forwards;
+    opacity: 1;
+    position: absolute;
+    top: 3rem;
+    left: 1rem;
+    background-color: whitesmoke;
+    padding: 1rem;
+    border: 1px solid black;
+    z-index: 99;
+    border-radius: 7px;
+    width: 20rem;
+    word-break: normal;
+    white-space: normal;
+  }
+  
+  th.header-editable:hover::after {
+    content: '\270F';
+    visibility: visible;
+    margin-left: 1rem;
+    font-size: 1.1rem;
+    font-weight: bolder;
+  }
+  
+  .checkbox-th:hover {
+    background-color: cornflowerblue;
+    border-radius: 7px;
+  }
+  
+  .header-row > th > input[type=checkbox]:hover {
+    border: 2px solid orange;
+  }
+
+  tr:hover {
+    background: cornflowerblue;
+    color: whitesmoke;
+    -webkit-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+    -ms-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    transition: all 500ms ease;
+  }
+
+  td > a {
+    color: inherit;
+    -webkit-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+    -ms-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    transition: all 500ms ease;
+  }
+  
+  td > a:hover {
+    color: orange;
+    -webkit-transition: all 500ms ease;
+    -moz-transition: all 500ms ease;
+    -ms-transition: all 500ms ease;
+    -o-transition: all 500ms ease;
+    transition: all 500ms ease;
+  }
+}
+
+@media all and (min-width: 500px) {
+  table {
+    font-size: 1.3rem;
+  }
+
+  td {
+    font-size: 1.3rem;
+  }
+}
+
+@media all and (min-width: 768px) {
+  table {
+    font-size: 1.5rem;
+  }
+
+  td {
+    font-size: 1.5rem;
+  }
+}
+
+@media all and (min-width: 1280px) {
+  .header-editable::after {
+    visibility: hidden;
+  }
+}

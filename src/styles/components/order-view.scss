@@ -6,12 +6,17 @@
     display: flex;
     justify-content: center;
   }
-  @media screen and (min-width: 1280px) {
+  @media screen and (min-width: 512px) {
     .new-number {
       justify-content: start;
     }
   }
 }
+
+.order-detail-input {
+  min-height: 2.2rem;
+}
+
 .order-view-header {
   display: flex;
   flex-direction: column;
@@ -43,6 +48,7 @@
   table {
     border: 2px solid whitesmoke;
     border-radius: 7px;
+    white-space: pre-wrap;
 
     @media screen and (min-width: 1280px) {
       border: none;
@@ -187,4 +193,5 @@
 .no-order-error {
   color: cornflowerblue;
   font-weight: bolder;
+  margin-bottom: 1rem;
 }

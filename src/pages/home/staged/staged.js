@@ -23,7 +23,7 @@ const Staged = props => {
       (
         <div className='loading'>Loading . . . </div>
       ) 
-      : props.subheader !== 'Unpushed' ?
+      :
       (
         <div className="subheader">
           <Link
@@ -37,10 +37,6 @@ const Staged = props => {
             {props.subheader}
           </Link>*
         </div>
-      )
-      :
-      (
-        <div className="subheader">{props.subheader}</div>
       )}
       <table>
         <thead>
@@ -53,7 +49,7 @@ const Staged = props => {
                   onClick={() => requestSort(header[0].toLowerCase() + header.split(' ').join('').slice(1))}
                   className={getClassNamesFor(header[0].toLowerCase() + header.split(' ').join('').slice(1))}
                 >
-                  {header}
+                  {header === 'Order Count' ? 'Count' : header === 'Total Amount' ? 'Total' : header}
                 </th>
               ))
             ) 

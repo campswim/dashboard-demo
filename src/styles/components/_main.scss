@@ -1,15 +1,24 @@
 main {
+  position: relative;
   margin: auto;
   width: 90%;
-  padding-top: 1rem;
+  min-height: 20rem;
+  padding-top: 18rem;
 }
 
-// .dashboard {
-//   margin: auto;
-//   width: 80%;
-// }
+@media all and (max-height: 500px) {
+  main {
+    padding-top: 1rem;
+  }
+}
 
-@media all and (min-width: 768px) {
+@media all and (orientation: portrait) and (min-width: 768px) {
+  main {
+    padding-top: 13rem;
+  }
+}
+
+@media all and (min-width: 1024px) {
   main {
     padding-top: 13rem;
   }

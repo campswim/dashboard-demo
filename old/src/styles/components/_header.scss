@@ -1,0 +1,215 @@
+.navbar {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  color: whitesmoke;
+  background-color: black;
+  font-size: 3rem;
+  box-shadow: 2px 2px 2px 1px whitesmoke;
+  margin: 0;
+
+  .logo-links {
+    width: 100%;
+    margin: 0 0 2rem 0;
+
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: whitesmoke;
+      border-bottom: 2px solid whitesmoke;
+      margin: 2rem 0;
+      padding: 0 2rem;
+      position: relative;
+      -webkit-transition: all 500ms ease;
+      -moz-transition: all 500ms ease;
+      -ms-transition: all 500ms ease;
+      -o-transition: all 500ms ease;
+      transition: all 500ms ease;
+
+      a:hover {
+        color: orange;
+        -webkit-transition: all 500ms ease;
+        -moz-transition: all 500ms ease;
+        -ms-transition: all 500ms ease;
+        -o-transition: all 500ms ease;
+        transition: all 500ms ease;
+      }
+    
+      h1 {
+        margin: 0px;
+        font-size: 3rem;
+        margin-left: 1rem;
+      }
+  
+      .logo {
+        width: 20rem;
+        height: auto;
+        position: absolute;
+        bottom: -5rem;
+        left: -4rem;
+
+        a:hover {
+          -webkit-transition: all 500ms ease;
+          -moz-transition: all 500ms ease;
+          -ms-transition: all 500ms ease;
+          -o-transition: all 500ms ease;
+          transition: all 500ms ease;
+        }
+
+        h1 {
+          margin: 0;
+        }    
+      }
+    }
+
+    .links-container {
+      display: flex;
+      justify-content: space-between;
+      
+      .navbar-links {
+        display: flex;
+        padding: 0 2rem;
+  
+        .nav-link {
+          display: none;
+          padding: 1rem;
+          text-decoration: none;
+          color: cornflowerblue;
+          font-size: 2rem;
+        }
+        .active {
+          display: flex;
+          padding: 1rem;
+          text-decoration: none;
+          color: cornflowerblue;
+          font-size: 2rem;
+        }
+  
+        .list-item-text {
+          padding: 0;
+          margin: 0;
+        }
+      }
+      .hamburger-menu-icon {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-right: 2rem;
+
+        svg {
+          font-size: 4rem;
+        }
+      }
+    }
+  }
+
+  .logo-links.tablet {
+    display: none;
+  }
+}
+
+.navbar-links-mobile {
+  border-radius: 7px;
+  background: black;
+  color: orange;
+  padding: 1rem 0;
+  width: 90%;
+  position: absolute;
+  left: 50%;
+  top: 18rem;
+  transform: translate(-50%);
+
+  h5 {
+    margin: 1rem 0;
+  }
+}
+
+//-----------Media Queries.------------
+@media all and (min-width: 500px) {
+  .navbar-links-mobile {
+    width: 50%;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .navbar {    
+    position: fixed;
+    z-index: 99;
+    
+    .logo-links.mobile {
+      display: none;
+    }
+
+    .logo-links.tablet {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 2px solid whitesmoke;
+      padding: 0 5rem;
+
+      .links-container {
+        margin-bottom: 1rem;
+      }
+
+      .logo-container {
+        border: none;
+        margin-bottom: 0;
+        padding: 0;
+      }
+
+      .hamburger-menu-icon {
+        svg {
+          font-size: 4rem;
+        }
+      }
+    }
+  }
+
+  .navbar-links-mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 30%;
+    right: 5%;
+    left: auto;
+    top: 10rem;
+    transform: none;
+
+    h5 {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media all and (min-width: 1280px) { // Height of MacBook Pro 13" and the breakpoint for the desktop view.
+  .navbar {
+    .logo-links.tablet {
+      display: none;
+    }
+
+    .logo-links.desktop {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid whitesmoke;
+
+      .logo-container {
+        border: none;
+        margin-bottom: 0;
+      }
+
+      .links-container {
+        justify-content: center;
+        margin-top: 2rem;
+        
+        .navbar-links {
+          .nav-link {
+            display: flex;
+          }
+        }
+      }
+    }
+  }
+}

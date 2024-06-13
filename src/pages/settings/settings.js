@@ -12,12 +12,15 @@ const SettingsPage = () => {
   const [params, setParams] = useState([]);
   const [loggedIn, setloggedIn] = useState(localStorage.getItem('loggedIn') ? parseInt(localStorage.getItem('loggedIn')) : 0);
   const [loggedInUser, setLoggedInUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
+  const [mapsTab, setMapsTab] = useState('active-button');
+  const [paramsTab, setParamsTab] = useState('inactive-button');
   const handleSubmit = event => event.preventDefault();
 
   // Click handler: which tab to show, maps or params.
   const handleClick = event => {    
-    let chosenButton, activeButton, inactiveButton;
+    let chosenButton;
 
+    // Set the chosen-button variable.
     if (typeof event === 'object') {
       event.preventDefault();
       if (event.target.value !== path) {
@@ -34,13 +37,14 @@ const SettingsPage = () => {
       }
     }
 
-    if (chosenButton) {
-      activeButton = document.getElementById(chosenButton);
-      activeButton.setAttribute('class', 'active-button');
-      if (chosenButton === 'maps') 
-        inactiveButton = document.getElementById('params');
-      else inactiveButton = document.getElementById('maps');
-      inactiveButton.setAttribute('class', 'inactive-button');
+    if (chosenButton) { // 'maps' or 'params'
+      if (chosenButton === 'maps') {
+        setMapsTab('active-button');
+        setParamsTab('inactive-button');
+      } else  {
+        setMapsTab('inactive-button');
+        setParamsTab('active-button');
+      }
     }
   };
 
@@ -62,21 +66,21 @@ const SettingsPage = () => {
               
               if (errors && errors.length > 0) {
                 path === 'maps' ? setMaps(res.errors) : setParams(res.errors);
-              } else if (!res.errors && res.data) {
+              } else if (!res.errors && res?.data) {
                 path === 'maps' ? setMaps(res.data[path]) : setParams(res.data[path]);
                 setIsLoaded(true);
                 setError(null);
               }
             } else {
               setError({code: res?.name, message: res?.message});
-              setIsLoaded(true);
+              setIsLoaded(false);
             }
           }
         },
         err => {
           if (mounted) {
             setError(err);
-            setIsLoaded(true);
+            setIsLoaded(false);
           }
         }
       );
@@ -96,7 +100,6 @@ const SettingsPage = () => {
   
   return !loggedIn ?
   (
-    // <div className="signin-error">You must sign in to access this resource.</div>
     <Redirect to={
         {
           pathname: '/login',
@@ -110,19 +113,31 @@ const SettingsPage = () => {
   )
   : error ?
   (
-    <div className="signin-error">{error?.message}</div>
+    <div className="signin-error">{error?.message ? error.message : error}</div>
   )
-  :
+  : isLoaded ?
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Settings')) ?
     (
       <>
         <div className='order-actions'>
           <form onSubmit={handleSubmit}>
-            <button className="active-button" id="maps" value="maps" onClick={handleClick}>
+            <button 
+              // ref={mapsTab} 
+              className={mapsTab} 
+              id="maps" 
+              value="maps" 
+              onClick={handleClick}
+            >
               Warehouse Map
             </button>
-            <button className="inactive-button" id="params" value="params" onClick={handleClick}>
+            <button 
+              // ref={paramsTab} 
+              className={paramsTab}
+              id="params" 
+              value="params" 
+              onClick={handleClick}
+            >
               Parameters
             </button>
           </form>
@@ -155,6 +170,10 @@ const SettingsPage = () => {
     (
       <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
     )
+  )
+  :
+  (
+    null
   )
 };
 

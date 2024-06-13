@@ -7,25 +7,29 @@ Chad Larson (<chad@ncompass.org>)
 
 ## Description
 
-The nCompass order-staging dashboard tracks orders through their full lifecycle, from origination to database storage, with built-in error tracking and resolution, and user authentication and authorization.
+The nCompass order-staging dashboard tracks orders through their full lifecycle, from origination in the CRM to the ERP, with built-in error tracking and resolution, and user authentication and authorization.
 
 ## Locations
 
 1. Front-end
     - URL
       - Local development: `http://localhost:3000/`
+      - Development on server: `https://hulk.yoli.net:3003`
       - Manual deploy: `http://hulk.yoli.net:3001/`
       - CI/CD deploy: `http://hulk.yoli.net:3002/`
     - On the server
       - :3001: C:\inetpub\wwwroot\Dashboard APP\build\
       - :3002: C:\web\STAGE\ErpStageDashboard\
+      - :3003: C:\web\inetpub\wwwroot\Dashboard APP Dev\build\
 2. Back-end
     - URL
       - Local development: `http://localhost:4000/graphql/`
-      - Manual deploy: `http:/hulk.yoli.net:4000/graphql/`
+      - Manual deploy--production: `http:/hulk.yoli.net:4000/graphql/`
+      - Manual deploy--development: `http:/hulk.yoli.net:4001/graphql`
       - CI/CD deploy: N/A
     - On the server
-      - Manual deploy: C:\inetpub\wwwroot\Dashboard API\
+      - Manual deploy--production: C:\inetpub\wwwroot\Dashboard API\
+      - Manual deploy--development: C:\inetpub\wwwroot\Dashboard API Dev\
       - CI/CD: N/A
 
 ## To Run the App Locally
@@ -78,6 +82,11 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
     [x] As a user, I want to see a summary of failed processes.
     [x] As a user, I want to be able to click on the name of the failed process and be redirected to its full list on its respective tab of the failed-processes page.
 
+  - Failed Payments
+
+    [x] As a user, I want to see a summary of failed payments.
+    [x] As a user, I want to click on the failed-payment type and be redirected to its full l ist on its respective tab of the failed-payments page.
+
   - Missing CRM Items (currently hidden)
 
     [x] As a user, I want to have the option to generate a market-specific list of CRM items that are missing from the ERP.
@@ -116,7 +125,7 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
     [x] As an adminstrator, I want to select one, some, or all ignored orders and perform any one of the following actions on them:
       [x] unignore.
 
-  - Order View tab (currently hidden)
+- Order View page (currently hidden)
 
     [x] As a user, I want to see the order detail from various places (CRM, Staging, ERP) to determine how far the order went through the CRM2GP workflow and compare order values among these various stages.  
     [ ] As an administrator, I want to be able to do the following:  
@@ -133,6 +142,13 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
     [x] Partial detail with modal on mobile (< 1280px).
   [x] As a user, I want to be able to choose to view include dismissed errors in the list or otherwise.
   [x] As an administrator, I want to be able to dismiss an error or reinstate it.
+
+- Failed Payments page
+
+  [x] As a user, I want to be shown a list of failed payments with some details of the cause of the failure.
+    [x] Full detail on desktop (> 1280px).
+    [x] Partial detail with modal on mobile (<1280px).
+  [x] As a user, I want to be able to view 
 
 - Settings page
 
@@ -163,7 +179,7 @@ The nCompass order-staging dashboard tracks orders through their full lifecycle,
 
   [ ] As a user, I'd like:
     [x] to be able to sort each column of each section in ascending or descending order;
-    [ ] to be able to sort each column by specified criteria;
+    [ ] to be able to filter each column by specified criteria;
     [ ] to be able to toggle between dark and light themes;
     [ ] there to be caching of data that is rarely updated, so that each page loads as quickly as possible;
     [ ] the app to use the secure HTTPs protocol, to ensure the security of the site (which is behind a firewall on a VPN).

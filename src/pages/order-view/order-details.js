@@ -4,10 +4,11 @@ import formatCurrency from '../../hooks/format-currency';
 
 const OrderDetails = props => {
 	const formattedOrder = props.order;
-	const dateRelated = ['OrderDate', 'ShipDate', 'PulledDate', 'SentToErp', 'ErpInvoicedAt'];
-	const currencyRelated = ['OrderTotalAmount', 'TaxAmount', 'FreightAmount', 'FreightTaxAmount'];
+	const dateRelated = ['OrderDate', 'ShipDate', 'PulledDate', 'SentToErp', 'ErpInvoicedAt', 'At', 'IgnoredAt'];
+	const currencyRelated = ['OrderTotalAmount', 'OrderTotal', 'TaxAmount', 'FreightAmount', 'FreightTaxAmount'];
 	const erpCategories = ['PushStatus', 'SentToErp', 'ErpOrderNumber', 'ErpInvoicedAt'];
 	const erpHeaders = formatHeaders(erpCategories);
+	
 	const headers = formatHeaders(Object.keys(formattedOrder), ['OrderNumber', 'Error']);
 	const crmValues = []; 
 	const erpValues = [];
@@ -18,6 +19,7 @@ const OrderDetails = props => {
 	// Separate the CRM and ERP values into separate arrays.
 	if (formattedOrder && JSON.stringify(formattedOrder) !== '{}') {
 		for (const property in formattedOrder) {
+			if (property === 'PushStatus') crmValues.push({ [property]: formattedOrder[property] });
 			if (erpCategories.includes(property)) erpValues.push({ [property]: formattedOrder[property] });
 			else crmValues.push({ [property]: formattedOrder[property] });
 		}
@@ -30,10 +32,11 @@ const OrderDetails = props => {
 			props.getId(props.orderId);
 		}
 	}, [props]);
-	
+		
 	return formattedOrder && JSON.stringify(formattedOrder) !== '{}' ? 
 	(
 		<>
+			{/* The order in the CRM */}
 			<div className='order-view-container desktop'>
 				<div className='order-view-header'>
 					<h3>Order {props.orderId} in Exigo</h3>
@@ -42,40 +45,46 @@ const OrderDetails = props => {
 							<thead>
 								<tr className='header-row'>
 									{headers.map((header, key) => {
-										return !erpHeaders.includes(header) && header !== 'Currency Code' ? 
-										<th key={key} className="order-view-summary-col-header">
-											{
-												header === 'Customer Number' ?
-												(
-													'Customer #'
-												)
-												:	header === 'Order Type Description' ? 
-												(
-													'Order Type'
-												) 
-												: header === 'Reference Order Number' ?
-												(
-													'Ref Order #'
-												)
-												: header === 'Order Total Amount' ?
-												(
-													'Total'
-												)
-												: header === 'Tax Amount' ?
-												(
-													'Tax'
-												)
-												: header === 'Freight Amount' ?
-												(
-													'Freight'
-												)
-												: header === 'Freight Tax Amount' ?
-												(
-													'Freight Tax'
-												)
-												: header
-											}
-										</th> : null;
+										return header !== 'Currency Code' && header !== 'Push Status Id' && header !== 'Sent To Erp' && header !== 'Erp Order Number' && header !== 'Erp Invoiced At' ? 
+										(
+											<th key={key} className="order-view-summary-col-header">
+												{
+													header === 'Customer Number' ?
+													(
+														'Customer #'
+													)
+													:	header === 'Order Type Description' ? 
+													(
+														'Order Type'
+													) 
+													: header === 'Reference Order Number' ?
+													(
+														'Ref Order #'
+													)
+													: header === 'Order Total Amount' ?
+													(
+														'Total'
+													)
+													: header === 'Tax Amount' ?
+													(
+														'Tax'
+													)
+													: header === 'Freight Amount' ?
+													(
+														'Freight'
+													)
+													: header === 'Freight Tax Amount' ?
+													(
+														'Freight Tax'
+													)
+													: header
+												}
+											</th>
+										)
+										:
+										(
+											null
+										)
 								})}
 								</tr>
 							</thead>
@@ -85,10 +94,13 @@ const OrderDetails = props => {
 										const property = Object.keys(val)[0];
 										const value = Object.values(val)[0];
 
-										return property !== 'CurrencyCode' ?
+										return property !== 'CurrencyCode' && property !== 'Error' && property !== 'PushStatusId' ?
 										(
-											<td class={property === 'OrderTypeDescription' || property === 'ShipMethod' ? 'whitespace-prewrap' : ''} key={key}>
-												{(value || value === 0) && currencyRelated.includes(property) ? formatCurrency(value, formattedOrder.CurrencyCode) : value && dateRelated.includes(property) ? new Date(parseInt(value)).toISOString().split('T')[0] : !value ? 'N/A' : value}
+											<td 
+												key={key}
+												className={property === 'OrderTypeDescription' || property === 'ShipMethod' ? 'whitespace-prewrap' : ''}
+											>
+												{(value || value === 0) && currencyRelated.includes(property) ? formatCurrency(value, formattedOrder.CurrencyCode) : value && dateRelated.includes(property) ? new Date(parseInt(value)).toISOString().split('T')[0] : !value && property === 'PushStatus' ? 'Unpushed' : !value ? 'N/A' : value}
 											</td>
 										)
 										:
@@ -102,6 +114,8 @@ const OrderDetails = props => {
 					</div>
 				</div>
 			</div>
+
+			{/* The order in the ERP */}
 			<div className='order-view-container desktop'>
 				<div className='order-view-header'>
 					<h3>Order {props.orderId} in Business Central</h3>
@@ -116,12 +130,23 @@ const OrderDetails = props => {
 							</thead>
 							<tbody>
 								<tr>
-									{erpValues.map((val, key) => {
-										const property = Object.keys(val)[0];
-										const value = Object.values(val)[0];
+									{erpValues.length > 0 ? 
+									(
+										erpValues.map((val, key) => {
+											const property = Object.keys(val)[0];
+											const value = Object.values(val)[0];
 
-										return <td key={key}>{(value || value === 0) && currencyRelated.includes(property) ? formatCurrency(value, formattedOrder.CurrencyCode) : value && dateRelated.includes(property) ? new Date(parseInt(value)).toISOString().split('T')[0] : !value ? 'N/A' : value}</td>
-									})}
+											return (
+												<td 
+													key={key}
+												>
+													{(value || value === 0) && currencyRelated.includes(property) ? formatCurrency(value, formattedOrder.CurrencyCode) : value && dateRelated.includes(property) ? new Date(parseInt(value)).toISOString().split('T')[0] : !value ? 'N/A' : value}
+												</td>
+											)
+										})
+									)
+									:	erpHeaders.map((_, key) => <td key={key}>N/A</td>
+									)}
 								</tr>
 							</tbody>
 						</table>

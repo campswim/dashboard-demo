@@ -15,8 +15,7 @@ const FailedPayments = () => {
   // Get the state values passed on the user's clicking of a redirect link.
   const params = useLocation();
   const state = params?.state;
-  let type, action, orderNum;  
-  if (state) ({ type, action, orderNum } = state);
+  const { type, action, orderNum } = state ? state : '';
 
   // Handle the user choosing another tab on this page.
   const handleClick = (callerId) => {
@@ -36,14 +35,22 @@ const FailedPayments = () => {
     let mounted = true;
     if (mounted) {      
       getAllFailedPayments().then(
-        res => {          
-          if (res?.errors) {
-            const errors = Object.values(res.errors);
-            errors.forEach(error => setError(`${error}\n`));
-          } else {            
-            setFailedPayments(res.data.getAllFailedPayments);
+        res => {
+          const results = res?.data?.getAllFailedPayments;
+          const error = res?.message;
+                    
+          if (error) {
+            setError(error);
+            setIsLoaded(false);
+          } else if (results) {         
+            setFailedPayments(results);
             setError(null);
             setIsLoaded(true);
+          } else if (res?.errors) {
+            const errors = Object.values(res.errors);
+            errors.forEach(error => setError(`${error}\n`));
+          } else {
+            setIsLoaded(false);
           }
         },
         err => {
@@ -55,7 +62,7 @@ const FailedPayments = () => {
     }
     
     return () => mounted = false;
-  }, [currentTab]);
+  }, [currentTab, isLoaded]);
 
   // Set the loggedIn variable.
   useEffect(() => {
@@ -82,9 +89,9 @@ const FailedPayments = () => {
   )
   : error ?
   (
-    <div className="signin-error">{error?.message}</div>
+    <div className="signin-error">{error}</div>
   )
-  :
+  : isLoaded ?
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Payments')) ?
     (
@@ -104,6 +111,10 @@ const FailedPayments = () => {
     (
       <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
     )
+  )
+  :
+  (
+    null
   )
 };
 

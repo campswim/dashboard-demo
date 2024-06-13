@@ -1,3 +1,6 @@
+.error-message.true {
+  text-decoration: underline;
+}
 .error-message-unpushed {
   display: none;
 }
@@ -6,7 +9,6 @@
 }
 .unpushed-error-message {
   white-space: pre-wrap;
-  font-size: 1.4rem;
 }
 
 .x-close-container {

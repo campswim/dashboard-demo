@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, Redirect } from 'react-router-dom';
 import { getOrders } from '../../hooks/get-order';
 import Unpulled from './unpulled';
+import FailedToPush from './failed-to-push';
 import Unpushed from './unpushed';
 import Ignored from './ignored';
 
@@ -9,22 +10,29 @@ const FailedOrders = () => {
   // Get state when passed from a link or redirect component.
   const params = useLocation();
   const state = params?.state;
-  const { order, postPath, action, id, type } = state; // This is for user-initiated actions, not the get-all-failed called.
+  const { order, postPath, action, id, type } = state ? state : ''; // This is for user-initiated actions, not the get-all-failed called.
   
   const [getQuery, setGetQuery] = useState('failedPulls');
   const [click, setClick] = useState(false);
   const [currentPage, setCurrentPage] = useState('');
   const [tab, setTab] = useState('');
+  const [failedToPush, setFailedToPush] = useState([]);
   const [unpushed, setUnpushed] = useState([]);
   const [unpulled, setUnpulled] = useState([]);
   const [ignored, setIgnored] = useState([]);
   const [error, setError] = useState(null);
   const [unpulledIsLoaded, setUnpulledIsLoaded] = useState(false);
+  const [failedToPushIsLoaded, setFailedToPushIsLoaded] = useState(false);
   const [unpushedIsLoaded, setUnpushedIsLoaded] = useState(false);
   const [ignoredIsLoaded, setIgnoredIsLoaded] = useState(false);
   const [query, setQuery] = useState(getQuery);
   const [loggedIn, setloggedIn] = useState(localStorage.getItem('loggedIn') ? parseInt(localStorage.getItem('loggedIn')) : 0);
   const [loggedInUser, setLoggedInUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [failedToPullTab, setFailedToPullTab] = useState('active-button');
+  const [unpushedTab, setUnpushedTab] = useState('inactive-button');
+  const [failedToPushTab, setFailedToPushTab] = useState('inactive-button');
+  const [ignoredOrdersTab, setIgnoredOrdersTab] = useState('inactive-button');
   const restrictedActions = useRef(loggedInUser?.restrictions?.actions);
 
   const recallApi = newQuery => {
@@ -36,33 +44,33 @@ const FailedOrders = () => {
   const handleClick = event => {
     event.preventDefault();
     const chosenPage = event.target.value;
-    let activeButton, inactiveButton;
 
-    setClick(true);    
+    setClick(true);
     setCurrentPage(chosenPage);
 
     if (chosenPage) {
       if (chosenPage === getQuery) setGetQuery(null);
       else setGetQuery(chosenPage);
-  
-      activeButton = document.getElementById(chosenPage);
-      activeButton.setAttribute('class', 'active-button');
-
       if (chosenPage === 'failedPulls') {
-        inactiveButton = document.getElementById('failedPushes');
-        inactiveButton.setAttribute('class', 'inactive-button');
-        inactiveButton = document.getElementById('ignoredOrders');
-        inactiveButton.setAttribute('class', 'inactive-button');
+        setFailedToPullTab('active-button');
+        setFailedToPushTab('inactive-button');
+        setIgnoredOrdersTab('inactive-button');
+        setUnpushedTab('inactive-button');
       } else if (chosenPage === 'failedPushes') {
-        inactiveButton = document.getElementById('failedPulls');
-        inactiveButton.setAttribute('class', 'inactive-button');
-        inactiveButton = document.getElementById('ignoredOrders');
-        inactiveButton.setAttribute('class', 'inactive-button');
+        setFailedToPushTab('active-button');
+        setFailedToPullTab('inactive-button');
+        setIgnoredOrdersTab('inactive-button');
+        setUnpushedTab('inactive-button');
       } else if (chosenPage === 'ignoredOrders') {
-        inactiveButton = document.getElementById('failedPulls');
-        inactiveButton.setAttribute('class', 'inactive-button');
-        inactiveButton = document.getElementById('failedPushes');
-        inactiveButton.setAttribute('class', 'inactive-button');
+        setIgnoredOrdersTab('active-button');
+        setFailedToPullTab('inactive-button');
+        setFailedToPushTab('inactive-button');
+        setUnpushedTab('inactive-button');
+      } else { // The chosen page === 'unpushed'
+        setUnpushedTab('active-button');
+        setIgnoredOrdersTab('inactive-button');
+        setFailedToPullTab('inactive-button');
+        setFailedToPushTab('inactive-button');
       }
     }
   };
@@ -72,34 +80,68 @@ const FailedOrders = () => {
     let mounted = true;
     if (mounted && loggedIn) {
       // Set the active tab.
-      if (!click) {
-        if (tab && tab !== getQuery) setGetQuery(tab);
-        if (getQuery) {
-          document.getElementById(getQuery).setAttribute('class', 'active-button');
-          document.getElementById(getQuery === 'failedPulls' ? 'failedPushes' : 'failedPulls').setAttribute('class', 'inactive-button');
+      if (!click) { // Redirect from the homepage.
+        if (tab) {
+          setGetQuery(tab);
+          if (tab === 'failedPushes') {
+            setFailedToPushTab('active-button');
+            setFailedToPullTab('inactive-button');
+            setIgnoredOrdersTab('inactive-button');
+            setUnpushedTab('inactive-button');
+          } else if (tab === 'ignoredOrders') {
+            setIgnoredOrdersTab('active-button');
+            setFailedToPullTab('inactive-button');
+            setFailedToPushTab('inactive-button');
+            setUnpushedTab('inactive-button');
+          } else if (tab === 'unpushedNoFail') {
+            setUnpushedTab('active-button');
+            setIgnoredOrdersTab('inactive-button');
+            setFailedToPullTab('inactive-button');
+            setFailedToPushTab('inactive-button');
+          }
         }
-      } else {
+      } else { // Click by user of a tab on the failed-orders page.
         setTab('');
 
         if (!getQuery) setGetQuery(currentPage);
         if (getQuery) {
-          document.getElementById(getQuery).setAttribute('class', 'active-button');
-          document.getElementById(getQuery === 'failedPulls' ? 'failedPushes' : 'failedPulls').setAttribute('class', 'inactive-button');
+          if (getQuery === 'failedPulls') {
+            setFailedToPullTab('active-button');
+            setFailedToPushTab('inactive-button');
+            setIgnoredOrdersTab('inactive-button');
+            setUnpushedTab('inactive-button');
+          } else if (getQuery === 'failedPushes') {
+            setFailedToPushTab('active-button');
+            setFailedToPullTab('inactive-button');
+            setIgnoredOrdersTab('inactive-button');
+            setUnpushedTab('inactive-button');
+          } else if (getQuery === 'ignoredOrders') {
+            setIgnoredOrdersTab('active-button');
+            setFailedToPullTab('inactive-button');
+            setFailedToPushTab('inactive-button');
+            setUnpushedTab('inactive-button');
+          } else if (getQuery === 'unpushedNoFail') {
+            setUnpushedTab('active-button');
+            setIgnoredOrdersTab('inactive-button');
+            setFailedToPullTab('inactive-button');
+            setFailedToPushTab('inactive-button');
+          }
         }
       }
 
       if (sessionStorage.getItem('action')) setClick(false);
     }
     return () => mounted = false;
-  }, [action, click, currentPage, getQuery, loggedIn, state, tab]);
+  }, [click, currentPage, getQuery, loggedIn, tab]);
   
-  // Set the tab state variable when a user clicks on a redirect link from the homepage.
+  // Set the tab state variable.
   useEffect(() => {
     let mounted = true;
     if (mounted) {
       if (!click) {
         if (type && tab !== null) {
           if (type.includes('Failed')) setTab('failedPushes');
+          else if (type === 'Unpushed') setTab('unpushedNoFail')
           else setTab('ignoredOrders');  
         }
       } else {
@@ -107,22 +149,20 @@ const FailedOrders = () => {
       }
     }
     return () => mounted = false;
-}, [type, tab, getQuery, click]);
+}, [type, tab, click]);
 
   // Get data from the db.
   useEffect(() => {
     let mounted = true;
     if (mounted) {
       getOrders(getQuery).then(
-        res => {
-
-          // console.log({res});
-
+        res => {          
           if (res?.data) {
             if (getQuery === 'failedPushes') {
-              setUnpushed(res.data);
-              setUnpushedIsLoaded(true);
+              setFailedToPush(res.data);
+              setFailedToPushIsLoaded(true);
               setUnpulledIsLoaded(false);
+              setUnpushedIsLoaded(false);
               setIgnoredIsLoaded(false);
               setError(null);
             } else if (getQuery === 'failedPulls') {
@@ -137,19 +177,29 @@ const FailedOrders = () => {
               setUnpulledIsLoaded(false);
               setUnpushedIsLoaded(false);
               setError(null);
+            } else if (getQuery === 'unpushedNoFail') {
+              setUnpushed(res.data);
+              setUnpushedIsLoaded(true);
+              setUnpulledIsLoaded(false);
+              setFailedToPushIsLoaded(false);
+              setIgnoredIsLoaded(false);
+              setError(null);
             }
-          } else if (res.name) {
+
+            setIsLoaded(true);
+          } else if (res?.name) {
             setError({name: res.name, message: res.message});
-          }
+            setIsLoaded(false);
+          } 
         },
         err => {
           console.error({err});
-          if (mounted) {
-            setError(err);
-            setUnpulledIsLoaded(true);
-            setUnpushedIsLoaded(true);
-            setIgnoredIsLoaded(true);
-          }
+          setError(err);
+          setUnpulledIsLoaded(true);
+          setFailedToPushIsLoaded(true);
+          setUnpushedIsLoaded(true);
+          setIgnoredIsLoaded(true);
+          setIsLoaded(true);
         }
       );
       return () => mounted = false;
@@ -191,7 +241,7 @@ const FailedOrders = () => {
   ( // Render the error when there's an error.
     <div className="signin-error">{error?.message}</div>
   )
-  :
+  : isLoaded ?
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Orders')) ?
     ( // Render the page.
@@ -199,17 +249,42 @@ const FailedOrders = () => {
         <>
           <div className='order-actions'>
             <form>
-              <button id='failedPulls' value='failedPulls' onClick={(e) => handleClick(e)}>
+              <button 
+                className={unpushedTab}
+                id='unpushedNoFail' 
+                value='unpushedNoFail' 
+                onClick={(e) => handleClick(e)}
+              >
+                Unpushed
+              </button>
+            </form>
+            <form>
+              <button 
+                className={failedToPullTab}
+                id='failedPulls' 
+                value='failedPulls' 
+                onClick={(e) => handleClick(e)}
+              >
                 Failed to Pull
               </button>
             </form>
             <form>
-              <button id='failedPushes' value='failedPushes' onClick={(e) => handleClick(e)}>
+              <button 
+                className={failedToPushTab}
+                id='failedPushes' 
+                value='failedPushes' 
+                onClick={(e) => handleClick(e)}
+              >
                 Failed to Push
               </button>
             </form>
             <form>
-              <button className="inactive-button" id="ignoredOrders" value="ignoredOrders" onClick={(e) => handleClick(e)}>
+              <button 
+                className={ignoredOrdersTab}
+                id="ignoredOrders" 
+                value="ignoredOrders" 
+                onClick={(e) => handleClick(e)}
+              >
                 Ignored Orders
               </button>
             </form>
@@ -231,10 +306,10 @@ const FailedOrders = () => {
             />
           ) : getQuery === 'failedPushes' ?
           (
-            <Unpushed
-              data={unpushed}
+            <FailedToPush
+              data={failedToPush}
               error={error}
-              isLoaded={unpushedIsLoaded}
+              isLoaded={failedToPushIsLoaded}
               getQuery={getQuery}
               postPath={postPath}
               recall={recallApi}
@@ -245,7 +320,25 @@ const FailedOrders = () => {
               restrictedActions={restrictedActions.current}
               tab={type}
             />
-          ) : getQuery === 'ignoredOrders' ?
+          ) 
+          : getQuery === 'unpushedNoFail' ?
+          (
+            <Unpushed
+              data={unpushed}
+              error={error}
+              isLoaded={!unpushedIsLoaded && unpushed.length > 0 ? true : unpushed}
+              getQuery={getQuery}
+              postPath={postPath}
+              recall={recallApi}
+              order={order}
+              action={action}
+              callerId={id}
+              click={click}
+              restrictedActions={restrictedActions.current}
+              tab={type}
+            />
+          )
+          : getQuery === 'ignoredOrders' ?
           (
             <Ignored
               data={ignored}
@@ -273,6 +366,10 @@ const FailedOrders = () => {
     (
       <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
     )
+  )
+  :
+  (
+    null
   )
 };
 

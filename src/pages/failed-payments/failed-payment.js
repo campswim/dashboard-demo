@@ -20,7 +20,7 @@ const FailedPayment = props => {
   const [activeLink, setActiveLink] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
   const [showDetails, setShowDetails] = useState(false);
-  const [jobNamesUnique, setJobNamesUnique] = useState(['']);
+  const [jobNamesUnique, setJobNamesUnique] = useState(['All']);
   const [vpWidth, setVpWidth] = useState(window.innerWidth);
   const [error, setError] = useState(null);
   const [displayDismissed, setDisplayDismissed] = useState(true);
@@ -81,7 +81,7 @@ const FailedPayment = props => {
 
               setError(null);
               
-              if (path === 'reinstatePaymentError') {
+              if (path === 'reinstatePaymentError') { // Turned off.
                 item.forEach(id => {
                   const dismissedAtTableCell = document.getElementById(`${id}-dismissed-at`);
                   const dismissedByTableCell = document.getElementById(`${id}-dismissed-by`);
@@ -92,7 +92,7 @@ const FailedPayment = props => {
 
                 dismissedCount.current = dismissedCount.current - res.data[path].length;
                 props.reload(props.activeTab);
-              } else if (path === 'dismissPaymentError') {
+              } else if (path === 'dismissPaymentError') { // No longer displaying dismissed by or at, because it can't be reinstated.
                 item.forEach(id => {
                   const dismissedAtTableCell = document.getElementById(`${id}-dismissed-at`);
                   const dismissedByTableCell = document.getElementById(`${id}-dismissed-by`);
@@ -256,14 +256,12 @@ const FailedPayment = props => {
           paymentType = formatHeaders(paymentType.split('(')[0]);
           paymentType += parenthetical ? ` (${parenthetical}` : '';
           
-          if (!jobNamesUnique.includes(paymentType)) {
-            setJobNamesUnique([...jobNamesUnique, paymentType]);
-          }
+          if (!jobNamesUnique.includes(paymentType)) setJobNamesUnique([...jobNamesUnique, paymentType]);
         });
       }
     }
     return () => mounted = false;
-  }, [jobNamesUnique, props]);
+  }, [jobNamesUnique, props, activeTab]);
 
   // Set the default active tab and each tab's count and tab's index.
   useEffect(() => {
@@ -396,7 +394,7 @@ const FailedPayment = props => {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
     }
   });
-  
+
   return props.error ?
   (
     <div className="signin-error">{props.error.message}</div>
@@ -411,7 +409,7 @@ const FailedPayment = props => {
       {items.length > 0 ? 
       (
         <div className="order-actions unprocessed">
-          <Tabs
+          <Tabs 
             activeTab={activeTab} 
             tabIndex={activeTabIndex} 
             tabs={jobNamesUnique.sort()}
@@ -661,9 +659,6 @@ const FailedPayment = props => {
         <tbody>
           {items.length > 0 ? (
             itemsFiltered.current.map((item, key) => {
-              console.log({key}, ': ', {item});
-              console.log({activeTab});
-              
               return formatHeaders(item.PaymentType) === formatHeaders(activeTab) || activeTab === 'All' ? 
               (
                 <tr key={key} className={!displayDismissed && item.DismissedAt ? 'hide-dismissed' : '' }>

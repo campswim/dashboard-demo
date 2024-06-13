@@ -25,23 +25,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-main {
-  min-height: 20rem;
-}
-
 h1 > a {
   color: cornflowerblue;
 }
+
 h3 {
   margin-bottom: .5rem;
 }
+
 p {
   font-size: 1rem;
   margin: 0 0 1rem 0;
 }
+
 a {
-  text-decoration: none;
   color: inherit;
+}
+
+.order-detail-modal.order-number {
+  text-decoration: underline;
 }
 
 .desktop {
@@ -85,6 +87,7 @@ a {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  min-height: 4rem;
   
   p {
     margin-right: 3rem;
@@ -176,6 +179,7 @@ a {
 
     button {
       font-size: 1.1rem;
+      min-height: 4rem;
     }
   }
 
@@ -235,7 +239,7 @@ a {
   flex-direction: column;
   position: absolute;
   left: 50%;
-  top: 18rem;
+  top: 26rem;
   transform: translate(-50%);  
   // position: fixed;
   // left: 50%;
@@ -349,6 +353,15 @@ a {
   animation-timing-function: linear; 
 }
 
+.api-down {
+  margin: auto;
+  width: 50%;
+  padding-top: 4rem;
+  color: cornflowerblue;
+  font-weight: bolder;
+  text-align: center;
+}
+
 @keyframes successfulEdit {
   0% {
     color: cornflowerblue;
@@ -375,6 +388,21 @@ a {
   }  
 }
 
+@media (orientation: landscape) and (max-height: 500px) {
+  .order-details-modal {
+    top: 10rem;
+  }
+
+  .order-info {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .order-info.no-actions {
+    flex-direction: column;
+  }
+}
+
 @media all and (min-width: 500px) {
   p {
     font-size: 1.3rem;
@@ -384,21 +412,24 @@ a {
     text-align: left;
   }
 
-  .order-actions {
-    form {
-      button {
-        font-size: 1.3rem;
-      }
-    }
-  }
-
   .order-info {
+    flex-direction: row;
+    align-items: flex-start;
+
     .stats{
       justify-content: flex-start;
     }
 
     .action-links {
       font-size: 1.5rem;
+    }
+  }
+
+  .order-actions {
+    form {
+      button {
+        font-size: 1.3rem;
+      }
     }
   }
 }
@@ -422,6 +453,10 @@ a {
 }
 
 @media all and (min-width: 1280px) { // Height of MacBook Pro 13" and the breakpoint between the mobile and desktop views, mainly.
+  a {
+    text-decoration: none;
+  }
+  
   .mobile {
     display: none;
   }

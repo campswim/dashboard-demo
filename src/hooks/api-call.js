@@ -7,7 +7,11 @@ export default async function apiCall(operation, query, variables, token) {
       process.env.REACT_APP_API_AUTO 
     : window.location.href.includes('localhost:3001') ? 
       process.env.REACT_APP_API_LOCAL 
-    : process.env.REACT_APP_API_DEV;
+    : window.location.href.includes('localhost:3003') ?
+      process.env.REACT_APP_API_HOME_SERVER_DEV
+    : process.env.REACT_APP_ENV === 'local-development' ? 
+      process.env.REACT_APP_API_DEV
+    : process.env.REACT_APP_API_SERVER_DEV;
   const graphQlQuery = {
     operation,
     query,

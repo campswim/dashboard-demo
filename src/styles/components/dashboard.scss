@@ -33,18 +33,35 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
     border-radius: 0 0 0 15px;
   
     .dash-staged-tableset {
       width: 100%;
-      // width: calc(100% * 0.33333);
       border: 2px solid whitesmoke;
       border-radius: 7px;
       padding: 1rem 0;
       margin-bottom: .5rem;
+      
       .subheader {
         margin-left: .5rem;
+        
+        a {
+          color: inherit;
+          -webkit-transition: all 500ms ease;
+          -moz-transition: all 500ms ease;
+          -ms-transition: all 500ms ease;
+          -o-transition: all 500ms ease;
+          transition: all 500ms ease;
+        }
+      
+        a:hover {
+          color: orange;
+          -webkit-transition: all 500ms ease;
+          -moz-transition: all 500ms ease;
+          -ms-transition: all 500ms ease;
+          -o-transition: all 500ms ease;
+          transition: all 500ms ease;
+        }
       }  
     }
   }
@@ -173,11 +190,12 @@
       flex-direction: row;
       align-items: start;
 
-      .dash-staged-tableset {
-        width: 33%;
-      }
+      // .dash-staged-tableset {
+      //   width: calc(100% * 0.33333);
+      // }
+
       .dash-staged-tableset:nth-child(2) {
-        margin: 0 0.1rem;
+        margin: 0 0.5rem;
       }
     }
 
@@ -198,27 +216,10 @@
   .dashboard-container {
     .dash-staged {
       .dash-staged-tableset {
-        width: 32.5%;
+        width: calc(100% * 0.325);
       }
       .dash-staged-tableset:nth-child(2) {
         margin: 0;
-      }
-
-      a {
-        color: inherit;
-        -webkit-transition: all 500ms ease;
-        -moz-transition: all 500ms ease;
-        -ms-transition: all 500ms ease;
-        -o-transition: all 500ms ease;
-        transition: all 500ms ease;    
-      }
-      a:hover {
-        color: orange;
-        -webkit-transition: all 500ms ease;
-        -moz-transition: all 500ms ease;
-        -ms-transition: all 500ms ease;
-        -o-transition: all 500ms ease;
-        transition: all 500ms ease;    
       }
     }
 
@@ -234,5 +235,6 @@
         margin-left: 5rem;
       }
     }
+  
   }
 }

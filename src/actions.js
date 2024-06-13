@@ -80,14 +80,14 @@ const actions = {
       onClickArg: 'dismissPaymentError',
       title: 'Dismiss'
     },
-    {
-      pathname: 'failed-payments',
-      postPath: '',
-      action: 'Reinstate',
-      actionId: 'reinstated',
-      onClickArg: 'reinstatePaymentError',
-      title: 'Reinstate'
-    }
+    // {
+    //   pathname: 'failed-payments',
+    //   postPath: '',
+    //   action: 'Reinstate',
+    //   actionId: 'reinstated',
+    //   onClickArg: 'reinstatePaymentError',
+    //   title: 'Reinstate'
+    // }
   ]
 };
 

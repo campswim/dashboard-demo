@@ -28,12 +28,23 @@ const NavBar = () => {
   const [reRender, setReRender] = useState(false);
   const loggedInUser = useRef(null);
   const links = useLinks(routes, null, null, handleClick);
-  const logoLink = process.env.REACT_APP_ENV === 'production-manual' ? process.env.REACT_APP_HOME_MANUAL : process.env.REACT_APP_ENV === 'production-auto' ? process.env.REACT_APP_HOME_AUTO : window.location.href.includes('localhost:3001') ? process.env.REACT_APP_HOME_LOCAL : process.env.REACT_APP_HOME_DEV;
+  const siteLocation = window.location.href;
+  const logoLink = process.env.REACT_APP_ENV === 'production-manual' ? 
+      process.env.REACT_APP_HOME_MANUAL 
+    : process.env.REACT_APP_ENV === 'production-auto' ? 
+      process.env.REACT_APP_HOME_AUTO 
+    : siteLocation.includes('localhost:3001') ? 
+      process.env.REACT_APP_HOME_LOCAL 
+    : siteLocation.includes('localhost:3003') ? 
+      process.env.REACT_APP_HOME_SERVER_DEV 
+    : process.env.REACT_APP_ENV === 'local-development' ? 
+      process.env.REACT_APP_HOME_DEV 
+    : process.env.REACT_APP_HULK_SERVER_DEV;
   
   // (Hoisted function.) If the user logs out, this function causes the user's token to expire.
   function handleClick(event) {
     const id = event.target.id;
-    
+        
     setRenderMobileLinksModal(false);
     document.getElementsByTagName('body')[0].classList.remove('no-scroll');
 
@@ -152,11 +163,14 @@ const NavBar = () => {
   return (
     <Router>
       <nav className='navbar'>
-        <div className='logo-links mobile'>
-          <div className="logo-container">
+        <div className={`logo-links mobile ${process.env.REACT_APP_ENV}`}>
+          <div className={`logo-container ${process.env.REACT_APP_ENV}`}>
             <a href={logoLink}><Logo /></a>
             {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
-            <h1>Orders</h1>
+            <div className='logo-subheading'>
+              <p className={`dev-or-live ${process.env.REACT_APP_ENV}`}>{process.env.REACT_APP_ENV.includes('development') ? 'Dev' : process.env.REACT_APP_ENV === 'production-manual' ? 'Live' : ''}</p>
+              <h1>Orders</h1>
+            </div>
           </div>
           <div className="links-container">
             <div className={"navbar-links"}>
@@ -172,7 +186,7 @@ const NavBar = () => {
               }
           </div>
         </div>
-        <div className='logo-links tablet'>
+        <div className={`logo-links tablet ${process.env.REACT_APP_ENV}`}>
           <div className='links-container'>
             <div className={"navbar-links"}>
               {links}
@@ -181,7 +195,10 @@ const NavBar = () => {
           <div className='logo-container'>
             <a href={logoLink}><Logo /></a>
             {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
-            <h1>Orders</h1>
+            <div className='logo-subheading'>
+              <p className={`dev-or-live ${process.env.REACT_APP_ENV}`}>{process.env.REACT_APP_ENV.includes('development') ? 'Dev' : process.env.REACT_APP_ENV === 'production-manual' ? 'Live' : ''}</p>
+              <h1>Orders</h1>
+            </div>
           </div>
           {loggedIn ? // Hamburger menu icon.
           (
@@ -192,11 +209,14 @@ const NavBar = () => {
           : null
           }
         </div>
-        <div className='logo-links desktop'>
+        <div className={`logo-links desktop ${process.env.REACT_APP_ENV}`}>
           <div className="logo-container">
             <a href={logoLink}><Logo /></a>
             {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
-            <h1>Orders</h1>
+            <div className='logo-subheading'>
+              <p className={`dev-or-live ${process.env.REACT_APP_ENV}`}>{process.env.REACT_APP_ENV.includes('development') ? 'Dev' : process.env.REACT_APP_ENV === 'production-manual' ? 'Live' : ''}</p>
+              <h1>Orders</h1>
+            </div>
           </div>
           <div className="links-container">
             <div className={"navbar-links"}>
@@ -265,8 +285,8 @@ const NavBar = () => {
         ) : (
           '' 
         )} */}
+        {renderMobileLinksModal ? <MobileLinksModal links={links} activePage={activePage} /> : null}
       </main>
-      {renderMobileLinksModal ? <MobileLinksModal links={links} activePage={activePage} /> : null}
     </Router>
   );
 };

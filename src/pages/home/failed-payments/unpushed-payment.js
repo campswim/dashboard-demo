@@ -10,7 +10,7 @@ const UnpushedPayments = props => {
     if (!sortConfig) return;
     return sortConfig.key === name ? sortConfig.direction : undefined;
   };
-
+  
   return props.error ?
   (
     <div className='signin-error'>{props.error}</div>

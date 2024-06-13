@@ -68,7 +68,6 @@ const FailedProcesses = () => {
   
   return !loggedIn ?
   (
-    // <div className="signin-error">You must sign in to access this resource.</div>
     <Redirect to={
         {
           pathname: '/login',
@@ -84,7 +83,7 @@ const FailedProcesses = () => {
   (
     <div className="signin-error">{error?.message}</div>
   )
-  :
+  : isLoaded ?
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Processes')) ?
     (
@@ -93,8 +92,7 @@ const FailedProcesses = () => {
         error={error} 
         isLoaded={isLoaded} 
         handleClick={handleClick} 
-        activeTab={currentTab ? currentTab : job ? job : null} 
-        restrictedActions={restrictedActions.current} 
+        activeTab={currentTab ? currentTab : job ? job : null} restrictedActions={restrictedActions.current} 
         order={orderNum} 
         action={action} 
       />
@@ -103,6 +101,10 @@ const FailedProcesses = () => {
     (
       <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
     )
+  )
+  :
+  (
+    null
   )
 };
 

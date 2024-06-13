@@ -1,24 +1,23 @@
 import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import Checkbox from '../../components/checkbox';
+// import Checkbox from '../../components/checkbox';
 import useSort from '../../hooks/sort-data';
 import formatCurrency from '../../hooks/format-currency';
 import formatHeaders from '../../hooks/format-headers';
-import { userAction } from '../../hooks/get-order';
-import getActions from '../../hooks/get-actions';
+// import { userAction } from '../../hooks/get-order';
+// import getActions from '../../hooks/get-actions';
 import OrderDetails from '../../components/order-details';
 
-const UnPushed = props => {
-  const [allChecked, setAllChecked] = useState(false);
-  const [isChecked, setIsChecked] = useState([]);
-  const [status, setStatus] = useState(null);
-  const [response, setResponse] = useState(null);
+const UnPushed = (props) => {
+  // const [allChecked, setAllChecked] = useState(false);
+  // const [isChecked, setIsChecked] = useState([]);
+  // const [status, setStatus] = useState(null);
+  // const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const [unpushed, setUnpushed] = useState([]);
-  const [activeLink, setActiveLink] = useState(false);
+  // const [activeLink, setActiveLink] = useState(false);
   const [chars, setChars] = useState(999);
   const [width, setWidth] = useState(window.innerWidth);
-  // const [shortenDates, setShortenDates] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
   const [showDetails, setShowDetails] = useState(false);
   const [vpWidth, setVpWidth] = useState(window.innerWidth);
@@ -49,29 +48,32 @@ const UnPushed = props => {
       setOrderDetails(item);
       setShowDetails(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (isChecked.length !== 0) {
-      if (path) {
-        userAction('unpushed', path, isChecked)
-        .then(
-          res => {            
-            setResponse(res?.data[path]);
-            setStatus(res?.status);
-            setError(null);
-            showMessage.current = true;
-          },
-          err => {
-            if (err) {
-              console.error(err);
-              setError(err.message);
-              showMessage.current = false;
-            }
-          }
-        );
-        setIsChecked([]);
-        setAllChecked(false);
-        props.recall('failedPushes');
-      }
-    } else alert('Please tick an order.');
+    } 
+    // else if (isChecked.length !== 0) {
+    //   if (path) {
+    //     userAction('unpushed', path, isChecked)
+    //     .then(
+    //       res => {
+    //         if (res) {
+    //           setResponse(res.data[path]);
+    //           setStatus(res.status);
+    //           setError(null);
+    //           showMessage.current = true;
+    //         }
+    //       },
+    //       err => {
+    //         if (err) {
+    //           console.error(err);
+    //           setError(err.message);
+    //           showMessage.current = false;
+    //         }
+    //       }
+    //     );
+    //     setIsChecked([]);
+    //     setAllChecked(false);
+    //     props.recall('failedPushes');
+    //   }
+    // } else alert('Please tick an order.');
     
     // Deactivate action buttons if a user's profile has restrictions that match.
     if (props?.restrictedActions === 'All' || path.includes(props.restrictedActions.toLowerCase())) {
@@ -80,24 +82,19 @@ const UnPushed = props => {
     }  
   };
   
-  const handleSelectAll = () => {
-    setAllChecked(!allChecked);
-    setIsChecked(unpushed.map(item => item.OrderNumber));
-    if (allChecked) setIsChecked([]);
-    sessionStorage.clear();
-  };
+  // const handleSelectAll = () => {
+  //   setAllChecked(!allChecked);
+  //   setIsChecked(unpushed.map(item => item.OrderNumber));
+  //   if (allChecked) setIsChecked([]);
+  //   sessionStorage.clear();
+  // };
 
-  const handleSelect = event => {
-    const { value, checked } = event.target;
-    setIsChecked([...isChecked, value]);
-    if (!checked) setIsChecked(isChecked.filter(item => item !== value));
-    sessionStorage.clear();
-  };
-
-  const toggleError = id => {
-    const errorElement = document.getElementById(id);
-    if (errorElement) errorElement.classList.toggle('show-error');
-  };
+  // const handleSelect = event => {
+  //   const { value, checked } = event.target;
+  //   setIsChecked([...isChecked, value]);
+  //   if (!checked) setIsChecked(isChecked.filter(item => item !== value));
+  //   sessionStorage.clear();
+  // };
 
   const clickSniffer = event => {
     let id;
@@ -129,40 +126,41 @@ const UnPushed = props => {
     // setIsChecked([]);
     clickCount.current = 0;
   };
-    
+  
+  // Set the unpushed state variable.
   useEffect(() => {
     let mounted = true;
-    if (mounted) setUnpushed(props.data.failedPushes);
+    if (mounted) setUnpushed(props.data.unpushedNoFail);
     return () => mounted = false;
   }, [props.data]);
 
   // Toggle allChecked.
-  useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (unpushed && unpushed.length !== 0 && isChecked.length === unpushed.length) setAllChecked(true);
-      else setAllChecked(false);
-    }
-    return () => mounted = false;
-  }, [isChecked, unpushed]);
+  // useEffect(() => {
+  //   let mounted = true;
+  //   if (mounted) {
+  //     if (unpushed && unpushed.length !== 0 && isChecked.length === unpushed.length) setAllChecked(true);
+  //     else setAllChecked(false);
+  //   }
+  //   return () => mounted = false;
+  // }, [isChecked, unpushed]);
 
-  // Show or hide optional actions.
-  useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const element = document.getElementById('retried-order-message');
-      if (isChecked.length > 0) {
-        const className = element ? element.getAttribute('class') : '';  
-        if (className && !className.includes('hidden')) element.setAttribute('class', `${className}-hidden`);
-        setActiveLink(true);
-      } else {
-        const className = element ? element.getAttribute('class').replace('-hidden', '') : ''; 
-        if (className) element.setAttribute('class', className);
-        setActiveLink(false);
-      }
-    }
-    return () => mounted = false;
-  }, [isChecked]);
+  // // Show or hide optional actions.
+  // useEffect(() => {
+  //   let mounted = true;
+  //   if (mounted) {
+  //     const element = document.getElementById('retried-order-message');
+  //     if (isChecked.length > 0) {
+  //       const className = element ? element.getAttribute('class') : '';  
+  //       if (className && !className.includes('hidden')) element.setAttribute('class', `${className}-hidden`);
+  //       setActiveLink(true);
+  //     } else {
+  //       const className = element ? element.getAttribute('class').replace('-hidden', '') : ''; 
+  //       if (className) element.setAttribute('class', className);
+  //       setActiveLink(false);
+  //     }
+  //   }
+  //   return () => mounted = false;
+  // }, [isChecked]);
 
   // Bind the event listener.
   useEffect(() => {
@@ -219,8 +217,11 @@ const UnPushed = props => {
   // Determine the width of the browser window and set toggles accordingly.
   useLayoutEffect(() => {
     let mounted = true;
-    const handleResize = () => setWidth(window.innerWidth);
     if (mounted) {
+      const handleResize = () => {
+        return () => setWidth(window.innerWidth);
+      };
+    
       // if (width < 1280) setShortenDates(true);
       setChars(width < 768 ? 7 : width < 1023 ? 24 : width < 1280 ? 48 : 999);  
       window.onresize = handleResize;
@@ -229,21 +230,24 @@ const UnPushed = props => {
     return () => mounted = false;    
   }, [width, chars, items]);
   
-  return props.getQuery === 'failedPushes' ?
+  return props.getQuery === 'unpushedNoFail' ?
   (
     props.error ? 
     (
       <div className="signin-error">{props.error.message}</div>
-    ) : !props.isLoaded ? 
+    ) 
+    : !props.isLoaded ? 
     ( 
       <div className="loading">Loading . . .</div>
-    ) : (
+    ) 
+    : 
+    (
       <>
         <div className='order-info'>
           {items.length > 0 ? 
           (
             <div className='stats'>
-              <p className="order-info-number-display">Selected: {isChecked.length}</p>
+              {/* <p className="order-info-number-display">Selected: {isChecked.length}</p> */}
               <p className="order-info-number-display">Count: {items.length}</p>
             </div>
           )
@@ -251,7 +255,7 @@ const UnPushed = props => {
           (
             null
           )}
-          {activeLink ? (
+          {/* {activeLink ? (
             <div className='action-links'>
               <form className='link'>
                 {props && props.restrictedActions ? getActions('unpushed', props.restrictedActions, isChecked, takeAction) : null}
@@ -261,13 +265,16 @@ const UnPushed = props => {
             <div>Error: {error}</div>
           ) : (
             ''
-          )}
+          )} */}
           {props.callerId === 'unpushed' ? 
           (
             !error ? 
             (
               props.order ? (
-                showMessage.current && props.action && !activeLink && (props.action === 'Repush' || props.action === 'Ignore' || props.action === 'Delete') ? (
+                showMessage.current 
+                  && props.action 
+                    // && !activeLink 
+                      && (props.action === 'Repush' || props.action === 'Ignore' || props.action === 'Delete') ? (
                   typeof props.order === 'number' || props.order.length === 1 ? (
                     <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                       <p>Order {props.order} has been {message(props.action)}.</p>
@@ -343,7 +350,7 @@ const UnPushed = props => {
         <table className="unpushed-table">
           <thead>
             <tr className='header-row'>
-              {items.length !== 0 ? (
+              {/* {items.length !== 0 ? (
                 <th className='checkbox-th'>
                   <Checkbox
                     type='checkbox'
@@ -354,11 +361,11 @@ const UnPushed = props => {
                 </th>
               ) : (
                 <th className='hidden-checkbox'></th>
-              )}
+              )} */}
               {headers ? 
               (
-                headers.map((header, key) => (
-                  vpWidth < 1280 ?
+                headers.map((header, key) => {
+                  return vpWidth < 1280 ?
                   (
                     header !== 'Market' && header !== 'Error Code' && header !== 'Staging Import Date' && header !== 'Customer Number' && header !== 'Order Type Description' ?
                     (
@@ -392,7 +399,7 @@ const UnPushed = props => {
                       null
                     )
                   )
-                ))
+                })
               )
               : 
                 null
@@ -403,7 +410,7 @@ const UnPushed = props => {
           {props && items.length > 0 ? (
             items.map((item, key) => (
                 <tr key={key}>
-                  <td className='select-one'>
+                  {/* <td className='select-one'>
                     <Checkbox
                       type='checkbox'
                       name={item.OrderNumber}
@@ -411,7 +418,7 @@ const UnPushed = props => {
                       handleClick={handleSelect}
                       isChecked={isChecked.includes(item.OrderNumber)}
                     />
-                  </td>
+                  </td> */}
                   <td className='order-number order-link'>
                     {vpWidth < 1280 ?
                     (
@@ -427,39 +434,16 @@ const UnPushed = props => {
                       item.OrderNumber ? item.OrderNumber : 'None'
                     )}
                   </td>
-                  <td className="reduceable-td desktop">{item.Market}</td>
-                  <td className="warehouse mobile">{item.Warehouse.split('-')[0]}-<br />{item.Warehouse.split('-')[1]}</td>
-                  <td className="warehouse desktop">{item.Warehouse ? item.Warehouse : 'None'}</td>
-                  <td>{formatCurrency(item.OrderTotalAmount, item.CurrencyCode)}</td>
+                  <td className="reduceable-td desktop">{item.Market ? item.Market : 'N/A'}</td>
+                  {/* <td className="warehouse mobile">{item.Warehouse ? item.Warehouse.split('-')[0] : 'None'}-<br />{item.Warehouse.split('-')[1]}</td> */}
+                  <td className="warehouse">{item.Warehouse ? item.Warehouse : 'None'}</td>
+                  <td>{item.OrderTotalAmount && item.CurrencyCode ? formatCurrency(item.OrderTotalAmount, item.CurrencyCode) : 'N/A'}</td>
                   <td className="order-type desktop">{item.OrderTypeDescription ? item.OrderTypeDescription : 'None'}</td>
-                  <td className="reduceable-td desktop">{item.CustomerNumber}</td>
-                  <td className="order-date">{new Date(parseInt(item.OrderDate)).toISOString().split('T')[0]}</td>
+                  <td className="reduceable-td desktop">{item.CustomerNumber ? item.CustomerNumber : 'N/A'}</td>
+                  <td className="order-date">{item.OrderDate ? new Date(parseInt(item.OrderDate)).toISOString().split('T')[0] : 'N/A'}</td>
                   <td className={`unpushed order-dates desktop`}>
-                    {new Date(parseInt(item.StagingImportDate)).toISOString().split('T')[0]}
+                    {item.StagingImportDate ? new Date(parseInt(item.StagingImportDate)).toISOString().split('T')[0] : 'N/A'}
                   </td>
-                  {/* <td className="error-code desktop">{item.ErrorCode ? item.ErrorCode : 'None'}</td> */}
-
-                  <td className="unpushed-error-message">
-                    <span 
-                      className={`error-message-button ${item.ErrorMessage.length < chars ? true : false}`} 
-                      title={item.ErrorMessage.length > chars ? "Click to view the error." : ''} 
-                      onClick={item.ErrorMessage.length > chars ? () => toggleError(item.OrderNumber) : null} 
-                      name={item.OrderNumber}
-                    >
-                      {item.ErrorMessage.includes('\r\n') ? `${item.ErrorMessage.split('\r\n').join(' ').slice(0, chars)}` : `${item.ErrorMessage.slice(0, chars)}`}{item.ErrorMessage.length > chars ? '...' : ''}
-                    </span>
-                  </td>
-                  <td 
-                    name={item.OrderNumber} 
-                    id={item.OrderNumber} 
-                    className='error-message-unpulled'
-                  >
-                    <div className='x-close-container'>
-                      <span className="x-close" onClick={() => toggleError(item.OrderNumber)}>x</span>
-                    </div>
-                    <p>{item.ErrorMessage}</p>
-                  </td>
-
                 </tr>
             ))
           ) : (
@@ -471,33 +455,6 @@ const UnPushed = props => {
           </tbody>
         </table>
 
-        {/* <table>
-          <thead>
-            <tr className='header-row error-message-unpushed'>
-              <th
-                onClick={() => requestSort('errorMessage')}
-                className={getClassNamesFor('errorMessage')}
-              >
-                Message
-              </th>
-            </tr>
-          </thead>
-          {items.length !== 0 ? (
-          <tbody >
-            {items.map((item, key) => (
-              <tr key={key}>
-                <td name={item.OrderNumber} id={item.OrderNumber} className='error-message-unpushed'>
-                  <span onClick={toggleError} className="x-close">X</span>
-                  {item.ErrorMessage.includes('\r\n') ? `${item.ErrorMessage.split('\r\n').join(' ')}` : item.ErrorMessage}
-                </td>
-              </tr>
-                )
-                )}
-          </tbody>
-          ) : (
-            <tbody hidden><tr><td></td></tr></tbody>
-          )}
-        </table> */}
         {showDetails ? <OrderDetails details={orderDetails} closeModal={closeModal} getClassNamesFor={getClassNamesFor} /> : null}
       </>
     )

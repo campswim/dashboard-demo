@@ -32,7 +32,7 @@ const Users = (props) => {
     
     if (mounted) {
       user.getAllUsers().then(
-        res => {
+        res => {          
           if (res.data) {
             if (res.data.users) setUsers(Array.isArray(res.data.users) ? res.data.users : [res.data.users]);
             setIsLoaded(true);

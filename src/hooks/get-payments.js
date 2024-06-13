@@ -5,7 +5,7 @@ export async function getAllFailedPayments() {
   const query = `query ${operation} {${operation} {OrderNumber, PaymentId, PaymentType, PaymentAmount, PaymentDate, AttemptedAt, CardNumber, ErrorReason, CurrencyCode, DismissedAt, DismissedBy}}`;
 
   return await apiCall(operation, query).then(
-    res => { return res; },
-    err => { return err; }
+    res => res,
+    err => err
   );
 }

@@ -362,6 +362,7 @@ const Users = (props) => {
                       if ('Role' === newValue.column) props.recall(); // Recall the API to get the right user tabs after a role change.
                     }, 2000);
                   }
+
                   // Log the change to the database.
                   logChange('Users', newValue.rowName, newValue.column, newValue.id, newValue.prevValue, newValue.newValue, valueType).then(
                     res => {

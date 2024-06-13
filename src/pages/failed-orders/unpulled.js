@@ -52,10 +52,7 @@ const UnPulled = props => {
       if (path) {
         userAction('unpulled', path, isChecked).then(
           res => {
-
-            console.log({res, path});
-
-            if (res) {
+            if (res) {              
               setResponse(res.data[path]);
               setStatus(res.status);
               setError(null);
@@ -197,7 +194,7 @@ const UnPulled = props => {
       const handleResize = () => {
         setVpWidth(window.innerWidth);
       };
-      window.addEventListener('resize', handleResize)
+      return () => window.addEventListener('resize', handleResize);
     }
     return () => mounted = false;
   }, [vpWidth]);
@@ -425,7 +422,16 @@ const UnPulled = props => {
                     )
                     :
                     (
-                      item.OrderNumber
+                      <Link
+                        to={{
+                          pathname: '/order-summary',
+                          state: {
+                            order: item.OrderNumber
+                          },
+                        }}
+                      >
+                        {item.OrderNumber}
+                      </Link>
                     )}
                   </td>
 
@@ -446,10 +452,7 @@ const UnPulled = props => {
                       'None'
                     )}
                   </td>
-
                   <td>{formatCurrency(item.OrderTotal, item.CurrencyCode)}</td>
-
-                  {/* To-do: CSS this in at a certain screen width. */}
                   <td className={`attempted-dates desktop`}>
                     {item.At ? 
                     (
@@ -458,7 +461,6 @@ const UnPulled = props => {
                       'None'
                     )}
                   </td>
-
                   <td 
                     name={item.OrderNumber} 
                     className={`error-message ${toggleShorterError}`} 

@@ -13,7 +13,8 @@ const Home = () => {
   const [loggedInUser, setLoggedInUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
   const params = useLocation();
   const userFromState = params?.state?.user;
-  
+
+  // Remove the user from local storage.
   const deleteUser = () => {    
     localStorage.setItem('loggedIn', 0);
     localStorage.setItem('user', null);
@@ -53,7 +54,6 @@ const Home = () => {
   )
   : 
   (
-    // <div className="signin-error">{user?.name ? `${user.name}, you're not logged in; please try signing in again.` : 'You must sign in to access this resource.'}</div>
     <Redirect to={
       {
         pathname: '/login',

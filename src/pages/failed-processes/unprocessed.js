@@ -74,13 +74,13 @@ const Unprocessed = props => {
         
         userAction('failedProcesses', path, isChecked).then(
           res => {
-            if (res?.data[path]) {
+            if (res?.data && res.data[path]) {
               setError(null);
               
               if (path === 'reinstateJobError') dismissedCount.current = dismissedCount.current - res.data[path].length;
               else if (path === 'dismissJobError') dismissedCount.current = dismissedCount.current + res.data[path].length;
 
-            } else if (res.errors) {
+            } else if (res?.errors) {
               let errorString = '';
               res.errors.forEach((error, idx) => {
                 if (res.errors.length === 1) errorString = error.message;
@@ -266,9 +266,9 @@ const Unprocessed = props => {
     let mounted = true;
     if (mounted) {
       const handleResize = () => {
-        setVpWidth(window.innerWidth);
-      }
-      window.addEventListener('resize', handleResize)
+        return () => setVpWidth(window.innerWidth);
+      };
+      window.addEventListener('resize', handleResize);
     }
     return () => mounted = false;
   }, [vpWidth]);
@@ -362,7 +362,7 @@ const Unprocessed = props => {
       (
         null
       )}
-      <div className="order-info no-actions">
+      <div className={`order-info ${!activeLink ? 'no-actions' : ''}`}>
         {items.length > 0 ? 
         (
           <div className="stats">
@@ -575,8 +575,8 @@ const Unprocessed = props => {
                       item.OrderNumber ? item.OrderNumber : 'None'
                     )}
                   </td>
-                  <td className="line-number desktop">{item.LineNumber ? item.LineNumber : 'N/A'}</td>
-                  <td className="order-category">{item.Category ? item.Category : 'N/A'}</td>
+                  <td className="line-number desktop">{item.LineNumber ? item.LineNumber : 'None'}</td>
+                  <td className="order-category">{item.Category ? item.Category : 'None'}</td>
                   <td className="external-system">{item.ExternalSystem}</td>
                   <td className="data-direction desktop">{item.DataDirection}</td>
                   <td className="order-date desktop">{new Date(parseInt(item.At)).toISOString().split('T')[0]}</td>
@@ -584,9 +584,9 @@ const Unprocessed = props => {
                   <td className="order-exception desktop">{item.Exception ? item.Exception : 'None'}</td>
                   <td className="order-additional-data desktop">{item.AdditionalData ? item.AdditionalData : 'None'}</td>
                   <td className="order-error-dismissed-at">
-                    {item.DismissedAt ? new Date(parseInt(item.DismissedAt)).toISOString().split('T')[0] : 'N/A'}
+                    {item.DismissedAt ? new Date(parseInt(item.DismissedAt)).toISOString().split('T')[0] : 'None'}
                   </td>
-                  <td className="order-error-dismissed-by desktop">{item.DismissedBy ? item.DismissedBy : 'N/A'}</td>
+                  <td className="order-error-dismissed-by desktop">{item.DismissedBy ? item.DismissedBy : 'None'}</td>
                 </tr>
               ) : 
               (
