@@ -20,7 +20,7 @@ const FailedPayment = props => {
   const [activeLink, setActiveLink] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
   const [showDetails, setShowDetails] = useState(false);
-  const [jobNamesUnique, setJobNamesUnique] = useState(['All']);
+  const [jobNamesUnique, setJobNamesUnique] = useState([]);
   const [vpWidth, setVpWidth] = useState(window.innerWidth);
   const [error, setError] = useState(null);
   const [displayDismissed, setDisplayDismissed] = useState(true);
@@ -252,7 +252,8 @@ const FailedPayment = props => {
       if (props && props.payments) {        
         props.payments.forEach(type => {
           let paymentType = type.PaymentType.split(' ').join('');
-          const parenthetical = paymentType.includes('(') ? paymentType.split('(')[1] : '';
+          const parenthetical = paymentType.includes('(') ? paymentType.split('(')[1] : '';          
+          
           paymentType = formatHeaders(paymentType.split('(')[0]);
           paymentType += parenthetical ? ` (${parenthetical}` : '';
           

@@ -3,6 +3,7 @@ import formatHeaders from '../hooks/format-headers';
 
 const Tabs = props => {
 
+  // Scroll the active button into view.
   useEffect(() => {
     const element = document.getElementsByClassName('active-button');
 
@@ -14,6 +15,15 @@ const Tabs = props => {
       });
     }
   });
+  
+  // Add "All" to the front of the tabs array for the failed-payments page.
+  if (props?.caller === 'payments') {
+    if (props.tabs.includes('All')) {
+      const index = props.tabs.indexOf('All');
+      props.tabs.splice(index, 1);
+    }
+    if (!props.tabs.includes('All')) props.tabs.unshift('All');
+  }
 
   return props.tabs ? 
   (

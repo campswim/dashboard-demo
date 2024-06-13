@@ -1,6 +1,6 @@
 export default function formatHeaders(headers, ignore = '') {
   if (!headers || headers.length <= 0) return;
-
+  
   if (Array.isArray(headers)) {
     const formattedHeaders = [];
     headers.forEach(header => {    
@@ -44,6 +44,7 @@ export default function formatHeaders(headers, ignore = '') {
     sample = sample.slice(1);
     const match = sample.match(/[A-Z]/g);
     
+    if (match && match.length === headers.length - 1) return headers;
     if (match) {
       let formatted = sample.split('');
       const indices = [];
