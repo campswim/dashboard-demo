@@ -11,7 +11,7 @@ const App = () => {
     let mounted = true;
     if (mounted) {
       checkDbConnection().then(
-        res => {           
+        res => {          
           const networkError = res?.message;
           const apiConnected = res?.data?.checkDbConnection?.Connected;
 

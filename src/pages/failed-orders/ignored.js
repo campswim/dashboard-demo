@@ -425,8 +425,8 @@ const Ignored = props => {
                     {item.Message.length > chars ? ' (...)' : null}
                   </span>
                 </td>
-                <td>{new Date(parseInt(item.IgnoredAt)).toISOString().split('T')[0]}</td>
-                <td className="ignored-by desktop">{item.IgnoredBy}</td>
+                <td>{item.IgnoredAt ? new Date(parseInt(item.IgnoredAt)).toISOString().split('T')[0] : 'N/A'}</td>
+                <td className="ignored-by desktop">{item.IgnoredBy ? item.IgnoredBy : 'N/A'}</td>
               </tr>
           ))
         ) : (
