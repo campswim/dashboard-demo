@@ -28,7 +28,7 @@ const NavBar = () => {
   const [reRender, setReRender] = useState(false);
   const loggedInUser = useRef(null);
   const links = useLinks(routes, null, null, handleClick);
-  const logoLink = process.env.REACT_APP_ENV === 'production-manual' ? process.env.REACT_APP_HOME_MANUAL : process.env.REACT_APP_ENV === 'production-auto' ? process.env.REACT_APP_HOME_AUTO : window.location.href.includes('localhost:3001') ? process.env.REACT_APP_HOME_LOCAL : process.env.REACT_APP_HOME_DEV;
+  const logoLink = process.env.REACT_APP_ENV === 'production' ? process.env.REACT_APP_HOME : process.env.REACT_APP_HOME_DEV;
   
   // (Hoisted function.) If the user logs out, this function causes the user's token to expire.
   function handleClick(event) {
