@@ -161,8 +161,10 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
             }
           } else {
             if (!res.response) {
+              const signInButton = document.getElementById('sign-in-button');
+
               setError('Network error. Check that the API is up and running');
-              document.getElementById('sign-in-button').innerText = 'Sign In';
+              if (signInButton) signInButton.innerText = 'Sign In';
             }
           }
         },
