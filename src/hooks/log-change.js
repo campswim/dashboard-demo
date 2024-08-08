@@ -1,6 +1,8 @@
+/* eslint-disable no-unreachable */
 import apiCall from './api-call';
 
-export default async function logChange(table, rowName, column, userId, prevValue, newValue, dataType) {  
+export default async function logChange(table, rowName, column, userId, prevValue, newValue, dataType) {
+  return true; // Not using for the demo, in order to avoid the free-tier db from going over its limit.
   if (!column || !userId) return;
   if (typeof dataType === 'number' ) dataType = dataType.toString();
   

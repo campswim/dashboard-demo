@@ -98,6 +98,8 @@ const SettingsPage = () => {
     return () => mounted = false;
   }, []);
   
+  console.log({error});
+
   return !loggedIn ?
   (
     <Redirect to={
@@ -114,6 +116,10 @@ const SettingsPage = () => {
   : error ?
   (
     <div className="signin-error">{error?.message ? error.message : error}</div>
+  )
+  : loggedInUser?.role !== 'Admin' ? 
+  (
+    <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
   )
   : isLoaded ?
   (

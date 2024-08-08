@@ -11,8 +11,8 @@ import Login from '../pages/login/login';
 import MobileLinksModal from './mobile-links-modal';
 import initialRoutes from '../routes';
 import useLinks from '../hooks/get-links';
-// import nCompassLogo from '../nCompass_logo_fullsize_square.png'; // For logo.otherExtension
-import {ReactComponent as Logo} from '../logo.svg';  // For logo.svg.
+import campSwimLogo from '../camp-swim-logo-nobg.png'; // For logo.otherExtension
+// import {ReactComponent as Logo} from '../logo.svg';  // For logo.svg.
 import MenuIcon from '@mui/icons-material/Menu';
 import LinearScaleIcon from '@mui/icons-material/LinearScale';
 
@@ -157,8 +157,8 @@ const NavBar = () => {
       <nav className='navbar'>
         <div className={`logo-links mobile ${process.env.REACT_APP_ENV}`}>
           <div className={`logo-container ${process.env.REACT_APP_ENV}`}>
-            <a href={logoLink}><Logo /></a>
-            {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
+            {/* <a href={logoLink}><Logo /></a> */}
+            <a href={logoLink}><img className="logo" src={campSwimLogo} alt="logo" /></a>
             <div className='logo-subheading'>
               <p className={`dev-or-live ${process.env.REACT_APP_ENV}`}>{process.env.REACT_APP_ENV.includes('development') ? 'Dev' : process.env.REACT_APP_ENV === 'production-manual' ? 'Live' : ''}</p>
               <h1>Orders</h1>
@@ -185,8 +185,8 @@ const NavBar = () => {
             </div>
           </div>
           <div className='logo-container'>
-            <a href={logoLink}><Logo /></a>
-            {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
+            {/* <a href={logoLink}><Logo /></a> */}
+            <a href={logoLink}><img className="logo" src={campSwimLogo} alt="logo" /></a>
             <div className='logo-subheading'>
               <p className={`dev-or-live ${process.env.REACT_APP_ENV}`}>{process.env.REACT_APP_ENV.includes('development') ? 'Dev' : process.env.REACT_APP_ENV === 'production-manual' ? 'Live' : ''}</p>
               <h1>Orders</h1>
@@ -203,8 +203,8 @@ const NavBar = () => {
         </div>
         <div className={`logo-links desktop ${process.env.REACT_APP_ENV}`}>
           <div className="logo-container">
-            <a href={logoLink}><Logo /></a>
-            {/* <a href={process.env.REACT_APP_HOME}><img className="logo" src={nCompassLogo} alt="logo" /></a> */}
+            {/* <a href={logoLink}><Logo /></a> */}
+            <a href={logoLink}><img className="logo" src={campSwimLogo} alt="logo" /></a>
             <div className='logo-subheading'>
               <p className={`dev-or-live ${process.env.REACT_APP_ENV}`}>{process.env.REACT_APP_ENV.includes('development') ? 'Dev' : process.env.REACT_APP_ENV === 'production-manual' ? 'Live' : ''}</p>
               <h1>Orders</h1>

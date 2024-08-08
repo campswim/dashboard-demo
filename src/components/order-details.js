@@ -6,6 +6,7 @@ import formatCurrency from '../hooks/format-currency';
 const OrderDetails = props => {
   const [item, setItem] = useState({});
   const [pastedValue, setPastedValue] = useState(null);
+  const userId = JSON.parse(localStorage.getItem('user')).id;
   const category = props.caller ? Object.keys(props.caller)[0] : null;
   const caller = props.caller ? Object.values(props.caller)[0] : null;
   const editableFields = {
@@ -116,13 +117,13 @@ const OrderDetails = props => {
                     : detail[0] === 'Role' ?
                     (
                       <>
-                        <p className={props.getClassNamesFor(detail[0])}>{formatHeaders(detail[0])}</p>
-                        <div className='editable select-container' id={`select-role-${key}`} name='role'>
+                        <p className={props.getClassNamesFor(detail[0], item.Id)}>{formatHeaders(detail[0])}</p>
+                        <div className={item.Id !== userId ? 'editable select-container' : 'select-container'} id={`select-role-${key}`} name='role'>
                           <p 
                             className='role-option default' 
                             id={`user-role-${key}`}
                             data-default-value={detail[1]}
-                            onClick={() => props.toggleSelect(key)}
+                            onClick={() => props.toggleSelect(key, item.Id, 'modal')}
                           >
                             {detail[1]}
                           </p>

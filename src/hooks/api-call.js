@@ -15,6 +15,7 @@ export default async function apiCall(operation, query, variables, token) {
   const options = {
     method: 'POST',
     url: url,
+    // url: 'https://dashboard-api-ncompass-demo-f3b2c0dc9f7c.herokuapp.com/graphql/',
     data: JSON.stringify(graphQlQuery),
     headers: {
       'Content-Type': 'application/json',

@@ -122,8 +122,8 @@ export default class User {
   async updateUser(operation, id, column, value) {
     const query = `mutation ${operation}($id: ID!, $column: String!, $newValue: String!) {${operation}(id: $id, column: $column, newValue: $newValue) {${column} Error}}`;
     const variables = {
-      id: id,
-      column: column,
+      id,
+      column,
       newValue: value
     };
     

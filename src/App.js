@@ -4,8 +4,8 @@ import Footer from './components/footer';
 import { checkDbConnection } from './hooks/get-dashboard';
 
 const App = () => {
-  const [connected, setConnected] = useState(true);
-
+  const [connected, setConnected] = useState(false);
+  
   // Check whether the API is running.
   useEffect(() => {
     let mounted = true;

@@ -33,17 +33,16 @@ const Users = (props) => {
   const clickCount = useRef(0);
   const prevElement = useRef('');
   const dataType = useRef({}); // => dataType.current = {ColumnName, DataType, MaxLength}
-  const changeDate = useRef('');
   const updated = useRef(false);
-  const user = new User();
+  const user = new User(JSON.parse(localStorage.getItem('user')).id);
   let tableHeaders = props.users.length > 0 ? Object.keys(props.users[0]) : [], formattedHeaders = [];
   let { items, requestSort, sortConfig } = useSort(users, 'users');
-  const getClassNamesFor = useCallback(name => {
+  const getClassNamesFor = useCallback((name, itemId) => {    
     if (!sortConfig) return;
-    let className = 'Name' === name || 'Role' === name ? 'header-editable' : '';
+    let className = 'Name' === name || ('Role' === name && itemId !== user.id) ? 'header-editable' : '';
     className = sortConfig.key === name ? sortConfig.direction + ' ' + className : className;
     return className ? className : undefined;
-  }, [sortConfig]);
+  }, [sortConfig, user.id]);
 
   // Format the table headers.
   if (tableHeaders.length > 0) {
@@ -198,7 +197,7 @@ const Users = (props) => {
     const newValue = 'Role' !== column ? event?.target?.textContent : event?.target?.textContent;
     const table = 'Users';
     const element = 'Role' !== column ? document.getElementById(`${column}-${row}`) : null;
-
+    
     if (prevValue === newValue) {
       if (element) element.removeAttribute('contentEditable');
       return;
@@ -207,7 +206,7 @@ const Users = (props) => {
     // Get the column's configuration from the DB.
     if (table && column) {
       getType(table, column).then(
-        res => {
+        res => {          
           dataType.current = res;
 
           // Check the input against type and length.
@@ -268,7 +267,24 @@ const Users = (props) => {
   };
 
   // Toggle the roles' dropdown menu.
-  const toggleSelect = (key) => {
+  const toggleSelect = (key, itemId, caller) => {
+    if (caller === 'modal') return;
+    if (itemId === user.id) {
+      const cellId = `select-role-${key}`;
+      const elementId = `user-role-${key}`;
+      const chosenCell = document.getElementById(cellId);
+      const cellValue = document.getElementById(elementId);
+      const role = cellValue.innerHTML;
+
+      chosenCell.style.maxWidth = '3rem';
+      cellValue.innerHTML = '<p style="color:orange; font-weight:bolder; white-space:pre-wrap">You can\'t change your own role.</p>';
+
+      setTimeout(() => {
+        cellValue.innerHTML = role; 
+      }, 2000);
+      return;
+    }
+
     const options = document.getElementById(`select-role-${key}`).children;
 
     if (options) {
@@ -290,7 +306,7 @@ const Users = (props) => {
   const handleRoleSelect = (event, idx, key, item, caller) => {
     const roleName = event.target.textContent;
     const options = document.getElementById(`select-role-${key}`).children;
-
+    
     if (options) {
       Object.values(options).forEach(option => {
         if (option.id) {
@@ -359,7 +375,9 @@ const Users = (props) => {
                       element.classList.toggle('edited');
                       updated.current = true;
 
-                      if ('Role' === newValue.column) props.recall(); // Recall the API to get the right user tabs after a role change.
+                      if ('Role' === newValue.column) {
+                        props.recall(); // Recall the API to get the right user tabs after a role change.
+                      }
                     }, 2000);
                   }
 
@@ -367,8 +385,6 @@ const Users = (props) => {
                   logChange('Users', newValue.rowName, newValue.column, newValue.id, newValue.prevValue, newValue.newValue, valueType).then(
                     res => {
                       if (res.data) {
-                        const changeDateTime = res.data?.logChange?.DateTime;
-                        changeDate.current = changeDateTime;
                         setNewValue({}); 
                       } else if (res.errors) {
                         console.error(res.errors);
@@ -796,12 +812,12 @@ const Users = (props) => {
                     {item.Name}
                   </td>
                   <td className='desktop'>{item.Email}</td>
-                  <td className='editable select-container' id={`select-role-${key}`} name='role'>
+                  <td className={item.Id !== user.id ? 'editable select-container' : 'select-container'} id={`select-role-${key}`} name='role'>
                     <p 
                       className='role-option default' 
                       id={`user-role-${key}`}
                       data-default-value={item.Role}
-                      onClick={() => toggleSelect(key)}
+                      onClick={() => toggleSelect(key, item.Id)}
                     >
                       {roleName && parseInt(roleName.key) === key ? roleName.roleName : item.Role}
                     </p>

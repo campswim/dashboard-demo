@@ -40,11 +40,11 @@
       }
       
       .logo {
-        width: 20rem;
+        width: 5rem;
         height: auto;
-        position: absolute;
-        bottom: -5rem;
-        left: -4rem;
+        // position: relative;
+        // bottom: -5rem;
+        // left: -4rem;
 
         a:hover {
           -webkit-transition: all 500ms ease;
@@ -253,7 +253,7 @@
   }
 }
 
-@media all and (min-width: 1500px) {
+@media all and (min-width: 1600px) {
   .navbar{
     .logo-links.desktop {
       .links-container {

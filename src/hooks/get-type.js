@@ -2,7 +2,6 @@ import apiCall from './api-call';
 
 export default async function getType(table, column) {  
   if (!column) return;
-
   const operation = 'getType';
   const query = `query ${operation}($table: String!, $column: String!) {${operation}(table: $table, column: $column) {ColumnName DataType MaxLength}}`;
   const variables = { table, column };
@@ -25,7 +24,7 @@ export default async function getType(table, column) {
   };
 
   return await apiCall(operation, query, variables).then(
-    res => { // res.data.getType => { ColumnName, DataType, MaxLength }
+    res => { // res.data.getType => { ColumnName, DataType, MaxLength }      
       if (res.data) {
         const columnConfig = res.data?.getType;
         const type = typeMap[columnConfig.DataType];
