@@ -18,7 +18,6 @@ const UnPulled = props => {
   const [activeLink, setActiveLink] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
   const [toggleShorterError, setToggleShorterError] = useState(false);
-  // const [shortenDates, setShortenDates] = useState(false);
   const [orderDetails, setOrderDetails] = useState({});
   const [showDetails, setShowDetails] = useState(false);
   const [vpWidth, setVpWidth] = useState(window.innerWidth);
@@ -189,14 +188,10 @@ const UnPulled = props => {
   
   // Update the vpWidth variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
       const handleResize = () => {
         setVpWidth(window.innerWidth);
       };
       return () => window.addEventListener('resize', handleResize);
-    }
-    return () => mounted = false;
   }, [vpWidth]);
   
   // Determine the width of the browser window and set toggles accordingly.

@@ -39,7 +39,7 @@ const OrderDetails = props => {
 			{/* The order in the CRM */}
 			<div className='order-view-container desktop'>
 				<div className='order-view-header'>
-					<h3>Order {props.orderId} in Exigo</h3>
+					<h3>Order {props.orderId} in the CRM</h3>
 					<div className="order-view-summary">
 						<table className="order-summary-table-1">
 							<thead>
@@ -118,7 +118,7 @@ const OrderDetails = props => {
 			{/* The order in the ERP */}
 			<div className='order-view-container desktop'>
 				<div className='order-view-header'>
-					<h3>Order {props.orderId} in Business Central</h3>
+					<h3>Order {props.orderId} in the ERP</h3>
 					<div className="order-view-summary">
 						<table className="order-summary-table-1">
 							<thead>
@@ -157,7 +157,7 @@ const OrderDetails = props => {
 			{ /* Display the table vertically for mobile. */ }
 			<div className='order-view-container mobile'>
 				<div className='order-view-header'>
-					<h3>Order {props.orderId} in Exigo</h3>
+					<h3>Order {props.orderId} in the CRM</h3>
 					<div className="order-view-summary">
 						<table>
 							<thead>
@@ -181,7 +181,7 @@ const OrderDetails = props => {
 			</div>
 			<div className='order-view-container mobile'>
 				<div className='order-view-header'>
-					<h3>Order {props.orderId} in Exigo</h3>
+					<h3>Order {props.orderId} in the ERP</h3>
 					<div className="order-view-summary">
 						<table>
 							<thead>

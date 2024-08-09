@@ -35,7 +35,7 @@ const FailedOrders = () => {
   const [ignoredOrdersTab, setIgnoredOrdersTab] = useState('inactive-button');
   const restrictedActions = useRef(loggedInUser?.restrictions?.actions);
 
-  const recallApi = newQuery => {
+  const recallApi = newQuery => {    
     if (newQuery === query) setQuery('');
     if (newQuery !== query) setQuery(newQuery);
   };

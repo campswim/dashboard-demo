@@ -63,7 +63,7 @@ const OrderView = props => {
     if (mounted) {
       if (orderId) {
         getOrderDetails(orderId).then(
-          res => {            
+          res => {                        
             const orderObject = res?.data?.orderDetails;
             
             if (orderObject) {
@@ -93,9 +93,9 @@ const OrderView = props => {
 
               setIsLoaded(true);
               setNewOrderNum(false);
-            } else { // The order hasn't been staged, so check if it's stuck in the CRM for some reason.
+            } else { // The order hasn't been staged, so check if it's stuck in the CRM for some reason.              
               getCrmOrderDetails(orderId).then(
-                res => {
+                res => {                  
                   const orderObject = res?.data?.getCrmOrderDetails;
 
                   if (orderObject) { // The order exists in the CRM but failed the attempt to pull it into staging.

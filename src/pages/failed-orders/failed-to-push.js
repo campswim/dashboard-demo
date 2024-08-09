@@ -222,8 +222,8 @@ const FailedToPush = (props) => {
   // Determine the width of the browser window and set toggles accordingly.
   useLayoutEffect(() => {
     let mounted = true;
-    const handleResize = () => setWidth(window.innerWidth);
     if (mounted) {
+      const handleResize = () => setWidth(window.innerWidth);
       // if (width < 1280) setShortenDates(true);
       setChars(width < 768 ? 7 : width < 1023 ? 24 : width < 1280 ? 48 : 999);  
       window.onresize = handleResize;
@@ -427,7 +427,16 @@ const FailedToPush = (props) => {
                     )
                     :
                     (
-                      item.OrderNumber ? item.OrderNumber : 'None'
+                      <Link
+                        to={{
+                          pathname: '/order-summary',
+                          state: {
+                            order: item.OrderNumber
+                          },
+                        }}
+                      >
+                        {item.OrderNumber}
+                      </Link>
                     )}
                   </td>
                   <td className="reduceable-td desktop">{item.Market ? item.Market : 'N/A'}</td>

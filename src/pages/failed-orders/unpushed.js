@@ -204,14 +204,10 @@ const UnPushed = (props) => {
   
   // Update the vpWidth variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
       const handleResize = () => {
         setVpWidth(window.innerWidth);
       };
       window.addEventListener('resize', handleResize)
-    }
-    return () => mounted = false;
   }, [vpWidth]);
   
   // Determine the width of the browser window and set toggles accordingly.
@@ -431,7 +427,16 @@ const UnPushed = (props) => {
                     )
                     :
                     (
-                      item.OrderNumber ? item.OrderNumber : 'None'
+                      <Link
+                        to={{
+                          pathname: '/order-summary',
+                          state: {
+                            order: item.OrderNumber
+                          },
+                        }}
+                      >
+                        {item.OrderNumber}
+                      </Link>
                     )}
                   </td>
                   <td className="reduceable-td desktop">{item.Market ? item.Market : 'N/A'}</td>

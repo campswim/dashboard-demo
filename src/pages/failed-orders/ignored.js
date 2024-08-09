@@ -152,13 +152,9 @@ const Ignored = props => {
 
   // Delay the loading message by a second to avoid flashes of the screen when the loading is quick but not enough to trick the eye.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      setTimeout(() => {
-        setDelayed(false);
-      }, 300);
-    }
-    return () => mounted = false;
+    return () => setTimeout(() => {
+      setDelayed(false);
+    }, 300);
   });
 
   // Hide the message of the action's result after a new tab has been chosen.
@@ -196,14 +192,10 @@ const Ignored = props => {
   
   // Update the vpWidth and vpHeight variables.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
       const handleResize = () => {
         setVpWidth(window.innerWidth);
       };
       window.addEventListener('resize', handleResize)
-    }
-    return () => mounted = false;
   }, [vpWidth]);
 
   // Determine the width of the browser window and set toggles accordingly.
@@ -226,7 +218,7 @@ const Ignored = props => {
 
     return () => mounted = false;
   }, [width, items, chars]);
-  
+    
   return props.error ? 
   (
     <div className="signin-error">{props.error.message}</div>
@@ -265,15 +257,22 @@ const Ignored = props => {
         ) : (
           null
         )}
-        {props.callerId === 'ignored' ? (
-          !error ? (
-            props.order ? (
-              showMessage.current && props.action && !activeLink && (props.action === 'Unignore') ? (
-                typeof props.order === 'number' || props.order.length === 1 ? (
+        {props.callerId === 'ignored' ? 
+        (
+          !error ? 
+          (
+            props.order ? 
+            (
+              showMessage.current && props.action && !activeLink && (props.action === 'Unignore') ? 
+              (
+                typeof props.order === 'number' || props.order.length === 1 ? 
+                (
                   <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                     <p>Order {props.order} has been {message(props.action)}.</p>
                   </div>
-                ) : (
+                ) 
+                : 
+                (
                   <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                     <p>The following orders have been {message(props.action)}:&nbsp;</p>
                     <div className='orders-in-array'>
@@ -294,21 +293,31 @@ const Ignored = props => {
                     </div>
                   </div>
                 )
-              ) : (
+              ) 
+              : 
+              (
                 null
               )
-            ) : (
+            ) 
+            : 
+            (
               null
             )
-          ) : (
-            props.order ? (
-              typeof props.order === 'number' || props.order.length === 1 ? (
+          ) 
+          : 
+          (
+            props.order ? 
+            (
+              typeof props.order === 'number' || props.order.length === 1 ? 
+              (
                 <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                   <p>The following error occurred when order {props.order} was {message(props.action)}: {error}.</p>
                 </div>
-              ) : (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
+              ) 
+              : 
+              (
+                <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                  <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
                   <div className='orders-in-array'>
                     {props.order.map((id, key) => (
                       props.order.length === 1 ? 
@@ -327,11 +336,15 @@ const Ignored = props => {
                   </div>
                 </div>
               )
-            ) : (
+            ) 
+            : 
+            (
               null
             )
           )
-        ) : (
+        ) 
+        : 
+        (
           null
         )}
       </div>
@@ -373,7 +386,7 @@ const Ignored = props => {
                 )
                 :
                 (
-                    <th
+                  <th
                     key={key}
                     onClick={() => requestSort(header.split(' ').join(''))}
                     className={getClassNamesFor(header.split(' ').join(''))}
@@ -414,10 +427,19 @@ const Ignored = props => {
                   )
                   :
                   (
-                    item.OrderNumber ? item.OrderNumber : 'None'
-                  )}
+                    <Link
+                    to={{
+                      pathname: '/order-summary',
+                      state: {
+                        order: item.OrderNumber
+                      },
+                    }}
+                  >
+                    {item.OrderNumber}
+                  </Link>
+              )}
                 </td>
-                <td className="order-date desktop">{new Date(parseInt(item.OrderDate)).toISOString().split('T')[0]}</td>
+                <td className="order-date desktop">{item.OrderDate ? new Date(parseInt(item.OrderDate)).toISOString().split('T')[0] : 'N/A'}</td>
                 <td>{formatCurrency(item.OrderTotal, item.CurrencyCode)}</td>
                 <td className="unpushed-error-message desktop">
                   <span className={`error-message ${noLink}`} title={item.Message.length > chars ? "Click to view the error." : null} onClick={item.Message.length > chars ? showError : null} name={item.OrderNumber}>
