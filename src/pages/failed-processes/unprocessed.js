@@ -73,7 +73,7 @@ const Unprocessed = props => {
         if (path === 'dismissJobError') dismissedCount.current = isChecked.length;
         
         userAction('failedProcesses', path, isChecked).then(
-          res => {
+          res => {            
             if (res?.data && res.data[path]) {
               setError(null);
               

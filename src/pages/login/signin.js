@@ -3,8 +3,8 @@ import {  Redirect } from 'react-router-dom';
 import User from '../../hooks/get-user';
 
 const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
-  const [username, setUsername] = useState(profile && profile.email ? profile.email : '');
-  const [password, setPassword] = useState(profile && profile.password ? profile.password : '');
+  const [username, setUsername] = useState(profile && profile.email ? profile.email : 'demo@demo.demo');
+  const [password, setPassword] = useState(profile && profile.password ? profile.password : 'demo');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [id, setId] = useState('');
   const [name, setName] = useState([]);

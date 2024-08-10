@@ -30,8 +30,8 @@ export async function getOrders(query) { // Used by the failed-orders page to po
 }
 
 export async function getUnpushedOrders(status) { // Used by the home page's "Staged Orders" section to populate the Unpushed, Failed Pushes, and Ingored Pushes cards.
-  const operation = status;
-  const query = `query ${operation} {${operation} {Market, OrderTotalAmount, PushStatusId, Error}}`;
+  const operation = status;  
+  const query = `query ${operation} {${operation} {Type, Market, OrderTotalAmount, Count, Error}}`;
   const variables = { status };
   const result = await apiCall(operation, query, variables).then(
     res => { return res; },

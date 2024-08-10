@@ -31,45 +31,50 @@ const StagedOrders = props => {
               setApiError(error);
             } else {
               let unpushedArray = [], failedPushArray = [], ignoredOrdersArray = [], toReturn = [];
-              let unpushedObject = {}, failedPushObject = {}, ignoredOrdersObject = {};
+              // let unpushedObject = {}, failedPushObject = {}, ignoredOrdersObject = {};
               
               if (results) {
                 results.forEach(order => {
-                  if (null === order.PushStatusId) unpushedArray.push(order);
-                  else if (order.PushStatusId === 2) failedPushArray.push(order);
-                  else if (order.PushStatusId === 3) ignoredOrdersArray.push(order);
+                  if (order.Type === 'Unpushed') unpushedArray.push(order);
+                  else if (order.Type === 'Push Failed') failedPushArray.push(order);
+                  else if (order.Type === 'Ignored') ignoredOrdersArray.push(order);
                 });
               }
               
               // Set the unpushed orders.
               if (unpushedArray) {
-                unpushedArray.forEach(order => {
-                  if (!unpushedObject[order.Market]) unpushedObject[order.Market] = { orderCount: 1, totalAmount: order.OrderTotalAmount };
-                  else {
-                    const count = unpushedObject[order.Market].orderCount;
-                    const total = unpushedObject[order.Market].totalAmount;
-                    unpushedObject[order.Market] = { orderCount: count + 1, totalAmount: total + order.OrderTotalAmount };
-                  }
+                unpushedArray.forEach(val => {
+                  toReturn.push({market: val.Market, orderCount: val.Count, totalAmount: val.OrderTotalAmount });
                 });
-                Object.keys(unpushedObject).forEach(key => toReturn.push({market: key, orderCount: unpushedObject[key].orderCount, totalAmount: unpushedObject[key].totalAmount}));
+
                 setUnpushed(toReturn);
                 setUnpushedError(null);
                 toReturn = [];
                 setUnpushedIsLoaded(true);
               }
+
+              // if (unpushedArray) {
+              //   unpushedArray.forEach(order => {        
+              //     if (!unpushedObject[order.Market]) unpushedObject[order.Market] = { orderCount: 1, totalAmount: order.OrderTotalAmount };
+              //     else {
+              //       const count = unpushedObject[order.Market].orderCount;
+              //       const total = unpushedObject[order.Market].totalAmount;
+              //       unpushedObject[order.Market] = { orderCount: count + 1, totalAmount: total + order.OrderTotalAmount };
+              //     }
+              //   });
+              //   Object.keys(unpushedObject).forEach(key => toReturn.push({market: key, orderCount: unpushedObject[key].orderCount, totalAmount: unpushedObject[key].totalAmount}));
+              //   setUnpushed(toReturn);
+              //   setUnpushedError(null);
+              //   toReturn = [];
+              //   setUnpushedIsLoaded(true);
+              // }
               
               // Set the failed-push orders.
               if (failedPushArray) {
-                failedPushArray.forEach(order => {
-                  if (!failedPushObject[order.Market]) failedPushObject[order.Market] = { orderCount: 1, totalAmount: order.OrderTotalAmount };
-                  else {
-                    let count = failedPushObject[order.Market].orderCount;
-                    let total = failedPushObject[order.Market].totalAmount;
-                    failedPushObject[order.Market] = { orderCount: count + 1, totalAmount: total + order.OrderTotalAmount };
-                  }
+                failedPushArray.forEach(val => {
+                  toReturn.push({market: val.Market, orderCount: val.Count, totalAmount: val.OrderTotalAmount });
                 });
-                
-                Object.keys(failedPushObject).forEach(key => toReturn.push({market: key, orderCount: failedPushObject[key].orderCount, totalAmount: failedPushObject[key].totalAmount}));
+
                 setFailedPushes(toReturn);
                 setFailedPushesError(null);
                 toReturn = [];
@@ -78,16 +83,9 @@ const StagedOrders = props => {
               
               // Set the ingored orders.
               if (ignoredOrdersArray) {
-                ignoredOrdersArray.forEach(order => {
-                  if (!ignoredOrdersObject[order.Market]) ignoredOrdersObject[order.Market] = { orderCount: 1, totalAmount: order.OrderTotalAmount };
-                  else {
-                    let count = ignoredOrdersObject[order.Market].orderCount;
-                    let total = ignoredOrdersObject[order.Market].totalAmount;
-                    ignoredOrdersObject[order.Market] = { orderCount: count + 1, totalAmount: total + order.OrderTotalAmount };
-                  }
+                ignoredOrdersArray.forEach(val => {
+                  toReturn.push({market: val.Market, orderCount: val.Count, totalAmount: val.OrderTotalAmount });
                 });
-                
-                Object.keys(ignoredOrdersObject).forEach(key => toReturn.push({market: key, orderCount: ignoredOrdersObject[key].orderCount, totalAmount: ignoredOrdersObject[key].totalAmount}));
                 setIgnored(toReturn);
                 setIgnoredError(null);
                 toReturn = [];

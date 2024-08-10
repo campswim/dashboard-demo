@@ -98,8 +98,6 @@ const SettingsPage = () => {
     return () => mounted = false;
   }, []);
   
-  console.log({error});
-
   return !loggedIn ?
   (
     <Redirect to={
