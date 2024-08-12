@@ -52,10 +52,20 @@ const UnPulled = props => {
         userAction('unpulled', path, isChecked).then(
           res => {
             if (res) {              
-              setResponse(res.data[path]);
-              setStatus(res.status);
-              setError(null);
-              showMessage.current = true;
+              const data = res?.data[path];
+
+              if (data) {
+                if (Array.isArray(data)) {
+                  if (data[0].Message) {
+                    setError(data[0].Message);
+                  } else {
+                    setResponse(res.data[path]);
+                    setStatus(res.status);
+                    setError(null);
+                    showMessage.current = true;
+                  }
+                }
+              }
             }
           },
           err => {
@@ -95,7 +105,9 @@ const UnPulled = props => {
   const message = (action) => {
     let pastTenseVerb = null;
     if (action) {
-      if (action === 'Repull') pastTenseVerb = 'repulled';
+      if (action === 'Repull') {
+        pastTenseVerb = 'repulled';
+      }
       if (action === 'RepullAllowMismatch')
         pastTenseVerb = 'repulled with mismatch';
       if (action === 'Ignore') pastTenseVerb = 'ignored';
@@ -214,7 +226,7 @@ const UnPulled = props => {
     }
     return () => mounted = false;
   }, [width]);
-  
+    
   return props.getQuery === 'failedPulls' ?
   ( 
     props.error ? 
@@ -256,7 +268,7 @@ const UnPulled = props => {
                 showMessage.current && props.action && !activeLink && props.restrictedActions !== 'All' && (props.action === 'Repull' || props.action === 'Ignore' || props.action === 'Delete') ? 
                 (
                   typeof props.order === 'number' || props.order.length === 1 ? 
-                  (
+                  ( 
                     <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
                       <p>Order {props.order} has been {message(props.action)}.</p>
                     </div>

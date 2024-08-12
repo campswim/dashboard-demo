@@ -53,12 +53,22 @@ const FailedToPush = (props) => {
       if (path) {
         userAction('unpushed', path, isChecked)
         .then(
-          res => {
+          res => {            
             if (res) {
-              setResponse(res.data[path]);
-              setStatus(res.status);
-              setError(null);
-              showMessage.current = true;
+              const data = res?.data[path];
+              
+              if (data) {
+                if (Array.isArray(data) && data.length > 0) {
+                  if (data[0].Message) {
+                    setError(data[0].Message);
+                  } else {
+                    setResponse(res.data[path]);
+                    setStatus(res.status);
+                    setError(null);
+                    showMessage.current = true;
+                  }
+                }
+              }
             }
           },
           err => {

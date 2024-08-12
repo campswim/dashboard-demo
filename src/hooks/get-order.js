@@ -43,12 +43,13 @@ export async function getUnpushedOrders(status) { // Used by the home page's "St
 
 export async function userAction(tab, operation, ids) {
   if (!operation || !ids) return;
+  const mode = process.env.REACT_APP_MODE;
 
   const query = 
     tab === 'unpushed' ? 
-      `mutation ${operation}($ids: [String]!) {${operation}(ids: $ids) {OrderNumber}}` : 
+      `mutation ${operation}($ids: [String]!, $mode: String) {${operation}(ids: $ids, mode: $mode) {OrderNumber, Message}}` : 
     tab === 'unpulled' ? 
-      `mutation ${operation}($ids: [String]!) {${operation}(ids: $ids) {Id, OrderNumber, OrderDate, OrderTotal, CurrencyCode, Message, At, IgnoredAt, Exception}}` : 
+      `mutation ${operation}($ids: [String]!, $mode: String) {${operation}(ids: $ids, mode: $mode) {Id, OrderNumber, OrderDate, OrderTotal, CurrencyCode, Message, At, IgnoredAt, Exception}}` : 
     tab === 'ignored' ? 
       `mutation ${operation}($ids: [IgnoredObject]!) {${operation}(ids: $ids) {OrderNumber}}` :
     tab === 'failedPayments' ?
@@ -56,7 +57,7 @@ export async function userAction(tab, operation, ids) {
     tab === 'failedProcesses' ?
       `mutation ${operation}($ids: [ID]!) {${operation}(ids: $ids) {Id, DismissedAt, DismissedBy}}` : 
     '';
-  const variables = { ids };
+  const variables = tab === 'unpulled' || tab === 'unpushed' ? { ids, mode } : { ids };
 
   return await apiCall(operation, query, variables).then(
     res => res,
