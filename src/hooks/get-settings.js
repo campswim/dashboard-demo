@@ -19,7 +19,9 @@ export async function updateSettings(path, name, column, newValue) {
   let query = `mutation ${path}Update($id: ID!, $column: String!, $newValue: String) {${path}Update(id: $id, column: $column, newValue: $newValue)`;
   if (path === 'params') query += `{Name${column !== 'Name' ? ' ' + column : '' } ValueTypeId EnabledDate Error {message}}}`;
   else if (path === 'maps') query += `{Id ${column} Error {message}}}`;
+
   const variables = { id: name, column: column, newValue };
+
   return await apiCall(operation, query, variables).then(
     res => res,
     err => console.error(err)

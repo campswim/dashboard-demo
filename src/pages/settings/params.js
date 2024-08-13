@@ -244,6 +244,7 @@ const Params = props => {
 
       if (JSON.stringify(newValue) !== '{}' && !updated.current) {
         // Get the parameter's previous value.
+
         getParamByName(newValue.id).then(
           res => {
             const prevEnabledDate = res?.getParamByName?.EnabledDate;
@@ -314,16 +315,18 @@ const Params = props => {
                     element.setAttribute('style', 'color:red; white-space:pre-wrap');
                   }
                 } else { // Special logging for the date-enabled column.
-                  if (newValue.column === 'EnabledDate' & !paramByNameError) {                    
-                    logChange('AppParams', newValue.id, newValue.column, userId, prevEnabledDate ? new Date(parseInt(prevEnabledDate)).toISOString() : null, enabledDate ? new Date(parseInt(enabledDate)).toISOString() : null, 8).then(
-                      res => {
-                        const changeDateTime = res?.logChange?.DateTime;
-                        changeDate.current = changeDateTime;
-                      },
-                      err => { console.error({err}); }
-                    );
-                  } else {
-                    console.error({paramByNameError});
+                  if (newValue.column === 'EnabledDate') {
+                    if (!paramByNameError) {
+                      logChange('AppParams', newValue.id, newValue.column, userId, prevEnabledDate ? new Date(parseInt(prevEnabledDate)).toISOString() : null, enabledDate ? new Date(parseInt(enabledDate)).toISOString() : null, 8).then(
+                        res => {
+                          const changeDateTime = res?.logChange?.DateTime;
+                          changeDate.current = changeDateTime;
+                        },
+                        err => { console.error({err}); }
+                      );
+                    } else {
+                      console.error({paramByNameError});   
+                    } 
                   }
                 }
               },
@@ -346,7 +349,7 @@ const Params = props => {
     }
     return () => mounted = false;
   });
-    
+  
   return props.error ? 
   ( 
     <div className="signin-error">{props.error.message}</div> 
