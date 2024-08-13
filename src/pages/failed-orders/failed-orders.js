@@ -29,8 +29,8 @@ const FailedOrders = () => {
   const [loggedIn, setloggedIn] = useState(localStorage.getItem('loggedIn') ? parseInt(localStorage.getItem('loggedIn')) : 0);
   const [loggedInUser, setLoggedInUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [failedToPullTab, setFailedToPullTab] = useState('active-button');
-  const [unpushedTab, setUnpushedTab] = useState('inactive-button');
+  const [unpushedTab, setUnpushedTab] = useState('active-button');
+  const [failedToPullTab, setFailedToPullTab] = useState('inactive-button');
   const [failedToPushTab, setFailedToPushTab] = useState('inactive-button');
   const [ignoredOrdersTab, setIgnoredOrdersTab] = useState('inactive-button');
   const restrictedActions = useRef(loggedInUser?.restrictions?.actions);
