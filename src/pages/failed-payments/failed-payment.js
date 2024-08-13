@@ -28,7 +28,8 @@ const FailedPayment = props => {
   const messageRef = useRef(null);
   const click = useRef(false);
   const toggleAll = useRef(0);
-  const dismissedCount = useRef(0);
+  const dismissedCount = useRef({});
+  const dismissedTabs = useRef([]);
   const queryPath = useRef('');
   const itemsFiltered = useRef([]);
 
@@ -58,7 +59,7 @@ const FailedPayment = props => {
   };
   
   // Handles the action chosen by the user.
-  const takeAction = (path, item) => {    
+  const takeAction = (path, item) => {
     //Store a flag in storage to indicate that a new action has been initiated.
     sessionStorage.setItem('action', true);
     queryPath.current = path;
@@ -69,11 +70,6 @@ const FailedPayment = props => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (isChecked.length > 0) {
       if (path) {
-        if (activeTabCount === isChecked.length) {
-          if (path === 'reinstatePaymentError') dismissedCount.current = 0;
-        }
-        if (path === 'dismissPaymentError') dismissedCount.current = isChecked.length;
-        
         userAction('failedPayments', path, isChecked).then(
           res => {
             if (res?.data[path]) {
@@ -81,7 +77,7 @@ const FailedPayment = props => {
 
               setError(null);
               
-              if (path === 'reinstatePaymentError') { // Turned off.
+              if (path === 'reinstatePaymentError') {
                 item.forEach(id => {
                   const dismissedAtTableCell = document.getElementById(`${id}-dismissed-at`);
                   const dismissedByTableCell = document.getElementById(`${id}-dismissed-by`);
@@ -90,10 +86,11 @@ const FailedPayment = props => {
                   dismissedByTableCell.textContent = 'N/A';
                 });
 
-                dismissedCount.current = dismissedCount.current - res.data[path].length;
+                dismissedCount.current = dismissedCount.current - result.length;
+
                 props.reload(props.activeTab);
               } else if (path === 'dismissPaymentError') { // No longer displaying dismissed by or at, because it can't be reinstated.
-                item.forEach(id => {
+                item.forEach(id => {                  
                   const dismissedAtTableCell = document.getElementById(`${id}-dismissed-at`);
                   const dismissedByTableCell = document.getElementById(`${id}-dismissed-by`);
                   const dismissed = result.filter(item => item.PaymentId === id);
@@ -102,7 +99,7 @@ const FailedPayment = props => {
                   dismissedByTableCell.textContent = dismissed[0].DismissedBy;
                 })
 
-                dismissedCount.current = dismissedCount.current + res.data[path].length;
+                dismissedCount.current = dismissedCount.current + result.length;
                 props.reload(props.activeTab);
               }
 
@@ -423,12 +420,12 @@ const FailedPayment = props => {
       (
         null
       )}
-      {dismissedCount.current > 0 ? 
+      {dismissedCount.current > 0 && (dismissedTabs.current.includes(activeTab) || activeTab === 'All') ? 
       (
         <div className="toggle-link">
-          <Link to='#' onClick={() => setDisplayDismissed(!displayDismissed)} >
+          <button onClick={() => setDisplayDismissed(!displayDismissed)} >
             {displayDismissed ? 'Hide' : 'Show'} Dismissed Errors
-          </Link>
+          </button>
         </div>
       )
       :
@@ -474,13 +471,13 @@ const FailedPayment = props => {
           props.order && (typeof props.order === 'number' || (Array.isArray(props.order) && props.order?.length === 1)) ? 
           (
             <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-              <p>The processing error of order "{Array.isArray(props.order) ? props.order[0] : props.order}" has been {message(props.action)}.</p>
+              <p>The payment error of order "{Array.isArray(props.order) ? props.order[0] : props.order}" has been {message(props.action)}.</p>
             </div>
           ) 
           : 
           (
             <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-              <p>The following orders' processing errors have been {message(props.action)}:&nbsp;</p>
+              <p>The following orders' payment errors have been {message(props.action)}:&nbsp;</p>
               <div className='orders-in-array'>
                 {props.order ? 
                 (
@@ -660,6 +657,15 @@ const FailedPayment = props => {
         <tbody>
           {items.length > 0 ? (
             itemsFiltered.current.map((item, key) => {
+              if (!key) {
+                dismissedCount.current = 0;
+                dismissedTabs.current = [];
+              }
+              if (item.DismissedAt && item.DismissedBy) {
+                dismissedCount.current += 1;
+                dismissedTabs.current.push(item.PaymentType);
+              }
+
               return formatHeaders(item.PaymentType) === formatHeaders(activeTab) || activeTab === 'All' ? 
               (
                 <tr key={key} className={!displayDismissed && item.DismissedAt ? 'hide-dismissed' : '' }>

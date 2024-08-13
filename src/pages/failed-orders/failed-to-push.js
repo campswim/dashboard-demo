@@ -54,9 +54,9 @@ const FailedToPush = (props) => {
         userAction('unpushed', path, isChecked)
         .then(
           res => {            
-            if (res) {
+            if (res) {              
               const data = res?.data[path];
-              
+
               if (data) {
                 if (Array.isArray(data) && data.length > 0) {
                   if (data[0].Message) {
