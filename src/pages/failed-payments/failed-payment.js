@@ -247,14 +247,14 @@ const FailedPayment = props => {
     let mounted = true;
     if (mounted) {
       if (props && props.payments) {        
-        props.payments.forEach(type => {
-          let paymentType = type.PaymentType.split(' ').join('');
+        props.payments.forEach(type => {          
+          let paymentType = type.PaymentType.split(' ').join('');          
           const parenthetical = paymentType.includes('(') ? paymentType.split('(')[1] : '';          
           
           paymentType = formatHeaders(paymentType.split('(')[0]);
           paymentType += parenthetical ? ` (${parenthetical}` : '';
-          
-          if (!jobNamesUnique.includes(paymentType)) setJobNamesUnique([...jobNamesUnique, paymentType]);
+                  
+          if (!jobNamesUnique.includes(paymentType)) setJobNamesUnique([...jobNamesUnique, paymentType]);          
         });
       }
     }
@@ -392,7 +392,7 @@ const FailedPayment = props => {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
     }
   });
-
+  
   return props.error ?
   (
     <div className="signin-error">{props.error.message}</div>

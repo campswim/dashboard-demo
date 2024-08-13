@@ -31,7 +31,7 @@ const FailedProcesses = () => {
     let mounted = true;
     if (mounted) {
       const operation = 'getAllProcessingErrors';
-      const query = `query ${operation} {${operation} {Id Name OrderNumber LineNumber Category ExternalSystem DataDirection At Message Exception AdditionalData DismissedAt DismissedBy}}`;
+      const query = `query ${operation} {${operation} {Id OrderNumber Name LineNumber Category ExternalSystem DataDirection At Message Exception AdditionalData DismissedAt DismissedBy}}`;
       const variables = {};
       
       apiCall(operation, query, variables)

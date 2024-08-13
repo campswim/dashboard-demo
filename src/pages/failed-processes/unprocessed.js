@@ -28,6 +28,7 @@ const Unprocessed = props => {
   const click = useRef(false);
   const toggleAll = useRef(0);
   const dismissedCount = useRef(0);
+  const dismissedTabs = useRef([]);
   const queryPath = useRef('');
 
   // The following two constants handle the sorting algorithm.
@@ -38,7 +39,7 @@ const Unprocessed = props => {
   };
   
   // Format the headers.
-  const headers = items && items.length > 0 ? formatHeaders(Object.keys(items[0]), ['Id', 'Name']) : '';
+  const headers = items && items.length > 0 ? formatHeaders(Object.keys(items[0]), activeTab !== 'All' ? ['Id', 'Name'] : ['Id']) : '';
 
   // Handles the selection and formatting of the page's tabs.
   const handleClick = (event, next) => {
@@ -111,7 +112,7 @@ const Unprocessed = props => {
 
   // Handle the toggling of the select-all checkbox.
   const handleSelectAll = () => {
-    const tabItems = items.filter(item => formatHeaders(item.Name) === formatHeaders(activeTab));
+    const tabItems = items.filter(item => formatHeaders(item.Name) === formatHeaders(activeTab) || activeTab === 'All');
     const dismissedTabItems = tabItems.filter(item => item.DismissedAt);
     const notDismissedTabItems = tabItems.filter(item => !item.DismissedAt);
     
@@ -246,7 +247,7 @@ const Unprocessed = props => {
         let counter = 0;
 
         props.jobs.forEach(job => {
-          if (formatHeaders(job.Name) === formatHeaders(activeTab)) {
+          if (formatHeaders(job.Name) === formatHeaders(activeTab) || activeTab === 'All') {
             counter++;
           }
         });
@@ -335,7 +336,7 @@ const Unprocessed = props => {
     }
     return () => mounted = false;
   });
-  
+    
   return props.error ?
   (
     <div className="signin-error">{props.error.message}</div>
@@ -350,12 +351,12 @@ const Unprocessed = props => {
       <div className="order-actions unprocessed">
         <Tabs activeTab={activeTab} tabIndex={activeTabIndex} tabs={jobNamesUnique} handleClick={handleClick} caller='unprocessed' />
       </div>
-      {dismissedCount.current > 0 ? 
+      {dismissedCount.current > 0 && (dismissedTabs.current.includes(activeTab) || activeTab === 'All') ? 
       (
         <div className="toggle-link">
-          <Link to='#' onClick={() => setDisplayDismissed(!displayDismissed)} >
+          <button onClick={() => setDisplayDismissed(!displayDismissed)} >
             {displayDismissed ? 'Hide' : 'Show'} Dismissed Errors
-          </Link>
+          </button>
         </div>
       )
       :
@@ -508,7 +509,7 @@ const Unprocessed = props => {
               headers.map((header, key) => (
                 vpWidth < 1280 ?
                 (
-                  header !== 'Line Number' && header !== 'At' & header !== 'Message' && header !== 'Exception' && header !== 'Additional Data' && header !== 'Data Direction' && header !== 'Dismissed By' ?
+                  header !== 'Name' && header !== 'Line Number' && header !== 'At' & header !== 'Message' && header !== 'Exception' && header !== 'Additional Data' && header !== 'Data Direction' && header !== 'Dismissed By' ?
                   (
                     <th
                       key={key}
@@ -542,8 +543,17 @@ const Unprocessed = props => {
         </thead>
         <tbody>
           {items.length > 0 ? (
-            items.map((item, key) => {
-              return formatHeaders(item.Name) === formatHeaders(activeTab) ? 
+            items.map((item, key) => {         
+              if (!key) {
+                dismissedCount.current = 0;
+                dismissedTabs.current = [];
+              }
+              if (item.DismissedAt && item.DismissedBy) {
+                dismissedCount.current += 1;
+                dismissedTabs.current.push(item.Name);
+              }
+
+              return formatHeaders(item.Name) === formatHeaders(activeTab) || activeTab === 'All' ? 
               (
                 <tr key={key} className={!displayDismissed && item.DismissedAt ? 'hide-dismissed' : '' }>
                   {props.restrictedActions && props.restrictedActions === 'All' ?
@@ -575,6 +585,14 @@ const Unprocessed = props => {
                       item.OrderNumber ? item.OrderNumber : 'None'
                     )}
                   </td>
+                  {activeTab === 'All' ? 
+                  (
+                    <td className="job-name desktop">{item.Name ? item.Name : 'N/A'}</td>
+                  )
+                  :
+                  (
+                    null
+                  )}
                   <td className="line-number desktop">{item.LineNumber ? item.LineNumber : 'None'}</td>
                   <td className="order-category">{item.Category ? item.Category : 'None'}</td>
                   <td className="external-system">{item.ExternalSystem}</td>
