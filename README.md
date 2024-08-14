@@ -14,7 +14,7 @@ The order-staging dashboard tracks orders through their full lifecycle, from ori
 1. Front-end
     - URL
       - Local development: `http://localhost:3000/`
-      - Production: `https://campswim-dashboard-demo.netlify.app/login`
+      - Production: `https://campswim-dashboard-demo.netlify.app/`
       - CI/CD deploy: N/A (because Netlify charges to connect a private GitHub repo).
       - Manual deploy:
         - change the "REACT_APP_ENV" in the .env file to "production";
@@ -25,7 +25,7 @@ The order-staging dashboard tracks orders through their full lifecycle, from ori
 2. Back-end
     - URL
       - Local development: `http://localhost:4000/graphql/`
-      - Production endpoint: `https://dashboard-api-ncompass-demo-f3b2c0dc9f7c.herokuapp.com/graphql/`
+      - Production endpoint: on Heroku.
       - CI/CD deploy: Deploys automatically to Heroku on pushes (or PRs) to the main branch.
 
 ## To Run the App Locally
