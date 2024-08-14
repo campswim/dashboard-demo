@@ -27,7 +27,8 @@ const NavBar = () => {
   const [renderMobileLinksModal, setRenderMobileLinksModal] = useState(false);
   const [reRender, setReRender] = useState(false);
   const loggedInUser = useRef(null);
-  const links = useLinks(routes, null, null, handleClick);
+  const restrictedPages = useRef('');
+  const links = useLinks(routes, null, null, handleClick, restrictedPages.current);
   // const siteLocation = window.location.href;
   const logoLink = process.env.REACT_APP_ENV === 'production' ? 
       process.env.REACT_APP_HOME
@@ -151,6 +152,17 @@ const NavBar = () => {
       }
     return () => mounted = false;
   }, [loggedIn]);
+
+  // Hide nav links based on a user's role.
+  useEffect(() => {
+    const userPageRestrictions = loggedInUser.current && typeof loggedInUser.current === 'string' ? JSON.parse(loggedInUser.current).restrictions.pages : loggedInUser.current ? loggedInUser.current.restrictions.pages : null;
+
+    if (userPageRestrictions && userPageRestrictions !== 'None') {
+      restrictedPages.current = userPageRestrictions;
+    } else {
+      restrictedPages.current = '';
+    }
+  });
 
   return (
     <Router>
