@@ -15,9 +15,9 @@ const Tabs = props => {
       });
     }
   });
-  
+    
   // Add "All" to the front of the tabs array for the failed-payments page.
-  if (props?.caller === 'payments' || 'unprocessed') {
+  if (props?.caller === 'payments' || props?.caller === 'unprocessed') {
     if (props.tabs.includes('All')) {
       const index = props.tabs.indexOf('All');
       props.tabs.splice(index, 1);
