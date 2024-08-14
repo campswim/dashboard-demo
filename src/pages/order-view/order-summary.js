@@ -63,7 +63,10 @@ const OrderView = props => {
     if (mounted) {
       if (orderId) {
         getOrderDetails(orderId).then(
-          res => {                        
+          res => {
+
+            console.log({res});
+            
             const orderObject = res?.data?.orderDetails;
             
             if (orderObject) {
@@ -74,6 +77,9 @@ const OrderView = props => {
                 if (pushStatusId) {
                   getPushStatusById(pushStatusId).then(
                     res => {
+
+                      console.log({res});
+
                       const pushStatus = res?.data?.getPushStatusById?.Name;
 
                       if (pushStatus) orderObject.PushStatus = pushStatus;
