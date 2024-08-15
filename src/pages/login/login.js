@@ -13,7 +13,15 @@ const Login = (props) => {
   
   return ( 
     <div className='login-container'>
-      <Signin profile={user ? user : { action: 'Sign In' }} message={state?.message} liftData={props ? props.liftData : ''} liftUser={props.liftUser} clearError={props ? props.error : ''} signedIn={loggedIn} signUp={props.signUp} />
+      <Signin 
+        profile={user ? user : { action: 'Sign In' }} 
+        message={state?.message} 
+        liftData={props ? props.liftData : ''} 
+        liftUser={props.liftUser} 
+        clearError={props ? props.error : ''} 
+        signedIn={loggedIn} 
+        signUp={props.signUp} 
+      />
     </div>
   );
 }

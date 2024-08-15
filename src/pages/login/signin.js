@@ -3,8 +3,11 @@ import {  Redirect } from 'react-router-dom';
 import User from '../../hooks/get-user';
 
 const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
-  const [username, setUsername] = useState(profile && profile.email ? profile.email : 'demo@demo.demo');
-  const [password, setPassword] = useState(profile && profile.password ? profile.password : 'demo');
+
+  console.log({profile});
+
+  const [username, setUsername] = useState(profile && (profile.email || profile.email === '') ? profile.email : 'demo@demo.demo');
+  const [password, setPassword] = useState(profile && (profile.password || profile.password === '') ? profile.password : 'demo');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [id, setId] = useState('');
   const [name, setName] = useState([]);
@@ -69,7 +72,7 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
                   );
                 } else { // Make the API call to validate the user and generate/sign her token.
                   user.signIn().then(
-                    res => {
+                    res => {                      
                       if (res.data) {
                         const userData = res.data?.signin;
                         const error = userData?.Error;

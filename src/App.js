@@ -5,20 +5,23 @@ import { checkDbConnection } from './hooks/get-dashboard';
 
 const App = () => {
   const [connected, setConnected] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
   
   // Check whether the API is running.
   useEffect(() => {
     let mounted = true;
     if (mounted) {
       checkDbConnection().then(
-        res => {          
+        res => {
           const networkError = res?.message;
           const apiConnected = res?.data?.checkDbConnection?.Connected;
 
           if (networkError) {
-            setConnected(false);
+            setConnected(true);
+            setConnectionError(true);
           } else if (apiConnected) {
             setConnected(apiConnected);
+            setConnectionError(false);
           }
         },
         err => console.error(err)
@@ -27,11 +30,17 @@ const App = () => {
     return () => mounted = false;
   }, []);
   
-  return !connected ?
+  return connectionError ?
   (
     <div className="api-down">
       <h3>This application's API may be down.</h3>
       <p>Please contact technical support.</p>
+    </div>
+  )
+  : !connected ?
+  (
+    <div className='loader-container'>
+      <span className='loader'></span>
     </div>
   )
   :

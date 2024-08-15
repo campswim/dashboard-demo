@@ -7,15 +7,16 @@ import UnpushedPaymentsSummary from './failed-payments/unpushed-payments';
 import FailedPaymentsSummary from './failed-payments/failed-payments';
 // import BcMissingItems from './missing/bc-missing-items';
 
-const Home = () => {
+const Home = (props) => {
   const [user, setUser] = useState({});
-  const [loggedIn, setloggedIn] = useState(localStorage.getItem('loggedIn') && localStorage.getItem('loggedIn') !== 'null' ? parseInt(localStorage.getItem('loggedIn')) : 0);
+  const [loggedIn, setLoggedIn] = useState(props.loggedIn);
+  // const [loggedIn, setLoggedIn] = useState(localStorage.getItem('loggedIn') && localStorage.getItem('loggedIn') !== 'null' ? parseInt(localStorage.getItem('loggedIn')) : 0);
   const [loggedInUser, setLoggedInUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
   const params = useLocation();
   const userFromState = params?.state?.user;
 
   // Remove the user from local storage.
-  const deleteUser = () => {    
+  const deleteUser = () => {
     localStorage.setItem('loggedIn', 0);
     localStorage.setItem('user', null);
   };
@@ -24,7 +25,7 @@ const Home = () => {
   useEffect(() => {
     let mounted = true;
     if (mounted) {
-      setloggedIn(localStorage.getItem('loggedIn') && localStorage.getItem('loggedIn') !== 'null' ? parseInt(localStorage.getItem('loggedIn')) : 0);
+      setLoggedIn(localStorage.getItem('loggedIn') && localStorage.getItem('loggedIn') !== 'null' ? parseInt(localStorage.getItem('loggedIn')) : 0);
       setLoggedInUser(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
       if (userFromState?.action !== user?.action) setUser(userFromState);
     }

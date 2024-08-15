@@ -52,22 +52,6 @@ const StagedOrders = props => {
                 toReturn = [];
                 setUnpushedIsLoaded(true);
               }
-
-              // if (unpushedArray) {
-              //   unpushedArray.forEach(order => {        
-              //     if (!unpushedObject[order.Market]) unpushedObject[order.Market] = { orderCount: 1, totalAmount: order.OrderTotalAmount };
-              //     else {
-              //       const count = unpushedObject[order.Market].orderCount;
-              //       const total = unpushedObject[order.Market].totalAmount;
-              //       unpushedObject[order.Market] = { orderCount: count + 1, totalAmount: total + order.OrderTotalAmount };
-              //     }
-              //   });
-              //   Object.keys(unpushedObject).forEach(key => toReturn.push({market: key, orderCount: unpushedObject[key].orderCount, totalAmount: unpushedObject[key].totalAmount}));
-              //   setUnpushed(toReturn);
-              //   setUnpushedError(null);
-              //   toReturn = [];
-              //   setUnpushedIsLoaded(true);
-              // }
               
               // Set the failed-push orders.
               if (failedPushArray) {

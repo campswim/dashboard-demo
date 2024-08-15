@@ -98,7 +98,9 @@ const NavBar = () => {
   const liftUser = user => {
     loggedInUser.current = user;
     
-    if (!user || user === 'null') setLoggedIn(0);
+    if (!user || user === 'null') {
+      setLoggedIn(0);
+    }
   };
 
   // Relays an action taken via submit on a page down river.
@@ -131,7 +133,7 @@ const NavBar = () => {
         return route;
       });
       
-      setRoutes(updatedRoutes);
+      setRoutes(updatedRoutes);      
       localStorage.setItem('loggedIn', loggedIn);
     }
     return () => mounted = false;
@@ -246,7 +248,7 @@ const NavBar = () => {
           </Route> */}
           <Redirect exact from='/' to={!loggedIn ? '/login' : '/dashboard'} />
           <Route exact path='/dashboard'>
-            <Home />
+            <Home loggedIn={loggedIn} />
           </Route>
           <Route exact path='/failed-orders'>
             <FailedOrders />
@@ -270,7 +272,6 @@ const NavBar = () => {
             <Users 
               liftData={liftData}
               liftUser={liftUser}
-              // clearId={clearId} 
             />
           </Route>
           <Route exact path='/login'>

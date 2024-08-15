@@ -582,6 +582,8 @@ const Users = (props) => {
     return () => mounted = false;
   }, []);
   
+  console.log({user});
+
   return props.error ? 
   ( // Render the sign-in error.
     <div className="signin-error">{props.error.message}</div>
@@ -613,7 +615,9 @@ const Users = (props) => {
                       user: {
                         id: '',
                         action: 'Add User',
-                        role: activeTab !== 'All Roles' ? activeTab : ''
+                        role: activeTab !== 'All Roles' ? activeTab : '',
+                        email: '',
+                        password: ''
                       }
                     },
                   }}

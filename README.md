@@ -3,7 +3,6 @@
 ## Authors
 
 Nathan Cox (<nate@campswim.co>)  
-Chad Larson (<chad@ncompass.org>)
 
 ## Description
 
@@ -18,7 +17,7 @@ The order-staging dashboard tracks orders through their full lifecycle, from ori
       - CI/CD deploy: N/A (because Netlify charges to connect a private GitHub repo).
       - Manual deploy:
         - change the "REACT_APP_ENV" in the .env file to "production";
-        - in the terminal, run "npm run build"
+        - in the terminal, run "npm run build";
         - in the terminal, run "netlify deploy" for a preview, indicating "build" as the directory to deploy;
         - if satisfied with the preview, run "netlify deploy --prod" in the terminal, indicating "build" as the directory to deploy.
 
@@ -94,14 +93,14 @@ The order-staging dashboard tracks orders through their full lifecycle, from ori
     [x] As an adminstrator, I want to select one, some, or all ignored orders and perform any one of the following actions on them:
       [x] unignore.
 
-- Order View page (currently hidden)
+- Order Summary page
 
-    [x] As a user, I want to see the order detail from various places (CRM, Staging, ERP) to determine how far the order went through the CRM2GP workflow and compare order values among these various stages.  
+    [x] As a user, I want to see an order's detail from various places (CRM, Staging, ERP) to determine how far the order went through the workflow and compare order values among the various stages.  
     [ ] As an administrator, I want to be able to do the following:  
-      [x] pull an order manually if it only exists in the CRM;  
-      [x] repull or repull with mismatch if an order returns an error, showing these action buttons conditionally;
-      [x] repush and order manually if it returns an error, showing this button conditionally;
-      [x] push an order manually if it is in staging and not yet in the ERP;
+      [ ] pull an order manually if it only exists in the CRM;  
+      [ ] repull or repull with mismatch if an order returns an error, showing these action buttons conditionally;
+      [ ] repush and order manually if it returns an error, showing this button conditionally;
+      [ ] push an order manually if it is in staging and not yet in the ERP;
       [ ] hide the pull option for the CRM if the order is in staging.
 
 - Failed Processes page
@@ -114,10 +113,11 @@ The order-staging dashboard tracks orders through their full lifecycle, from ori
 
 - Failed Payments page
 
-  [x] As a user, I want to be shown a list of failed payments with some details of the cause of the failure.
+  [x] As a user, I want to be shown a full list of failed payments with additional tabs listing each error by payment type, with some details of the cause of the failure.
     [x] Full detail on desktop (> 1280px).
     [x] Partial detail with modal on mobile (<1280px).
-  [x] As a user, I want to be able to view 
+  [x] As a user, I want to be able to toggle the dismissed errors on and off.
+  [x] As an administrator, I want to be able to dismiss and reinstate errors.
 
 - Settings page
 
@@ -151,11 +151,13 @@ The order-staging dashboard tracks orders through their full lifecycle, from ori
     [ ] to be able to filter each column by specified criteria;
     [ ] to be able to toggle between dark and light themes;
     [ ] there to be caching of data that is rarely updated, so that each page loads as quickly as possible;
-    [ ] the app to use the secure HTTPs protocol, to ensure the security of the site (which is behind a firewall on a VPN).
+    [x] the app to use the secure HTTPs protocol, to ensure the security of the site (unless it is behind a firewall on a VPN).
   [ ] As an adminstrator, I'd like:
     [x] any changes made to editable fields to be logged in the database;
     [ ] to see a list of changes made to the editable fields and be able to determine how far back to generate the list.
-  [ ] As a developer, I'd like the app to be deployed automatically whenever I make a pull request into the main branch.
+  [ ] As a developer, I'd like the app to be deployed automatically whenever I make a pull request into the main branch:
+    [x] backend;
+    [ ] frontend.
 
 ## Sources
 
