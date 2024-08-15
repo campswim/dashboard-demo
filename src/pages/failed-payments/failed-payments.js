@@ -91,6 +91,10 @@ const FailedPayments = () => {
   (
     <div className="signin-error">{error}</div>
   )
+  : !isLoaded ?
+  (
+    <div className="loading">Loading . . .</div>
+  )
   : isLoaded ?
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Payments')) ?
@@ -112,7 +116,7 @@ const FailedPayments = () => {
       <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
     )
   )
-  :
+  : 
   (
     null
   )

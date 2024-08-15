@@ -63,10 +63,7 @@ const OrderView = props => {
     if (mounted) {
       if (orderId) {
         getOrderDetails(orderId).then(
-          res => {
-
-            console.log({res});
-            
+          res => {            
             const orderObject = res?.data?.orderDetails;
             
             if (orderObject) {
@@ -77,9 +74,6 @@ const OrderView = props => {
                 if (pushStatusId) {
                   getPushStatusById(pushStatusId).then(
                     res => {
-
-                      console.log({res});
-
                       const pushStatus = res?.data?.getPushStatusById?.Name;
 
                       if (pushStatus) orderObject.PushStatus = pushStatus;
@@ -174,7 +168,11 @@ const OrderView = props => {
       }
     />
   )
-  : connected ?
+  : !connected ?
+  (
+    <div className="loading">Loading . . .</div>
+  )
+  :  connected ?
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Order Summary')) ?
     (

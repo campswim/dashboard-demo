@@ -3,9 +3,6 @@ import {  Redirect } from 'react-router-dom';
 import User from '../../hooks/get-user';
 
 const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
-
-  console.log({profile});
-
   const [username, setUsername] = useState(profile && (profile.email || profile.email === '') ? profile.email : 'demo@demo.demo');
   const [password, setPassword] = useState(profile && (profile.password || profile.password === '') ? profile.password : 'demo');
   const [confirmPassword, setConfirmPassword] = useState('');

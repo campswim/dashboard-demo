@@ -582,7 +582,16 @@ const Unprocessed = props => {
                     )
                     :
                     (
-                      item.OrderNumber ? item.OrderNumber : 'None'
+                      <Link
+                        to={{
+                          pathname: '/order-summary',
+                          state: {
+                            order: item.OrderNumber
+                          },
+                        }}
+                      >
+                        {item.OrderNumber}
+                      </Link>
                     )}
                   </td>
                   {activeTab === 'All' ? 

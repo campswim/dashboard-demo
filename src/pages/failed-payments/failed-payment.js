@@ -392,7 +392,7 @@ const FailedPayment = props => {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
     }
   });
-  
+    
   return props.error ?
   (
     <div className="signin-error">{props.error.message}</div>
@@ -695,7 +695,16 @@ const FailedPayment = props => {
                     )
                     :
                     (
-                      item.OrderNumber ? item.OrderNumber : 'None'
+                      <Link
+                        to={{
+                          pathname: '/order-summary',
+                          state: {
+                            order: item.OrderNumber
+                          },
+                        }}
+                      >
+                        {item.OrderNumber}
+                      </Link>
                     )}
                   </td>
                   <td className="payment-id desktop">{item.PaymentId ? item.PaymentId : 'N/A'}</td>

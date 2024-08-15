@@ -12,7 +12,7 @@ const FailedOrders = () => {
   const state = params?.state;
   const { order, postPath, action, id, type } = state ? state : ''; // This is for user-initiated actions, not the get-all-failed called.
   
-  const [getQuery, setGetQuery] = useState('failedPulls');
+  const [getQuery, setGetQuery] = useState('unpushedNoFail');
   const [click, setClick] = useState(false);
   const [currentPage, setCurrentPage] = useState('');
   const [tab, setTab] = useState('');
@@ -241,6 +241,10 @@ const FailedOrders = () => {
   ( // Render the error when there's an error.
     <div className="signin-error">{error?.message}</div>
   )
+  : !isLoaded ?
+  (
+    <div className="loading">Loading . . .</div>
+  )
   : isLoaded ?
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Orders')) ?
@@ -304,7 +308,8 @@ const FailedOrders = () => {
               click={click}
               restrictedActions={restrictedActions.current}
             />
-          ) : getQuery === 'failedPushes' ?
+          ) 
+          : getQuery === 'failedPushes' ?
           (
             <FailedToPush
               data={failedToPush}
@@ -354,11 +359,15 @@ const FailedOrders = () => {
               restrictedActions={restrictedActions.current}
               tab={type}
             />
-          ) : (
+          ) 
+          : 
+          (
             ''
           )}
         </>
-      ) : (
+      ) 
+      : 
+      (
         null
       )  
     )

@@ -157,7 +157,7 @@ const NavBar = () => {
 
   // Hide nav links based on a user's role.
   useEffect(() => {
-    const userPageRestrictions = loggedInUser.current && typeof loggedInUser.current === 'string' ? JSON.parse(loggedInUser.current).restrictions.pages : loggedInUser.current ? loggedInUser.current.restrictions.pages : null;
+    const userPageRestrictions = loggedInUser.current && typeof loggedInUser.current === 'string' ? JSON.parse(loggedInUser.current)?.restrictions?.pages : loggedInUser.current ? loggedInUser.current?.restrictions?.pages : null;
 
     if (userPageRestrictions && userPageRestrictions !== 'None') {
       restrictedPages.current = userPageRestrictions;

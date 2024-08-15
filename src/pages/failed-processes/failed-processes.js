@@ -83,6 +83,10 @@ const FailedProcesses = () => {
   (
     <div className="signin-error">{error?.message}</div>
   )
+  : !isLoaded ? 
+  (
+    <div className="loading">Loading . . .</div>
+  )
   : isLoaded ?
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Processes')) ?
