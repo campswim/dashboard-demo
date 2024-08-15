@@ -34,7 +34,7 @@ const Users = (props) => {
   const prevElement = useRef('');
   const dataType = useRef({}); // => dataType.current = {ColumnName, DataType, MaxLength}
   const updated = useRef(false);
-  const user = new User(JSON.parse(localStorage.getItem('user')).id);
+  const user = new User(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user'))?.id : {});
   let tableHeaders = props.users.length > 0 ? Object.keys(props.users[0]) : [], formattedHeaders = [];
   let { items, requestSort, sortConfig } = useSort(users, 'users');
   const getClassNamesFor = useCallback((name, itemId) => {    
@@ -582,8 +582,6 @@ const Users = (props) => {
     return () => mounted = false;
   }, []);
   
-  console.log({user});
-
   return props.error ? 
   ( // Render the sign-in error.
     <div className="signin-error">{props.error.message}</div>
