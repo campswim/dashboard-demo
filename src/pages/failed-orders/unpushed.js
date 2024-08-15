@@ -204,10 +204,14 @@ const UnPushed = (props) => {
   
   // Update the vpWidth variable.
   useEffect(() => {
+    let loaded = true;
+    if (loaded) {
       const handleResize = () => {
         setVpWidth(window.innerWidth);
       };
       window.addEventListener('resize', handleResize)
+    }
+    return () => loaded = false;
   }, [vpWidth]);
   
   // Determine the width of the browser window and set toggles accordingly.
