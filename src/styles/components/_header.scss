@@ -101,13 +101,12 @@
           color: cornflowerblue;
           font-size: 1.37rem;
         }
-        .active {
-          display: flex;
-          padding: 1rem;
-          text-decoration: none;
-          color: cornflowerblue;
-          // font-size: 2rem;
-        }
+        // .active {
+        //   display: flex;
+        //   padding: 1rem;
+        //   text-decoration: none;
+        //   color: cornflowerblue;
+        // }
   
         .list-item-text {
           padding: 0;
@@ -152,6 +151,21 @@
 @media all and (max-height: 500px) {
   .navbar {
     position: relative;
+
+    .logo-links {
+      .links-container {
+        .navbar-links {
+          .active {
+            .active {
+              display: flex;
+              padding: 1rem;
+              text-decoration: none;
+              color: cornflowerblue;
+            }    
+          }
+        }
+      }
+    }
   }
 
   .navbar-links-mobile {
