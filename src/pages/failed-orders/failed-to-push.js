@@ -234,7 +234,6 @@ const FailedToPush = (props) => {
     let mounted = true;
     if (mounted) {
       const handleResize = () => setWidth(window.innerWidth);
-      // if (width < 1280) setShortenDates(true);
       setChars(width < 768 ? 7 : width < 1023 ? 24 : width < 1280 ? 48 : 999);  
       window.onresize = handleResize;
     }

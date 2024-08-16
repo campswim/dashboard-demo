@@ -104,8 +104,10 @@
         .active {
           display: flex;
           padding: 1rem;
-          // text-decoration: none;
-          // color: cornflowerblue;
+          text-decoration: none;
+          color: cornflowerblue;
+          border: 1px solid cornflowerblue;
+          border-radius: 20px;
         }
   
         .list-item-text {

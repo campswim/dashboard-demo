@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ListItem } from '@mui/material';
 
 const useLinks = (routes, inputId, linkId, handleClick, restrictedPages) => {  
+  const [vpWidth, setVpWidth] = useState(window.innerWidth);
+  
+  // Determine the width of the browser window and set toggles accordingly.
+  useLayoutEffect(() => {
+    let mounted = true;
+    if (mounted) {
+      const handleResize = () => setVpWidth(window.innerWidth);
+      window.onresize = handleResize;
+    }
+    return () => mounted = false; 
+  }, [vpWidth]);
+  
   const links = (
     routes.map((route, key) => {
       const pathSansSlash = route.path.slice(1);
@@ -18,7 +30,7 @@ const useLinks = (routes, inputId, linkId, handleClick, restrictedPages) => {
           }}
           key={key}
           className={`nav-link ${route.layout}`}
-          activeStyle={{ border: '1px solid cornflowerblue', borderRadius: '20px', margin: '0', color: 'orange' }}
+          activeStyle={vpWidth >= 768 ? { border: '1px solid cornflowerblue', borderRadius: '20px', margin: '0', color: 'orange' } : { margin: '0', color: 'orange' }}
         >
           <ListItem style={{ padding: '0 1rem 0 1.5rem', margin: '0' }}>
             <route.icon style={{ fontSize: '2rem', padding: '0', margin: '0' }} />
@@ -39,7 +51,7 @@ const useLinks = (routes, inputId, linkId, handleClick, restrictedPages) => {
           }}
           key={key}
           className={`nav-link ${route.layout}`}
-          activeStyle={{ border: '1px solid cornflowerblue', borderRadius: '20px', margin: '0', color: 'orange' }}
+          activeStyle={vpWidth >= 768 ? { border: '1px solid cornflowerblue', borderRadius: '20px', margin: '0', color: 'orange' } : { margin: '0', color: 'orange' }}
         >
           <ListItem style={{ padding: '0 1rem 0 1.5rem', margin: '0' }}>
             <route.icon style={{ fontSize: '2rem', padding: '0', margin: '0', paddingRight: '5px' }} />
