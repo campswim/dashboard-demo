@@ -425,9 +425,55 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
           <button id='sign-in-button' name='submit' type='submit'>Sign In</button>
         </form>
       </div>
+      <div className='dashboard-description'>
+        <h2>Order-tracking Dashboard Demo</h2>
+        <p>This dashboard, custom built for and currently used by a multinational company, tracks orders through their full lifecycle, from origination in the CRM to their transfer to the ERP, with error tracking and resolution, and user authentication and authorization.</p>
+        <ul className='primary-ul-container'>
+          <p className='list-header'>Features</p>
+          <li>Authentication, secured with SSL and JWT, with persistence between sessions and automatic timeout.</li>
+          <li>Authorization, with role-based access to view pages and take actions.</li>
+          <li>Interactivity
+            <ul className='secondary-ul-container'>
+              <li>Hyperlinking to ease navigation among pages.</li>
+              <li>Role-based rendering of pages and available actions.</li>
+              <li>User actions, either in singular or in builk, including repull, repush, ignore, and delete.</li>
+              <li>Inline content editing of predefined categories.</li>
+              <li>Sorting of each column in ascending and descending order.</li>
+              <li>Adding, editing, and deleting of users.</li>
+            </ul>
+          </li>
+          <li>Responsive Design: simple, legible layout on any screen size.</li>
+          <li>Tech Stack
+            <ul className='secondary-ul-container'>
+              <li>Frontend
+                <ul>
+                  <li>SPA built in React using hooks and functional components.</li>
+                  <li>Deployed on Netlify via the Netlify CLI.</li>
+                </ul>
+              </li>
+              <li>Backend
+                <ul className='secondary-ul-container'>
+                  <li>NodeJS API: Express server with GraphQL.</li>
+                  <li>Deployed on Heroku using a CI/CD pipeline via GitHub.</li>
+                  <li>MySQL database hosted by JawsDB on Heroku.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <ul className='primary-ul-container'>
+          <p className='list-header'>Logging In</p>
+          <li>Admin: accessible on request.</li>
+          <li>Agent: replace the word "demo" in the default value of the email field with "agent," using this word in lowercase as the password.</li>
+          <li>User: click or tap the Sign In button.</li>
+        </ul>
+      </div>
       {error ?
+      (
         <div className='sign-in-error'>{error}</div>
+      )
       : parseInt(loggedIn) && userInfo.current ?
+      (
         <Redirect to={{
           pathname: '/dashboard',
           state: {
@@ -440,7 +486,11 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
           }
         }}
         />
-      : ''}
+      )
+      : 
+      (
+        ''
+      )}
     </>
   ) 
   : !renderSignUp && changePassword ? 
