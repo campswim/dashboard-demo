@@ -163,3 +163,8 @@ The order-staging dashboard tracks orders through their full lifecycle, from ori
 ## Sources
 
 - The sorting algorithm used in the useSort hook was adapted from [here](https://www.smashingmagazine.com/2020/03/sortable-tables-react/).
+
+## Notes
+
+- The "_redirect"s" file houses core redirect from /api--considered a local path and thereby circumventing third-party cookie errors--to the actual API, deployed on heroku.
+- This "_redirects" file has a companion file, called "_redirects.sample", which holds the contents of the "_redirects" file, this latter getting reset everytime a new build is run (npm run build). The "_redirects" file must mirror the "_redirects.sample" file or the app will break.
