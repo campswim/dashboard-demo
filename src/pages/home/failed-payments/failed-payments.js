@@ -3,7 +3,7 @@ import { getAllFailedPaymentsSummary } from '../../../hooks/get-dashboard';
 import FailedPayments from './failed-payment';
 
 const FailedPaymentsSummary = () => {
-  const [failedPayments, setFailedPayments] = useState({});
+  const [failedPayments, setFailedPayments] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(null);
   
