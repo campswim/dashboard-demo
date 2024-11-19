@@ -6,6 +6,7 @@ import OrderSummary from '../pages/order-view/order-summary';
 import Settings from '../pages/settings/settings';
 import FailedProcesses from '../pages/failed-processes/failed-processes';
 import FailedPayments from '../pages/failed-payments/failed-payments';
+import ErrorLogs from '../pages/error-logs/error-logs';
 import Users from '../pages/users/users';
 import Login from '../pages/login/login';
 import MobileLinksModal from './mobile-links-modal';
@@ -157,7 +158,11 @@ const NavBar = () => {
 
   // Hide nav links based on a user's role.
   useEffect(() => {
-    const userPageRestrictions = loggedInUser.current && typeof loggedInUser.current === 'string' ? JSON.parse(loggedInUser.current)?.restrictions?.pages : loggedInUser.current ? loggedInUser.current?.restrictions?.pages : null;
+    const userPageRestrictions = loggedInUser.current && typeof loggedInUser.current === 'string' ? 
+      JSON.parse(loggedInUser.current)?.restrictions?.pages : 
+        loggedInUser.current ? 
+      loggedInUser.current?.restrictions?.pages : 
+      null;
 
     if (userPageRestrictions && userPageRestrictions !== 'None') {
       restrictedPages.current = userPageRestrictions;
@@ -268,6 +273,9 @@ const NavBar = () => {
           <Route exact path='/settings'>
             <Settings />
           </Route>
+          <Route exact path='/error-logs'>
+            <ErrorLogs />
+          </Route>
           <Route exact path='/users'>
             <Users 
               liftData={liftData}
@@ -275,7 +283,13 @@ const NavBar = () => {
             />
           </Route>
           <Route exact path='/login'>
-            <Login liftData={liftData} liftUser={liftUser} loggedIn={loggedIn} signUp={signUp} error={error} />
+            <Login 
+              liftData={liftData} 
+              liftUser={liftUser} 
+              loggedIn={loggedIn} 
+              signUp={signUp} 
+              error={error} 
+            />
           </Route>
         </Switch>
         {/* {redirect === true ? (

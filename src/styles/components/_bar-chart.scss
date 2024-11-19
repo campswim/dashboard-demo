@@ -1,0 +1,71 @@
+.chart-container {
+  border: 2px solid whitesmoke;
+  border-radius: 7px;
+  position: relative;
+  z-index: 1;
+
+  .modal-overlay {
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: cornflowerblue;
+    border: 2px solid whitesmoke;
+    border-radius: 7px;
+    padding: 2rem 5rem;
+    opacity: 0; /* Start hidden */
+    transition: opacity 0.3s ease-in-out; /* Smooth transition */
+    gap: 4rem;
+
+    .x-close {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    ul {
+      column-count: 2;
+      column-gap: 2rem;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      min-width: 20rem;
+    }
+        
+    li {
+      padding: .5rem 0;
+      break-inside: avoid;
+      border-bottom: 1px solid black;
+      font-size: 1.2rem;
+    }
+}
+
+  /* Add a class to make the modal visible */
+  .modal-overlay.show {
+    opacity: 1;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .chart-container{
+    .modal-overlay {
+      position: absolute;
+      top: 50%;
+  
+      h3 {
+        font-size: 2rem;
+      }
+  
+      li {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}

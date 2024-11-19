@@ -102,7 +102,7 @@
     }
 
     #failed-payments-section {
-      min-width: 30vw;
+      width: 100%;
     }
   }
 
@@ -153,10 +153,20 @@
       border-radius: 7px;
     }
   }
-}
 
-.unprocessed-jobs-table {
-  white-space: pre-wrap;
+  .orders-by-month {
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+
+      .dropdown {
+        select {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
 }
 
 // ------------------ Media Queries ---------------

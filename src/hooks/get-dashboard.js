@@ -156,3 +156,23 @@ export async function getAllFailedPaymentsSummary() {
     err => { return err; }
   );
 }
+
+export async function getOrderSummaryByMonth(monthsBack = 4) {
+  const operation = 'getOrderSummaryByMonth';
+  const query = `query ${operation}($monthsBack: Int!) {${operation}(monthsBack: $monthsBack) { Month, OrderType, Count}}`;
+  const variables = { monthsBack };
+  return await apiCall(operation, query, variables).then(
+    res => res,
+    err => err
+  );
+}
+
+export async function getOrdersByMonthDay(month) {
+  const operation = 'getOrdersByMonthDay';
+  const query = `query ${operation}($month: String!) {${operation}(month: $month) {Day OrderCount}}`;
+  const variables = { month };
+  return await apiCall(operation, query, variables).then(
+    res => res,
+    err => err
+  );
+}

@@ -82,7 +82,7 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
                           if (userData) { // Get user restrictions from the db and add them to the user object in local storage.
                             user.getUserRestrictions(userData.RoleId).then(
                               res => {                                
-                                if (res) {
+                                if (res) {                                  
                                   const roleProfile = res?.data?.getUserRestrictions;
                                   const error = roleProfile?.Error;
                                 

@@ -17,7 +17,7 @@ const useLinks = (routes, inputId, linkId, handleClick, restrictedPages) => {
   
   const links = (
     routes.map((route, key) => {
-      const pathSansSlash = route.path.slice(1);
+      const pathSansSlash = route.path.slice(1).split('-').join(' ');
 
       return route.path === '/order-view' ?
       (

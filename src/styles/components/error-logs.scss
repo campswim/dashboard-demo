@@ -1,0 +1,10 @@
+.count {
+  margin-left: .5rem;
+}
+
+@media all and (min-width: 1024px) {
+  .count {
+    position: absolute;
+    top: 15rem;
+  }
+}

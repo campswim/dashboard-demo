@@ -1,0 +1,55 @@
+.dropdown-wrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+.dropdown-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: .1rem;
+
+  .custom-select {
+    position: relative;
+    min-width: 10rem;
+    font-size: 1.2rem;
+
+    .dropdown {
+      position: absolute;
+      top: 100%; /* Position dropdown directly below */
+      right: 0; /* Align the dropdown to the right */
+      width: 100%; /* Optional: Make the dropdown take the full width of the select */
+      max-height: 20rem;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      background-color: lightgray;
+      z-index: 2; /* Make sure it overlays other content */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Optional shadow for visibility */
+      display: flex; /* Use flexbox for the dropdown */
+      flex-direction: column; /* Stack options vertically */
+      align-items: center;
+      overflow: auto;
+      
+      .option {
+        padding: .5rem 0;
+        cursor: pointer;
+        min-width: 10rem;;
+        text-align: left;
+      }
+      
+      .option:hover {
+        color: whitesmoke; /* Highlight effect on hover */
+      }
+    }
+  }
+}
+
+@media all and (min-width: 1024px) {
+  .dropdown-wrapper {
+    justify-content: end;
+  }
+
+  .dropdown-container {
+    .custom-select {
+      margin-bottom: .5rem;
+      font-size: 1.8rem;
+    }
+  }
+}

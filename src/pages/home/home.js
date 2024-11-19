@@ -5,6 +5,7 @@ import StagedOrders from './staged/staged-orders';
 import FailedProcessesSummary from './failed-processes/failed-processes';
 import UnpushedPaymentsSummary from './failed-payments/unpushed-payments';
 import FailedPaymentsSummary from './failed-payments/failed-payments';
+import OrdersByMonthSummary from './orders-by-month/orders-by-month';
 // import BcMissingItems from './missing/bc-missing-items';
 
 const Home = (props) => {
@@ -45,6 +46,7 @@ const Home = (props) => {
           <UnpushedPaymentsSummary />
           <FailedPaymentsSummary />
         </div>
+        <OrdersByMonthSummary />
         {/* <BcMissingItems /> */}
       </div>
     )

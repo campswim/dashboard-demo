@@ -4,6 +4,7 @@ import SmsFailedIcon from '@mui/icons-material/SmsFailed';
 import RunningWithErrorsIcon from '@mui/icons-material/RunningWithErrors';
 import CreditCardOffIcon from '@mui/icons-material/CreditCardOff';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import CrisisAlertIcon from '@mui/icons-material/CrisisAlert';
 import PeopleIcon from '@mui/icons-material/People';
 import LoginIcon from '@mui/icons-material/Login';
 // import LogoutIcon from '@mui/icons-material/Logout';
@@ -17,6 +18,7 @@ import FailedProcesses from './pages/failed-processes/failed-processes.js';
 import FailedPayments from './pages/failed-payments/failed-payments.js';
 import OrderSummary from './pages/order-view/order-summary.js';
 import Settings from './pages/settings/settings.js';
+import ErrorLogs from './pages/error-logs/error-logs';
 import Users from './pages/users/users.js';
 import Login from './pages/login/login.js';
 
@@ -70,6 +72,14 @@ const dashboardRoutes = [
     rtlName: 'Таблица',
     icon: SettingsApplicationsIcon,
     component: Settings,
+    layout: 'admin',
+  },
+  {
+    path: '/error-logs',
+    name: 'Error Logs',
+    rtlName: 'Ошибки',
+    icon: CrisisAlertIcon,
+    component: ErrorLogs,
     layout: 'admin',
   },
   {
