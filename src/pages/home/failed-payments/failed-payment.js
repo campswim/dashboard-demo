@@ -4,9 +4,9 @@ import useSort from '../../../hooks/sort-data';
 import formatHeaders from '../../../hooks/format-headers';
 import formatCurrency from '../../../hooks/format-currency';
 
-const FailedPayments = props => {
+const FailedPayments = props => {  
   // Get the table's headers from the data's keys.
-  const headers = props.data && Array.isArray(props.data) && props.data.length > 0 ? formatHeaders(Object.keys(Object.values(props.data)[0]), 'CurrencyCode') : [];
+  const headers = props.data ? formatHeaders(Object.keys(Object.values(props.data)[0]), 'CurrencyCode') : [];
   // The following two constants handle the sorting algorithm.
   const { items, requestSort, sortConfig } = useSort(props.data && JSON.stringify(props.data) !== '{}' ? Object.values(props.data) : [], 'jobs-summary');
   const getClassNamesFor = name => {
