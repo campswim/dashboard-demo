@@ -6,16 +6,16 @@ const useSort = (items, caller) => {
   if (items['data'] && items['data']['failedPushes']) items = items.data.failedPushes;
   
   const [sortConfig, setSortConfig] = useState({
-    key: caller === 'params' || caller === 'users' ? 'Name' : caller === 'map' ? 'Id' : caller === 'unpulled' || caller === 'unpushed' || caller === 'ignored' ? 'OrderNumber' : caller === 'order-details' ? 'lineNumber' : caller === 'jobs' || caller === 'payments' ? 'OrderNumber' : caller === 'jobs-summary' ? 'Count' : caller === 'staged' ? 'market' : caller === 'missing-items' ? 'itemCode' : caller === 'unpushed-payments' ? 'Type' : null,
+    key: caller === 'params' || caller === 'users' ? 'Name' : caller === 'map' ? 'Id' : caller === 'unpulled' || caller === 'unpushed' || caller === 'ignored' ? 'OrderNumber' : caller === 'order-details' ? 'lineNumber' : caller === 'jobs' || caller === 'payments' ? 'OrderNumber' : caller === 'jobs-summary' ? 'Count' : caller === 'staged' ? 'market' : caller === 'missing-items' ? 'itemCode' : caller === 'unpushed-payments' ? 'Type' : caller === 'failed-payments' ? 'Count' : null,
     direction: 'ascending',
   });
 
   const sortedData = useMemo(() => {
     let sortedItems = items && items.length > 0 ? [...items] : [];
-
+    
     sortedItems.sort((a, b) => {
-      let elementOne = a[sortConfig.key];
-      let elementTwo = b[sortConfig.key];
+      let elementOne = caller !== 'failed-payments' ? a[sortConfig.key] : Object.entries(a)[0][1][sortConfig.key];
+      let elementTwo = caller !== 'failed-payments' ? b[sortConfig.key] : Object.entries(b)[0][1][sortConfig.key];
       
       // Correct for cases when the user ID is used in the ModifiedBy field, i.e., when a job modifies a parameter, not a user.
       if (sortConfig.key === 'ModifiedBy') {
@@ -50,12 +50,12 @@ const useSort = (items, caller) => {
     });
 
     return sortedItems;
-  }, [items, sortConfig]);
+  }, [items, sortConfig, caller]);
 
   const requestSort = (key, override, pause = false) => {
     if (pause) return;
     let direction = 'ascending';
-    if (!override) {
+    if (!override) {      
       if (sortConfig.key === key && sortConfig.direction === 'ascending') direction = 'descending';
     } else direction = override;
 

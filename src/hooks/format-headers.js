@@ -1,9 +1,9 @@
 export default function formatHeaders(headers, ignore = '') {
   if (!headers || headers.length <= 0) return;
-  
   if (Array.isArray(headers)) {
     const formattedHeaders = [];
-    headers.forEach(header => {    
+
+    headers.forEach(header => {
       if (!ignore.includes(header)) {
         const firstInitial = header[0].toUpperCase();
         const sample = header.slice(1);
@@ -37,7 +37,7 @@ export default function formatHeaders(headers, ignore = '') {
     });
     
     return formattedHeaders.length <= 0 ? null : formattedHeaders;
-  } else { // The headers argument is a single string, not an array.
+  } else { // The headers argument is a single string, not an array.    
     let formattedHeader, headerArray = headers.split(' ');
     let sample = headerArray[headerArray.length - 1];
     const firstInitial = sample[0].toUpperCase();

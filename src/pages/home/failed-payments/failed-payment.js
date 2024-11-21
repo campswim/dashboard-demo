@@ -4,11 +4,12 @@ import useSort from '../../../hooks/sort-data';
 import formatHeaders from '../../../hooks/format-headers';
 import formatCurrency from '../../../hooks/format-currency';
 
-const FailedPayments = props => {  
+const FailedPayments = props => {
   // Get the table's headers from the data's keys.
-  const headers = props.data ? formatHeaders(Object.keys(Object.values(props.data)[0]), 'CurrencyCode') : [];
-  // The following two constants handle the sorting algorithm.
-  const { items, requestSort, sortConfig } = useSort(props.data && JSON.stringify(props.data) !== '{}' ? Object.values(props.data) : [], 'jobs-summary');
+  const headers = props.data && Array.isArray(props.data) && props.data.length > 0 ? formatHeaders(Object.keys(Object.values(props.data[0])[0]), 'CurrencyCode') : {};
+  
+  // The following two expressions handle the sorting algorithm.
+  const { items, requestSort, sortConfig } = useSort(props.data ? props.data : [], 'failed-payments');
   const getClassNamesFor = name => {
     if (!sortConfig) return;
     return sortConfig.key === name ? sortConfig.direction : undefined;
@@ -50,8 +51,9 @@ const FailedPayments = props => {
           <tbody>
             {items.length > 0 ?
             (
-              items.map((item, key) => (
-                <tr key={key}>
+              items.map((val, key) => {
+                const item = Object.values(val)[0];
+                return <tr key={key}>
                   <td>
                     <Link
                       to={{
@@ -70,7 +72,7 @@ const FailedPayments = props => {
                     }
                   )}</td>
                 </tr>
-              )) 
+              }) 
             )
             :
             (
@@ -84,8 +86,9 @@ const FailedPayments = props => {
       <div className="dash-failed-processes mobile">
         {items && items.length > 0 ? 
         (
-          items.map((item, i) => (
-            <table key={i}>
+          items.map((val, i) => {
+            const item = Object.values(val)[0];
+            return <table key={i}>
               <thead>
                 {headers && headers.length > 0 ? 
                 (
@@ -128,7 +131,7 @@ const FailedPayments = props => {
                 )}
               </thead>
             </table>
-          ))
+          })
         )
         :
         (

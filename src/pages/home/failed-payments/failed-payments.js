@@ -10,7 +10,7 @@ const FailedPaymentsSummary = () => {
   // Get the data from the db.
   useEffect(() => {
     getAllFailedPaymentsSummary().then(
-      res => {        
+      res => {
         if (res?.errors) {
           const errors = Object.values(res.errors);
           errors.forEach(error => setError(`${error}\n`));

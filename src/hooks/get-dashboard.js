@@ -122,7 +122,7 @@ export async function getAllUnpushedPayments() {
 export async function getAllFailedPaymentsSummary() {
   const operation = 'getAllFailedPayments';
   const query = `query ${operation} {${operation} {PaymentId, OrderNumber, PaymentType, PaymentAmount, PaymentDate, CardNumber, AttemptedAt, ErrorReason, CurrencyCode}}`;
-  const failedPayments = {};
+  const failedPayments = [];
 
   return await apiCall(operation, query).then(
     res => {
@@ -131,8 +131,10 @@ export async function getAllFailedPaymentsSummary() {
       
       if (results) {
         results.forEach(result => {
-          if (!failedPayments[result.PaymentType]) {
-            failedPayments[result.PaymentType] = {
+          const obj = {};
+
+          if (!obj[result.PaymentType]) {
+            obj[result.PaymentType] = {
               Type: result.PaymentType,
               Count: 1,
               AggregateAmount: result.PaymentAmount,
@@ -140,14 +142,16 @@ export async function getAllFailedPaymentsSummary() {
               ErrorReasons: [result.ErrorReason]
             }
           } else {
-            let count = failedPayments[result.PaymentType].Count;
-            let aggregateAmount = failedPayments[result.PaymentType].AggregateAmount;
+            let count = obj[result.PaymentType].Count;
+            let aggregateAmount = obj[result.PaymentType].AggregateAmount;
 
-            failedPayments[result.PaymentType].Count = count + 1;
-            failedPayments[result.PaymentType].AggregateAmount = aggregateAmount + result.PaymentAmount;
+            obj[result.PaymentType].Count = count + 1;
+            obj[result.PaymentType].AggregateAmount = aggregateAmount + result.PaymentAmount;
           }
-        });
 
+          failedPayments.push(obj);
+        });
+        
         return failedPayments;
       } else if (errors) {
         return errors;
