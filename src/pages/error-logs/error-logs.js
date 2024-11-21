@@ -9,9 +9,9 @@ const ErrorLogs = () => {
   // const [filteredLogs, setFilteredLogs] = useState([]);
   const [numOfErrors, setNumOfErrors] = useState(100);
   // const [levels, setLevels] = useState([]);
-  const [level, setLevel] = useState('Error');
+  const [level, setLevel] = useState(null);
   const [selectedNumErrors, setSelectedNumErrors] = useState('');
-  const [selectedErrorLevel, setSelectedErrorLevel] = useState('Level: Error');
+  const [selectedErrorLevel, setSelectedErrorLevel] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(null);
   const [loggedIn, setloggedIn] = useState(localStorage.getItem('loggedIn') ? parseInt(localStorage.getItem('loggedIn')) : 0);
@@ -33,7 +33,7 @@ const ErrorLogs = () => {
   useEffect(() => {
     setIsLoaded(false); // Shows "loading..." when the db is slow or times out, a frequent occurrence for this query, because the error-logs table is huge.
     getErrorLogs(numOfErrors, level).then(
-      res => {
+      res => {        
         if (res.data) {
           const data = res?.data?.getErrorLogs;
           const errors = res?.errors;
