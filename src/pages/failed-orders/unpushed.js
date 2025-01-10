@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 // import Checkbox from '../../components/checkbox';
 import useSort from '../../hooks/sort-data';
@@ -16,8 +16,8 @@ const UnPushed = (props) => {
   const [error, setError] = useState(null);
   const [unpushed, setUnpushed] = useState([]);
   // const [activeLink, setActiveLink] = useState(false);
-  const [chars, setChars] = useState(999);
-  const [width, setWidth] = useState(window.innerWidth);
+  // const [chars, setChars] = useState(999);
+  // const [width, setWidth] = useState(window.innerWidth);
   const [orderDetails, setOrderDetails] = useState({});
   const [showDetails, setShowDetails] = useState(false);
   const [vpWidth, setVpWidth] = useState(window.innerWidth);
@@ -96,18 +96,15 @@ const UnPushed = (props) => {
   //   sessionStorage.clear();
   // };
 
-  const clickSniffer = event => {
+  const clickSniffer = useCallback((event) => {
     let id;
     const errorElement = document.getElementById('show-error');
     if (errorElement && !event.target.attributes.name) {
       id = errorElement.attributes.name.nodeValue;
       errorElement.setAttribute('id', id);
     } 
-    return () => {
-      // Unbind the event listener on clean up.
-      document.removeEventListener("mousedown", clickSniffer);
-    };
-  }
+    return () => document.removeEventListener("mousedown", clickSniffer);
+  }, []);
 
   // Display a message to the user indicating which action has been taken and on what ID number.
   const message = (action) => {
@@ -129,9 +126,7 @@ const UnPushed = (props) => {
   
   // Set the unpushed state variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) setUnpushed(props.data.unpushedNoFail);
-    return () => mounted = false;
+    if (props.data) setUnpushed(props.data.unpushedNoFail);
   }, [props.data]);
 
   // Toggle allChecked.
@@ -164,162 +159,90 @@ const UnPushed = (props) => {
 
   // Bind the event listener.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) document.addEventListener("mousedown", clickSniffer);
-    return () => mounted = false;
-  });
+    document.addEventListener("mousedown", clickSniffer);
+    return () => document.removeEventListener("mousedown", clickSniffer);
+  }, [clickSniffer]);
 
   // Hide the message of the action's result after a new tab has been chosen.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (props.click) showMessage.current = false;
-    }
-    return () => mounted = false;
+    if (props.click) showMessage.current = false;
   }, [props.click]);
 
   // Hide checkboxes if a user is not allowed any actions.
   useEffect(() => {
-    let mounted = true;
+    if (props?.restrictedActions === 'All') { // Hide the checkboxes, so that a user can't choose any items, thereby blocking her from taking any action on the items.      
+      const headerCheckbox = document.getElementsByClassName('checkbox-th');
+      const rowCheckbox = document.getElementsByClassName('select-one');
 
-    if (mounted) {
-      if (props?.restrictedActions) {
-        if (props.restrictedActions === 'All') { // Hide the checkboxes, so that a user can't choose any items, thereby blocking her from taking any action on the items.      
-          const headerCheckbox = document.getElementsByClassName('checkbox-th');
-          const rowCheckbox = document.getElementsByClassName('select-one');
-    
-          for (let checkbox of headerCheckbox) {
-            checkbox.classList.add('hidden-checkbox');
-          }
-    
-          for (let checkbox of rowCheckbox) {
-            checkbox.classList.add('hidden-checkbox');
-          }
-        } 
-      }
-    }
-
-    return () => mounted = false;
+      Array.from(headerCheckbox).forEach(checkbox => checkbox.classList.add('hidden-checkbox'));
+      Array.from(rowCheckbox).forEach(checkbox => checkbox.classList.add('hidden-checkbox'));
+    } 
   }, [props?.restrictedActions, items]);  
   
   // Update the vpWidth variable.
   useEffect(() => {
-    let loaded = true;
-    if (loaded) {
-      const handleResize = () => {
-        setVpWidth(window.innerWidth);
-      };
-      window.addEventListener('resize', handleResize)
-    }
-    return () => loaded = false;
+    const handleResize = () => setVpWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [vpWidth]);
   
-  // Determine the width of the browser window and set toggles accordingly.
-  useLayoutEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const handleResize = () => {
-        return () => setWidth(window.innerWidth);
-      };
-    
-      // if (width < 1280) setShortenDates(true);
-      setChars(width < 768 ? 7 : width < 1023 ? 24 : width < 1280 ? 48 : 999);  
-      window.onresize = handleResize;
-    }
-
-    return () => mounted = false;    
-  }, [width, chars, items]);
+  // // Determine the width of the browser window and set toggles accordingly.
+  // useLayoutEffect(() => {
+  //   const handleResize = () => setWidth(window.innerWidth);
   
-  return props.getQuery === 'unpushedNoFail' ?
-  (
-    props.error ? 
-    (
-      <div className="signin-error">{props.error.message}</div>
-    ) 
-    : !props.isLoaded ? 
-    ( 
-      <div className="loading">Loading . . .</div>
-    ) 
-    : 
-    (
-      <>
-        <div className='order-info'>
-          {items.length > 0 ? 
+  //   setChars(width < 768 ? 7 : width < 1023 ? 24 : width < 1280 ? 48 : 999);  
+  //   window.addEventListener('resize', handleResize);
+    
+  //   return () => window.removeEventListener('resize', handleResize);  
+  // }, [width]);
+
+  if (props.getQuery !== 'unpushedNoFail') return null;
+
+  if (props.error) return <div className="signin-error">{props.error.message}</div>;
+
+  if (!props.isLoaded) return <div className="loading">Loading . . .</div>;
+
+  return (
+    <>
+      <div className='order-info'>
+        {items.length > 0 ? 
+        (
+          <div className='stats'>
+            {/* <p className="order-info-number-display">Selected: {isChecked.length}</p> */}
+            <p className="order-info-number-display">Count: {items.length}</p>
+          </div>
+        )
+        :
+        (
+          null
+        )}
+        {/* {activeLink ? (
+          <div className='action-links'>
+            <form className='link'>
+              {props && props.restrictedActions ? getActions('unpushed', props.restrictedActions, isChecked, takeAction) : null}
+            </form>
+          </div>
+        ) : status && status !== 200 && response ? (
+          <div>Error: {error}</div>
+        ) : (
+          ''
+        )} */}
+        {props.callerId === 'unpushed' ? 
+        (
+          !error ? 
           (
-            <div className='stats'>
-              {/* <p className="order-info-number-display">Selected: {isChecked.length}</p> */}
-              <p className="order-info-number-display">Count: {items.length}</p>
-            </div>
-          )
-          :
-          (
-            null
-          )}
-          {/* {activeLink ? (
-            <div className='action-links'>
-              <form className='link'>
-                {props && props.restrictedActions ? getActions('unpushed', props.restrictedActions, isChecked, takeAction) : null}
-              </form>
-            </div>
-          ) : status && status !== 200 && response ? (
-            <div>Error: {error}</div>
-          ) : (
-            ''
-          )} */}
-          {props.callerId === 'unpushed' ? 
-          (
-            !error ? 
-            (
-              props.order ? (
-                showMessage.current 
-                  && props.action 
-                    // && !activeLink 
-                      && (props.action === 'Repush' || props.action === 'Ignore' || props.action === 'Delete') ? (
-                  typeof props.order === 'number' || props.order.length === 1 ? (
-                    <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>Order {props.order} has been {message(props.action)}.</p>
-                    </div>
-                  ) : (
-                    <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>The following orders have been {message(props.action)}:&nbsp;</p>
-                      <div className='orders-in-array'>
-                        {props.order.map((id, key) => (
-                          props.order.length === 1 ? 
-                          ( 
-                            <p key={key}>{id}</p>
-                          )
-                          : key === props.order.length - 1 ?
-                          (
-                            <p key={key}>{id}.</p>
-                          )
-                          :
-                          (
-                            <p key={key}>{id},<span>&nbsp;</span></p>
-                          )                          
-                        ))}
-                      </div>
-                    </div>
-                  )
-                ) : (
-                  ''
-                )
-              ) : (
-                ''
-              )
-            ) 
-            : 
-            (
-              props.order ? (
-                typeof props.order === 'number' || props.order.length === 1 ? 
-                (
+            props.order ? (
+              showMessage.current 
+                && props.action 
+                  // && !activeLink 
+                    && (props.action === 'Repush' || props.action === 'Ignore' || props.action === 'Delete') ? (
+                typeof props.order === 'number' || props.order.length === 1 ? (
                   <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>The following error occurred when order {props.order} was {message(props.action)}: {error}.</p>
+                    <p>Order {props.order} has been {message(props.action)}.</p>
                   </div>
-                ) 
-                : 
-                (
-                    <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
+                ) : (
+                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                    <p>The following orders have been {message(props.action)}:&nbsp;</p>
                     <div className='orders-in-array'>
                       {props.order.map((id, key) => (
                         props.order.length === 1 ? 
@@ -339,136 +262,171 @@ const UnPushed = (props) => {
                   </div>
                 )
               ) : (
-                null
+                ''
               )
+            ) : (
+              ''
             )
-          ) : (
-            null
-          )}
-        </div>
-          
-        <table className="unpushed-table">
-          <thead>
-            <tr className='header-row'>
-              {/* {items.length !== 0 ? (
-                <th className='checkbox-th'>
-                  <Checkbox
-                    type='checkbox'
-                    name='selectAll'
-                    handleClick={handleSelectAll}
-                    isChecked={allChecked}
-                  />
-                </th>
-              ) : (
-                <th className='hidden-checkbox'></th>
-              )} */}
-              {headers ? 
+          ) 
+          : 
+          (
+            props.order ? (
+              typeof props.order === 'number' || props.order.length === 1 ? 
               (
-                headers.map((header, key) => {
-                  return vpWidth < 1280 ?
+                <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                  <p>The following error occurred when order {props.order} was {message(props.action)}: {error}.</p>
+                </div>
+              ) 
+              : 
+              (
+                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                    <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
+                  <div className='orders-in-array'>
+                    {props.order.map((id, key) => (
+                      props.order.length === 1 ? 
+                      ( 
+                        <p key={key}>{id}</p>
+                      )
+                      : key === props.order.length - 1 ?
+                      (
+                        <p key={key}>{id}.</p>
+                      )
+                      :
+                      (
+                        <p key={key}>{id},<span>&nbsp;</span></p>
+                      )                          
+                    ))}
+                  </div>
+                </div>
+              )
+            ) : (
+              null
+            )
+          )
+        ) : (
+          null
+        )}
+      </div>
+        
+      <table className="unpushed-table">
+        <thead>
+          <tr className='header-row'>
+            {/* {items.length !== 0 ? (
+              <th className='checkbox-th'>
+                <Checkbox
+                  type='checkbox'
+                  name='selectAll'
+                  handleClick={handleSelectAll}
+                  isChecked={allChecked}
+                />
+              </th>
+            ) : (
+              <th className='hidden-checkbox'></th>
+            )} */}
+            {headers ? 
+            (
+              headers.map((header, key) => {
+                return vpWidth < 1280 ?
+                (
+                  header !== 'Market' && header !== 'Error Code' && header !== 'Staging Import Date' && header !== 'Customer Number' && header !== 'Order Type Description' ?
                   (
-                    header !== 'Market' && header !== 'Error Code' && header !== 'Staging Import Date' && header !== 'Customer Number' && header !== 'Order Type Description' ?
-                    (
-                      <th
-                        key={key}
-                        onClick={() => requestSort(header.split(' ').join(''))}
-                        className={getClassNamesFor(header.split(' ').join(''))}
-                      >
-                        {header === 'Order Number' ? header.replace('Number', '') : header === 'Customer Number' ? header.replace('Number', '') : header === 'Warehouse' ? 'WHouse' : header.replace('Order', '').replace('Amount', '').replace('Description', '').replace('Message', '')}
-                      </th>
-                    )
-                    :
-                    (
-                      null
-                    )
+                    <th
+                      key={key}
+                      onClick={() => requestSort(header.split(' ').join(''))}
+                      className={getClassNamesFor(header.split(' ').join(''))}
+                    >
+                      {header === 'Order Number' ? header.replace('Number', '') : header === 'Customer Number' ? header.replace('Number', '') : header === 'Warehouse' ? 'WHouse' : header.replace('Order', '').replace('Amount', '').replace('Description', '').replace('Message', '')}
+                    </th>
                   )
                   :
                   (
-                    header !== 'Error Code' ?
-                    (
-                      <th
-                        key={key}
-                        onClick={() => requestSort(header.split(' ').join(''))}
-                        className={getClassNamesFor(header.split(' ').join(''))}
-                      >
-                        {header === 'Order Number' ? header.replace('Number', '') : header === 'Customer Number' ? header.replace('Number', '') : header.replace('Order', '').replace('Amount', '').replace('Description', '').replace('Message', '').replace('Staging', '')}
-                      </th>
-                    )
-                    :
-                    (
-                      null
-                    )
+                    null
                   )
-                })
-              )
-              : 
-                null
-              }
-            </tr>
-          </thead>
-          <tbody>
-          {props && items.length > 0 ? (
-            items.map((item, key) => (
-                <tr key={key}>
-                  {/* <td className='select-one'>
-                    <Checkbox
-                      type='checkbox'
-                      name={item.OrderNumber}
-                      value={item.OrderNumber}
-                      handleClick={handleSelect}
-                      isChecked={isChecked.includes(item.OrderNumber)}
-                    />
-                  </td> */}
-                  <td className='order-number order-link'>
-                    {vpWidth < 1280 ?
-                    (
-                      <Link
-                        to='#'
-                        onClick={() => takeAction('showDetails', item, key)}
-                      >
-                        {item.OrderNumber ? item.OrderNumber : 'None'}
-                      </Link>
-                    )
-                    :
-                    (
-                      <Link
-                        to={{
-                          pathname: '/order-summary',
-                          state: {
-                            order: item.OrderNumber
-                          },
-                        }}
-                      >
-                        {item.OrderNumber}
-                      </Link>
-                    )}
-                  </td>
-                  <td className="reduceable-td desktop">{item.Market ? item.Market : 'N/A'}</td>
-                  {/* <td className="warehouse mobile">{item.Warehouse ? item.Warehouse.split('-')[0] : 'None'}-<br />{item.Warehouse.split('-')[1]}</td> */}
-                  <td className="warehouse">{item.Warehouse ? item.Warehouse : 'None'}</td>
-                  <td>{item.OrderTotalAmount && item.CurrencyCode ? formatCurrency(item.OrderTotalAmount, item.CurrencyCode) : 'N/A'}</td>
-                  <td className="order-type desktop">{item.OrderTypeDescription ? item.OrderTypeDescription : 'None'}</td>
-                  <td className="reduceable-td desktop">{item.CustomerNumber ? item.CustomerNumber : 'N/A'}</td>
-                  <td className="order-date">{item.OrderDate ? new Date(parseInt(item.OrderDate)).toISOString().split('T')[0] : 'N/A'}</td>
-                  <td className={`unpushed order-dates desktop`}>
-                    {item.StagingImportDate ? new Date(parseInt(item.StagingImportDate)).toISOString().split('T')[0] : 'N/A'}
-                  </td>
-                </tr>
-            ))
-          ) : (
-              <tr>
-                <td className='hidden-checkbox'></td>
-                <td>None</td>
+                )
+                :
+                (
+                  header !== 'Error Code' ?
+                  (
+                    <th
+                      key={key}
+                      onClick={() => requestSort(header.split(' ').join(''))}
+                      className={getClassNamesFor(header.split(' ').join(''))}
+                    >
+                      {header === 'Order Number' ? header.replace('Number', '') : header === 'Customer Number' ? header.replace('Number', '') : header.replace('Order', '').replace('Amount', '').replace('Description', '').replace('Message', '').replace('Staging', '')}
+                    </th>
+                  )
+                  :
+                  (
+                    null
+                  )
+                )
+              })
+            )
+            : 
+              null
+            }
+          </tr>
+        </thead>
+        <tbody>
+        {props && items.length > 0 ? (
+          items.map((item, key) => (
+              <tr key={key}>
+                {/* <td className='select-one'>
+                  <Checkbox
+                    type='checkbox'
+                    name={item.OrderNumber}
+                    value={item.OrderNumber}
+                    handleClick={handleSelect}
+                    isChecked={isChecked.includes(item.OrderNumber)}
+                  />
+                </td> */}
+                <td className='order-number order-link'>
+                  {vpWidth < 1280 ?
+                  (
+                    <Link
+                      to='#'
+                      onClick={() => takeAction('showDetails', item, key)}
+                    >
+                      {item.OrderNumber ? item.OrderNumber : 'None'}
+                    </Link>
+                  )
+                  :
+                  (
+                    <Link
+                      to={{
+                        pathname: '/order-summary',
+                        state: {
+                          order: item.OrderNumber
+                        },
+                      }}
+                    >
+                      {item.OrderNumber}
+                    </Link>
+                  )}
+                </td>
+                <td className="reduceable-td desktop">{item.Market ? item.Market : 'N/A'}</td>
+                {/* <td className="warehouse mobile">{item.Warehouse ? item.Warehouse.split('-')[0] : 'None'}-<br />{item.Warehouse.split('-')[1]}</td> */}
+                <td className="warehouse">{item.Warehouse ? item.Warehouse : 'None'}</td>
+                <td>{item.OrderTotalAmount && item.CurrencyCode ? formatCurrency(item.OrderTotalAmount, item.CurrencyCode) : 'N/A'}</td>
+                <td className="order-type desktop">{item.OrderTypeDescription ? item.OrderTypeDescription : 'None'}</td>
+                <td className="reduceable-td desktop">{item.CustomerNumber ? item.CustomerNumber : 'N/A'}</td>
+                <td className="order-date">{item.OrderDate ? new Date(parseInt(item.OrderDate)).toISOString().split('T')[0] : 'N/A'}</td>
+                <td className={`unpushed order-dates desktop`}>
+                  {item.StagingImportDate ? new Date(parseInt(item.StagingImportDate)).toISOString().split('T')[0] : 'N/A'}
+                </td>
               </tr>
-          )}
-          </tbody>
-        </table>
+          ))
+        ) : (
+            <tr>
+              <td className='hidden-checkbox'></td>
+              <td>None</td>
+            </tr>
+        )}
+        </tbody>
+      </table>
 
-        {showDetails ? <OrderDetails details={orderDetails} closeModal={closeModal} getClassNamesFor={getClassNamesFor} /> : null}
-      </>
-    )
-  ) : (
-    ''
+      {showDetails ? <OrderDetails details={orderDetails} closeModal={closeModal} getClassNamesFor={getClassNamesFor} /> : null}
+    </>
   );
 };
 
