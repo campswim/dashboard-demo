@@ -193,7 +193,7 @@ const OrderDetails = props => {
               (
                 <div className='order-details-detail-container'>
                   <p className={props.getClassNamesFor(detail[0])}>{formatHeaders(detail[0])}</p>
-                  <p className='order-detail-modal order-number'>
+                  <p className='order-detail-modal__order-number'>
                     <Link
                       to={{
                         pathname: '/order-summary',

@@ -171,8 +171,6 @@ const NavBar = () => {
     }
   });
 
-  console.log({restrictedPages});
-
   return (
     <Router>
       <nav className='navbar'>
@@ -243,7 +241,7 @@ const NavBar = () => {
             value={inputDisplay ? inputDisplay : ''}
             placeholder="Order Search by ID"
             onChange={handleChange}
-            onKeyPress={event => event.key === 'Enter' ? handleSubmit(event) : {}}
+            onKeyUp={event => event.key === 'Enter' ? handleSubmit(event) : {}}
             onClick={handleClick}
           />
         </div> */}

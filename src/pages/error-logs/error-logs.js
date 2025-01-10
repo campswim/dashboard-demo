@@ -58,13 +58,9 @@ const ErrorLogs = () => {
 
   // Set the loggedIn variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      setloggedIn(localStorage.getItem('loggedIn') ? parseInt(localStorage.getItem('loggedIn')) : 0);
-      setLoggedInUser(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
-    }
-    return () => mounted = false;
-  }, [setLevel]);
+    setloggedIn(localStorage.getItem('loggedIn') ? parseInt(localStorage.getItem('loggedIn')) : 0);
+    setLoggedInUser(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
+  }, []);
   
   // useEffect(() => {
   //   if (level !== 'All') {
@@ -94,7 +90,7 @@ const ErrorLogs = () => {
   )
   : isLoaded ?
   (
-    loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Settings')) ?
+    loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Error Logs')) ?
     (
       <ErrorLog 
         // data={filteredLogs.length ? filteredLogs : errorLogs}

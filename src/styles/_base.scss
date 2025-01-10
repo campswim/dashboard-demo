@@ -42,8 +42,10 @@ a {
   color: inherit;
 }
 
-.order-detail-modal.order-number {
-  text-decoration: underline;
+.order-detail-modal {
+  &__order-number {
+    text-decoration: underline;
+  }
 }
 
 .desktop {

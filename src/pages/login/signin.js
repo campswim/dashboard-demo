@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {  Redirect } from 'react-router-dom';
 import User from '../../hooks/get-user';
+// import { render } from '@testing-library/react';
 
 const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
   const [username, setUsername] = useState(profile && (profile.email || profile.email === '') ? profile.email : 'demo@demo.demo');
@@ -309,7 +310,7 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
   };
 
   // Toggle the class that highlights the role.
-  const toggleClass = (event) => {
+  const toggleClass = event => {
     const options = document.getElementById('select-role').children;
     const id = event.target.id;
 
@@ -330,7 +331,7 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
   };
 
   // Capture the user's role.
-  const handleSelect = (event) => {
+  const handleSelect = event => {
     const roleId = event.target.dataset.value;
     const roleName = event.target.textContent;
     const options = document.getElementById('select-role').children;
@@ -354,25 +355,22 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
 
   // Render the sign-up form.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (userAction.current === 'Add User' && profile.action === 'Add User') setRenderSignUp(true);
-      else setRenderSignUp(false);
-    }
-    return () => mounted = false;
+    const renderSignUp = userAction.current === 'Add User' && profile.action === 'Add User';
+    setRenderSignUp(renderSignUp);
   }, [profile.action]);
   
   // Change the page's nav title.
   useEffect(() => {
     let mounted = true;
-    if (mounted) {
-      if (userAction.current === 'Add User' && profile.action === 'Add User') {
-        liftData(true, 'signup', false);
-        setRenderSignUp(true);
-      } else if (profile.action === 'Sign Out' && userAction.current === 'Sign Out') {
-        const user = new User();
-        user.signOut().then(
-          res => {
+
+    if (userAction.current === 'Add User' && profile.action === 'Add User') {
+      liftData(true, 'signup', false);
+      setRenderSignUp(true);
+    } else if (profile.action === 'Sign Out' && userAction.current === 'Sign Out') {
+      const user = new User();
+      user.signOut().then(
+        res => {
+          if (mounted) {
             if (res) {
               if (res.data) {
                 setLoggedIn(0);
@@ -386,31 +384,34 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
                 // console.error(res.message);
               }  
             }
-          },
-          err => { console.error({err}) }
-        );  
-      }
+          }
+        },
+        err => { 
+          if (mounted) console.error({err}) }
+      );  
     }
+
     return () => mounted = false;
   }, [liftData, liftUser, profile.action]);
 
   // Get the user's available roles for sign-up.
   useEffect(() => {
     let mounted = true;
-    if (mounted) {
-      const user = new User(); // Must create a new user inside the useEffect, otherwise the code runs ad nauseum.
-      user.getUserRoles().then(
-        res => {          
+    const user = new User(); // Must create a new user inside the useEffect, otherwise the code runs ad nauseum.
+    user.getUserRoles().then(
+      res => {
+        if (mounted) {
           if (res.data) {
             const userRoles = res.data?.getUserRoles;
             setRoles(userRoles);
           } else if (res.name) {
             setError(res.message);
           }
-        },
-        err => { console.error({err}); }
-      );
-    }
+        }
+      },
+      err => { if (mounted) console.error({err}); }
+    );
+
     return () => mounted = false;
   }, []);
     
@@ -420,8 +421,8 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
       <div className='signin-container'>
         <p>{message}</p>
         <form onSubmit={(e) => handleSignIn(e)}>
-          <input name='username' value={username} placeholder='Email' onChange={(e) => setUsername(e.target.value)} required />
-          <input name='password' value={password} placeholder='Password' onChange={(e) => setPassword(e.target.value)} required type='password'/>
+          <input name='username' type='email' value={username} placeholder='Email' onChange={(e) => setUsername(e.target.value)} required />
+          <input name='password' type='password' value={password} placeholder='Password' onChange={(e) => setPassword(e.target.value)} required />
           <button id='sign-in-button' name='submit' type='submit'>Sign In</button>
         </form>
       </div>
@@ -499,8 +500,8 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
       <div className='signin-container'>
         <p>Enter a new password and confirm it in the second field.</p>
         <form onSubmit={(e) => handleSignIn(e)}>
-          <input id='new-password-first-field' name='password' value={password} placeholder='Enter your new password.' onChange={(e) => setPassword(e.target.value)} type='password' required />
-          <input name='password' value={confirmPassword} placeholder='Re-enter your new password.' onChange={(e) => setConfirmPassword(e.target.value)} required type='password' />
+          <input id='new-password-first-field' type='password' name='password' value={password} placeholder='Enter your new password.' onChange={(e) => setPassword(e.target.value)} required />
+          <input name='password' type='password' value={confirmPassword} placeholder='Re-enter your new password.' onChange={(e) => setConfirmPassword(e.target.value)} required />
           <button id='sign-in-button' name='submit' type='submit'>Update</button>
         </form>
       </div>
@@ -528,8 +529,8 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
       (
         <>
           <form onSubmit={handleSignUp}>
-            <input name='your-name' value={name} placeholder='Name' onChange={(e) => setName(e.target.value)} required />
-            <input name='email' value={username} placeholder='Email' onChange={(e) => setUsername(e.target.value)} required />
+            <input name='your-name' type='text' value={name} placeholder='Name' onChange={(e) => setName(e.target.value)} required />
+            <input name='email' value={username} type='text' placeholder='Email' onChange={(e) => setUsername(e.target.value)} required />
             <div className='select-container add-user' id='select-role' name='role' onChange={() => handleSelect()}>
               <p 
                 className='role-option default' 
@@ -548,7 +549,7 @@ const Signin = ({ profile, message, liftData, liftUser, signUp }) => {
                   data-value={value.Id} 
                   onClick={(e) => handleSelect(e)} 
                   onFocus={(e) => toggleClass(e, key)} 
-                  onKeyPress={(e) => handleSelect(e)}
+                  onKeyUp={(e) => handleSelect(e)}
                   tabIndex='0'
                 >
                   {value.Role}
