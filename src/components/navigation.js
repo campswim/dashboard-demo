@@ -40,7 +40,7 @@ const NavBar = () => {
     const id = event.target.id;
         
     setRenderMobileLinksModal(false);
-    document.getElementsByTagName('body')[0].classList.remove('no-scroll');
+    document.getElementsByTagName('body')[0].classList.remove('body--no-scroll');
 
     if (id === 'Sign Out') {
       setLoggedIn(0);
@@ -64,7 +64,7 @@ const NavBar = () => {
 
     if (activePage) {
       // Disable/enable vertical scrolling on click of the hamburger menu and its closed counterpart.
-      document.getElementsByTagName('body')[0].classList.toggle('no-scroll');
+      document.getElementsByTagName('body')[0].classList.toggle('body--no-scroll');
       // Set the active page.
       setActivePage(activePage);
 
@@ -170,6 +170,8 @@ const NavBar = () => {
       restrictedPages.current = '';
     }
   });
+
+  console.log({restrictedPages});
 
   return (
     <Router>

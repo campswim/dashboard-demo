@@ -30,13 +30,13 @@ const UnPulled = props => {
   // Determine whether the class is ascending or descending.
   const getClassNamesFor = name => {
     if (!sortConfig) {
-      return;
+      return '';
     }
-    return sortConfig.key === name ? sortConfig.direction : undefined;
+    return sortConfig.key === name ? sortConfig.direction : '';
   };
 
   // Format the headers.
-  const headers = unpulled && unpulled.length > 0 ? formatHeaders(Object.keys(unpulled[0]), ['Id', 'CurrencyCode', 'IgnoredAt']) : '';
+  const headers = unpulled?.length > 0 ? formatHeaders(Object.keys(unpulled[0]), ['Id', 'CurrencyCode', 'IgnoredAt']) : [];
 
   // Handle the user's selected action.
   const takeAction = (path, item) => {
@@ -47,44 +47,48 @@ const UnPulled = props => {
       setOrderDetails(item);
       setShowDetails(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (isChecked.length !== 0) {
-      if (path) {
-        userAction('unpulled', path, isChecked).then(
-          res => {
-            if (res) {              
-              const data = res?.data[path];
+      return;
+    }
 
-              if (data) {
-                if (Array.isArray(data)) {
-                  if (data[0].Message) {
-                    setError(data[0].Message);
-                  } else {
-                    setResponse(res.data[path]);
-                    setStatus(res.status);
-                    setError(null);
-                    showMessage.current = true;
-                  }
-                }
-              }
-            }
-          },
-          err => {
-            console.error({err});
-            setError(err.message);
-            showMessage.current = false;
-          }
-        );
-        setIsChecked([]);
-        setAllChecked(false);
-        props.recall('failedPulls');
-      }
-    } else alert('Please tick an order.');
+    if (isChecked.length === 0) {
+      alert('Please tick an order.');
+      return;
+    }
 
     // Deactivate action buttons if a user's profile has restrictions that match.
     if (props?.restrictedActions === 'All' || path.includes(props.restrictedActions.toLowerCase())) {
       setError('This feature is inaccessible for your user type');
       props.recall('failedPushes');
+      return;
     }    
+    
+    if (path) {
+      userAction('unpulled', path, isChecked)
+      .then(res => {
+        if (!res?.data?.[path]) return;
+
+          const data = res.data[path];
+
+          if (Array.isArray(data) && data[0]?.Message) {
+              setError(data[0].Message);
+          } else {
+            setResponse(res.data[path]);
+            setStatus(res.status);
+            setError(null);
+            showMessage.current = true;
+          }
+        })
+      .catch(err => {
+        console.error({err});
+        setError(err.message);
+        showMessage.current = false;
+      })
+      .finally(() => {
+        setIsChecked([]);
+        setAllChecked(false);
+        props.recall('failedPulls');
+      });
+    }
   };
   
   // Handle the toggling of the select-all checkbox.
@@ -102,26 +106,18 @@ const UnPulled = props => {
   };
 
   // Set the verb to display in the message for the action links.
-  const message = (action) => {
-    let pastTenseVerb = null;
-    if (action) {
-      if (action === 'Repull') {
-        pastTenseVerb = 'repulled';
-      }
-      if (action === 'RepullAllowMismatch')
-        pastTenseVerb = 'repulled with mismatch';
-      if (action === 'Ignore') pastTenseVerb = 'ignored';
-      // if (action === 'Retry') pastTenseVerb = 'repulled';
-      // if (action === 'Pull') pastTenseVerb = 'pulled';
-      // if (action === 'Push') pastTenseVerb = 'pushed';
-    }
-    return pastTenseVerb;
+  const message = action => {
+    const actionMessages = {
+      'Repull': 'repulled',
+      'RepullAllowMismatch': 'repulled with mismatch',
+      'Ignore': 'ignored'
+    };
+    return actionMessages[action];
   };
 
   // Close the modal on click of the X.
   const closeModal = () => {
     setShowDetails(false);
-    // setIsChecked([]);
     clickCount.current = 0;
   };
 
@@ -134,373 +130,326 @@ const UnPulled = props => {
 
   // Set the unpulled state variable with props.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) setUnpulled(props.data.failedPulls);
-    return () => mounted = false;
-  }, [props]);
+    if (props.data.failedPulls) setUnpulled(props.data.failedPulls);
+  }, [props.data.failedPulls]);
 
   // Manage the value of the allChecked state variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (unpulled && unpulled.length !== 0 && isChecked.length === unpulled.length) setAllChecked(true);
-      else setAllChecked(false);
-    }
-    return () => mounted = false;
-  }, [isChecked, unpulled]);
+    const allItemsChecked = unpulled?.length > 0 && isChecked.length === unpulled.length;
+    setAllChecked(allItemsChecked);
+  }, [isChecked.length, unpulled]);
 
   // Toggle the activeLink state variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const element = document.getElementById('retried-order-message');
-      if (isChecked.length > 0) {
-        const className = element ? element.getAttribute('class') : '';  
-        if (className && !className.includes('hidden')) element.setAttribute('class', `${className}-hidden`);
-        setActiveLink(true);
-      } else {
-        const className = element ? element.getAttribute('class').replace('-hidden', '') : ''; 
-        if (className) element.setAttribute('class', className);
-        setActiveLink(false);
-      }
+    const element = document.getElementById('retried-order-message');
+
+    if (isChecked.length > 0) {
+      const className = element ? element.getAttribute('class') : '';  
+      if (className && !className.includes('hidden')) element.setAttribute('class', `${className}-hidden`);
+      setActiveLink(true);
+    } else {
+      const className = element ? element.getAttribute('class').replace('-hidden', '') : ''; 
+      if (className) element.setAttribute('class', className);
+      setActiveLink(false);
     }
-    return () => mounted = false;
   }, [isChecked]);
   
   // Hide the message of the action's result after a new tab has been chosen.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (props.click) showMessage.current = false;
-    }
-    return () => mounted = false;
-  });
+    if (props.click) showMessage.current = false;
+  }, [props.click]);
 
   // Hide checkboxes if a user is not allowed any actions.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (props?.restrictedActions) {
-        if (props.restrictedActions === 'All') { // Hide the checkboxes, so that a user can't choose any items, thereby blocking her from taking any action on the items.      
-          const headerCheckbox = document.getElementsByClassName('checkbox-th');
-          const rowCheckbox = document.getElementsByClassName('select-one');
-    
-          for (let checkbox of headerCheckbox) {
-            checkbox.classList.add('hidden-checkbox');
-          }
-    
-          for (let checkbox of rowCheckbox) {
-            checkbox.classList.add('hidden-checkbox');
-          }
-        } 
-      }
-    }
-    return () => mounted = false;
+    if (props?.restrictedActions === 'All') { // Hide the checkboxes, so that a user can't choose any items, thereby blocking her from taking any action on the items.      
+      ['checkbox-th', 'select-one'].forEach(className => {
+        Array.from(document.getElementsByClassName(className))
+          .forEach(el => el.classList.add('hidden-checkbox'));
+      });
+    } 
   }, [props?.restrictedActions, items]);
   
   // Update the vpWidth variable.
   useEffect(() => {
-      const handleResize = () => {
-        setVpWidth(window.innerWidth);
-      };
-      return () => window.addEventListener('resize', handleResize);
+      const handleResize = () => setVpWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
   }, [vpWidth]);
   
   // Determine the width of the browser window and set toggles accordingly.
   useLayoutEffect(() => {
-    let mounted = true;
-    const browserWidth = window.innerWidth;
-    const handleResize = () => {
-      setWidth(window.innerWidth);
-    } 
-    window.onresize = handleResize;
-
-    if (mounted) {
-      if (browserWidth < 768) {
-        setToggleShorterError(true);
-        // setShortenDates(true);
-      } else {
-        setToggleShorterError(false);
-        // setShortenDates(false);
-      }
-    }
-    return () => mounted = false;
+    const handleResize = () => setWidth(window.innerWidth); 
+    window.addEventListener('resize', handleResize);
+    setToggleShorterError(window.innerWidth < 768);
   }, [width]);
+
+  if (props.getQuery !== 'failedPulls') return null;
+  if (props.error) return <div className="signin-error">{props.error.message}</div>;
+  if (!props.isLoaded) return <div className="loading">Loading . . .</div>;
     
-  return props.getQuery === 'failedPulls' ?
-  ( 
-    props.error ? 
-    ( 
-      <div className="signin-error">{props.error.message}</div>
-    ) : !props.isLoaded ? 
-    ( 
-      <div className="loading">Loading . . .</div>
-    ) : (
-      <>
-        <div className="order-info">
-          {items.length > 0 ? 
-          (
-            <div className='stats'>
-              <p className="order-info-number-display">Selected: {isChecked.length}</p>
-              <p className="order-info-number-display">Count: {items.length}</p>
-            </div>
-          )
-          :
-          (
-            null
-          )}
-          {activeLink ? 
-          (
-            <div className="action-links">
-              <form className="link">
-                {props && props.restrictedActions ? getActions('unpulled', props.restrictedActions, isChecked, takeAction) : null}
-              </form>
-            </div>
-          ) : status && status !== 200 && response ? 
-          (
-            <div>Error: {error}</div>
-          ) : (
-            null
-          )}
-          {props.callerId === 'unpulled' ? (
-            !error ? (
-              props.order ? (
-                showMessage.current && props.action && !activeLink && props.restrictedActions !== 'All' && (props.action === 'Repull' || props.action === 'Ignore' || props.action === 'Delete') ? 
-                (
-                  typeof props.order === 'number' || props.order.length === 1 ? 
-                  ( 
-                    <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>Order {props.order} has been {message(props.action)}.</p>
-                    </div>
-                  ) 
-                  : 
-                  (
-                    <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>The following orders have been {message(props.action)}:&nbsp;</p>
-                      <div className='orders-in-array'>
-                        {props.order.map((id, key) => (
-                          props.order.length === 1 ? 
-                          ( 
-                            <p key={key}>{id}</p>
-                          )
-                          : key === props.order.length - 1 ?
-                          (
-                            <p key={key}>{id}.</p>
-                          )
-                          :
-                          (
-                            <p key={key}>{id},<span>&nbsp;</span></p>
-                          )                          
-                        ))}
-                      </div>
-                    </div>
-                  )
+  return (
+    <>
+      <div className="order-info">
+        {items.length > 0 ? 
+        (
+          <div className='stats'>
+            <p className="order-info-number-display">Selected: {isChecked.length}</p>
+            <p className="order-info-number-display">Count: {items.length}</p>
+          </div>
+        )
+        :
+        (
+          null
+        )}
+        {activeLink ? 
+        (
+          <div className="action-links">
+            <form className="link">
+              {props && props.restrictedActions ? getActions('unpulled', props.restrictedActions, isChecked, takeAction) : null}
+            </form>
+          </div>
+        ) : status && status !== 200 && response ? 
+        (
+          <div>Error: {error}</div>
+        ) : (
+          null
+        )}
+        {props.callerId === 'unpulled' ? (
+          !error ? (
+            props.order ? (
+              showMessage.current && props.action && !activeLink && props.restrictedActions !== 'All' && (props.action === 'Repull' || props.action === 'Ignore' || props.action === 'Delete') ? 
+              (
+                typeof props.order === 'number' || props.order.length === 1 ? 
+                ( 
+                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                    <p>Order {props.order} has been {message(props.action)}.</p>
+                  </div>
                 ) 
                 : 
                 (
-                  ''
-                ) 
+                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                    <p>The following orders have been {message(props.action)}:&nbsp;</p>
+                    <div className='orders-in-array'>
+                      {props.order.map((id, key) => (
+                        props.order.length === 1 ? 
+                        ( 
+                          <p key={key}>{id}</p>
+                        )
+                        : key === props.order.length - 1 ?
+                        (
+                          <p key={key}>{id}.</p>
+                        )
+                        :
+                        (
+                          <p key={key}>{id},<span>&nbsp;</span></p>
+                        )                          
+                      ))}
+                    </div>
+                  </div>
+                )
               ) 
               : 
               (
                 ''
-              )
+              ) 
             ) 
             : 
             (
-              props.order ? 
-              (
-                typeof props.order === 'number' || props.order.length === 1 ? (
-                <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                  The following error occurred when order {props.order} was {message(props.action)}: {error}.
-                </div>
-              ) 
-              : 
-              (
-                <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                  <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
-                  <div className='orders-in-array'>
-                    {props.order.map((id, key) => (
-                      props.order.length === 1 ? 
-                      ( 
-                        <p key={key}>{id}</p>
-                      )
-                      : key === props.order.length - 1 ?
-                      (
-                        <p key={key}>{id}.</p>
-                      )
-                      :
-                      (
-                        <p key={key}>{id},<span>&nbsp;</span></p>
-                      )                          
-                    ))}
-                  </div>
-                </div>
-              )
-              ) 
-              : 
-              (
-                ''
-              )
+              ''
             )
           ) 
           : 
           (
-            null
-          )}
-        </div>
-        <table className="unpulled-table-large" id="tab">
-          <thead>
-            <tr className='header-row'>
-              {items.length !== 0 ? (
-                <th className='checkbox-th'>
-                <Checkbox
-                    type='checkbox'
-                    name='selectAll'
-                    handleClick={handleSelectAll}
-                    isChecked={allChecked}
-                  />
-                </th>
-              ) : (
-                <th className='hidden-checkbox'></th>
-              )}
-              {headers ? 
-              (
-                <>
-                  {headers.map((header, key) => (
-                    vpWidth < 1280 ?
+            props.order ? 
+            (
+              typeof props.order === 'number' || props.order.length === 1 ? (
+              <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                The following error occurred when order {props.order} was {message(props.action)}: {error}.
+              </div>
+            ) 
+            : 
+            (
+              <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
+                <div className='orders-in-array'>
+                  {props.order.map((id, key) => (
+                    props.order.length === 1 ? 
+                    ( 
+                      <p key={key}>{id}</p>
+                    )
+                    : key === props.order.length - 1 ?
                     (
-                      header !== 'At' && header !== 'Exception' ?
-                      (
-                        <th
-                          key={key}
-                          onClick={() => requestSort(header.split(' ').join(''))}
-                          className={`${getClassNamesFor(header.split(' ').join(''))}`}
-                        >
-                          {header === 'Message' ? 'Error' : header.replace('Order', '')}
-                        </th>
-                      )
-                      :
-                      (
-                        null
-                      )
+                      <p key={key}>{id}.</p>
                     )
                     :
+                    (
+                      <p key={key}>{id},<span>&nbsp;</span></p>
+                    )                          
+                  ))}
+                </div>
+              </div>
+            )
+            ) 
+            : 
+            (
+              ''
+            )
+          )
+        ) 
+        : 
+        (
+          null
+        )}
+      </div>
+      <table className="unpulled-table-large" id="tab">
+        <thead>
+          <tr className='header-row'>
+            {items.length !== 0 ? (
+              <th className='checkbox-th'>
+              <Checkbox
+                  type='checkbox'
+                  name='selectAll'
+                  handleClick={handleSelectAll}
+                  isChecked={allChecked}
+                />
+              </th>
+            ) : (
+              <th className='hidden-checkbox'></th>
+            )}
+            {headers ? 
+            (
+              <>
+                {headers.map((header, key) => (
+                  vpWidth < 1280 ?
+                  (
+                    header !== 'At' && header !== 'Exception' ?
                     (
                       <th
                         key={key}
                         onClick={() => requestSort(header.split(' ').join(''))}
                         className={`${getClassNamesFor(header.split(' ').join(''))}`}
                       >
-                          {header === 'Message' ? 'Error' : header.replace('Order', '')}
+                        {header === 'Message' ? 'Error' : header.replace('Order', '')}
                       </th>
-                    )
-                  ))}
-                </>
-              )
-              : 
-                null
-              }
-            </tr>
-          </thead>
-          <tbody>
-            {items.length !== 0 ? 
-            (
-              items.map((item, key) => (
-                <tr key={key}>
-                  <td className='select-one'>
-                    <Checkbox
-                      type='checkbox'
-                      name={item.OrderNumber}
-                      value={item.OrderNumber}
-                      handleClick={handleSelect}
-                      isChecked={isChecked.includes(item.OrderNumber)}
-                    />
-                  </td>
-                  <td className="order-number order-link">
-                    {vpWidth < 1280 ?
-                    (
-                      <Link
-                        to='#'
-                        onClick={() => takeAction('showDetails', item, key)}
-                      >
-                        {item.OrderNumber}
-                      </Link>
                     )
                     :
                     (
-                      <Link
-                        to={{
-                          pathname: '/order-summary',
-                          state: {
-                            order: item.OrderNumber
-                          },
-                        }}
-                      >
-                        {item.OrderNumber}
-                      </Link>
-                    )}
-                  </td>
+                      null
+                    )
+                  )
+                  :
+                  (
+                    <th
+                      key={key}
+                      onClick={() => requestSort(header.split(' ').join(''))}
+                      className={`${getClassNamesFor(header.split(' ').join(''))}`}
+                    >
+                        {header === 'Message' ? 'Error' : header.replace('Order', '')}
+                    </th>
+                  )
+                ))}
+              </>
+            )
+            : 
+              null
+            }
+          </tr>
+        </thead>
+        <tbody>
+          {items.length !== 0 ? 
+          (
+            items.map((item, key) => (
+              <tr key={key}>
+                <td className='select-one'>
+                  <Checkbox
+                    type='checkbox'
+                    name={item.OrderNumber}
+                    value={item.OrderNumber}
+                    handleClick={handleSelect}
+                    isChecked={isChecked.includes(item.OrderNumber)}
+                  />
+                </td>
+                <td className="order-number order-link">
+                  {vpWidth < 1280 ?
+                  (
+                    <Link
+                      to='#'
+                      onClick={() => takeAction('showDetails', item, key)}
+                    >
+                      {item.OrderNumber}
+                    </Link>
+                  )
+                  :
+                  (
+                    <Link
+                      to={{
+                        pathname: '/order-summary',
+                        state: {
+                          order: item.OrderNumber
+                        },
+                      }}
+                    >
+                      {item.OrderNumber}
+                    </Link>
+                  )}
+                </td>
 
-                  <td className={`unpulled order-dates mobile`}>
-                    {item.OrderDate ? 
-                    (
-                      new Date(parseInt(item.OrderDate)).toISOString().split('T')[0]
-                    ) : (
-                      'None'
-                    )}
-                  </td>
-                  {/* To-do: CSS this in at a certain screen width. */}
-                  <td className={`unpulled order-dates desktop`}>
-                    {item.OrderDate ? 
-                    (
-                      new Date(parseInt(item.OrderDate)).toISOString().split('T')[0]
-                    ) : (
-                      'None'
-                    )}
-                  </td>
-                  <td>{formatCurrency(item.OrderTotal, item.CurrencyCode)}</td>
-                  <td className={`attempted-dates desktop`}>
-                    {item.At ? 
-                    (
-                      new Date(parseInt(item.At)).toISOString().split('T')[0]
-                    ) : (
-                      'None'
-                    )}
-                  </td>
-                  <td 
-                    name={item.OrderNumber} 
-                    className={`error-message ${toggleShorterError}`} 
-                    onClick={() => toggleErrorMessage(item.OrderNumber)}
-                  >
-                    <p>{!toggleShorterError ? item.Message : `${item.Message.slice(0, 7)}...`}</p>
-                  </td>
-                  <td 
-                    name={item.OrderNumber} 
-                    id={item.OrderNumber} 
-                    className='error-message-unpulled'
-                  >
-                    <div className='x-close-container'>
-                      <span className="x-close" onClick={() => toggleErrorMessage(item.OrderNumber)}>x</span>
-                    </div>
-                    <p>{item.Message}</p>
-                  </td>
-                  <td className='exception desktop'>{item.Exception ? item.Exception : 'None'}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className='hidden-checkbox'></td>
-                <td>None</td>
+                <td className={`unpulled order-dates mobile`}>
+                  {item.OrderDate ? 
+                  (
+                    new Date(parseInt(item.OrderDate)).toISOString().split('T')[0]
+                  ) : (
+                    'None'
+                  )}
+                </td>
+                {/* To-do: CSS this in at a certain screen width. */}
+                <td className={`unpulled order-dates desktop`}>
+                  {item.OrderDate ? 
+                  (
+                    new Date(parseInt(item.OrderDate)).toISOString().split('T')[0]
+                  ) : (
+                    'None'
+                  )}
+                </td>
+                <td>{formatCurrency(item.OrderTotal, item.CurrencyCode)}</td>
+                <td className={`attempted-dates desktop`}>
+                  {item.At ? 
+                  (
+                    new Date(parseInt(item.At)).toISOString().split('T')[0]
+                  ) : (
+                    'None'
+                  )}
+                </td>
+                <td 
+                  name={item.OrderNumber} 
+                  className={`error-message ${toggleShorterError}`} 
+                  onClick={() => toggleErrorMessage(item.OrderNumber)}
+                >
+                  <p>{!toggleShorterError ? item.Message : `${item.Message.slice(0, 7)}...`}</p>
+                </td>
+                <td 
+                  name={item.OrderNumber} 
+                  id={item.OrderNumber} 
+                  className='error-message-unpulled'
+                >
+                  <div className='x-close-container'>
+                    <span className="x-close" onClick={() => toggleErrorMessage(item.OrderNumber)}>x</span>
+                  </div>
+                  <p>{item.Message}</p>
+                </td>
+                <td className='exception desktop'>{item.Exception ? item.Exception : 'None'}</td>
               </tr>
-            )}
-          </tbody>
-        </table>
-        {showDetails ? <OrderDetails details={orderDetails} closeModal={closeModal} getClassNamesFor={getClassNamesFor} /> : null}
-      </>
-    )
-  ) : (
-    ''
+            ))
+          ) : (
+            <tr>
+              <td className='hidden-checkbox'></td>
+              <td>None</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      {showDetails ? <OrderDetails details={orderDetails} closeModal={closeModal} getClassNamesFor={getClassNamesFor} /> : null}
+    </>
   );
 };
 

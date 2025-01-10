@@ -15,10 +15,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-size: 1.6rem;
   padding-bottom: 10rem;
-  
-  .no-scroll {
-    overflow: hidden;
-  }
+}
+
+.body--no-scroll {
+  overflow: hidden;
 }
 
 code {
@@ -241,10 +241,6 @@ a {
   left: 50%;
   top: 26rem;
   transform: translate(-50%);  
-  // position: fixed;
-  // left: 50%;
-  // top: 50%;
-  // transform: translate(-50%, -50%);
   background-color: lightgray;
   padding: .5rem;
   font-size: 2rem;
