@@ -120,7 +120,6 @@ const UnPushed = (props) => {
   // Close the modal on click of the X.
   const closeModal = () => {
     setShowDetails(false);
-    // setIsChecked([]);
     clickCount.current = 0;
   };
   
@@ -196,10 +195,9 @@ const UnPushed = (props) => {
   //   return () => window.removeEventListener('resize', handleResize);  
   // }, [width]);
 
+  // Conditionals for rendering the component.
   if (props.getQuery !== 'unpushedNoFail') return null;
-
   if (props.error) return <div className="signin-error">{props.error.message}</div>;
-
   if (!props.isLoaded) return <div className="loading">Loading . . .</div>;
 
   return (
@@ -207,9 +205,9 @@ const UnPushed = (props) => {
       <div className='order-info'>
         {items.length > 0 ? 
         (
-          <div className='stats'>
+          <div className='order-info__stats'>
             {/* <p className="order-info-number-display">Selected: {isChecked.length}</p> */}
-            <p className="order-info-number-display">Count: {items.length}</p>
+            <p className="order-info__stats__paragraph">Count: {items.length}</p>
           </div>
         )
         :
@@ -237,25 +235,33 @@ const UnPushed = (props) => {
                   // && !activeLink 
                     && (props.action === 'Repush' || props.action === 'Ignore' || props.action === 'Delete') ? (
                 typeof props.order === 'number' || props.order.length === 1 ? (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>Order {props.order} has been {message(props.action)}.</p>
+                  <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                    <p className='order-info__retried-order-set__pagaraph'>Order {props.order} has been {message(props.action)}.</p>
                   </div>
                 ) : (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>The following orders have been {message(props.action)}:&nbsp;</p>
-                    <div className='orders-in-array'>
+                  <div className="order-info__retried-order-set" id="retried-order-message" ref={messageRef}>
+                    <p className='order-info__retried-order-set__pagaraph'>
+                      The following orders have been {message(props.action)}:&nbsp;
+                    </p>
+                    <div className='order-info__retried-order-set__orders-in-array'>
                       {props.order.map((id, key) => (
                         props.order.length === 1 ? 
                         ( 
-                          <p key={key}>{id}</p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id}
+                          </p>
                         )
                         : key === props.order.length - 1 ?
                         (
-                          <p key={key}>{id}.</p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id}.
+                          </p>
                         )
                         :
                         (
-                          <p key={key}>{id},<span>&nbsp;</span></p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id},<span>&nbsp;</span>
+                          </p>
                         )                          
                       ))}
                     </div>
@@ -273,27 +279,37 @@ const UnPushed = (props) => {
             props.order ? (
               typeof props.order === 'number' || props.order.length === 1 ? 
               (
-                <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                  <p>The following error occurred when order {props.order} was {message(props.action)}: {error}.</p>
+                <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                  <p className='order-info__retried-order-set__paragraph'>
+                    The following error occurred when order {props.order} was {message(props.action)}: {error}.
+                  </p>
                 </div>
               ) 
               : 
               (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
-                  <div className='orders-in-array'>
+                  <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                    <p className='order-info__retried-order-set__paragraph'>
+                      There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;
+                    </p>
+                  <div className='order-info__retried-order-set__orders-in-array'>
                     {props.order.map((id, key) => (
                       props.order.length === 1 ? 
                       ( 
-                        <p key={key}>{id}</p>
+                        <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                          {id}
+                        </p>
                       )
                       : key === props.order.length - 1 ?
                       (
-                        <p key={key}>{id}.</p>
+                        <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                          {id}.
+                        </p>
                       )
                       :
                       (
-                        <p key={key}>{id},<span>&nbsp;</span></p>
+                        <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                          {id},<span>&nbsp;</span>
+                        </p>
                       )                          
                     ))}
                   </div>

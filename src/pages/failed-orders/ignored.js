@@ -218,28 +218,18 @@ const Ignored = props => {
 
     return () => mounted = false;
   }, [width, items, chars]);
-    
-  return props.error ? 
-  (
-    <div className="signin-error">{props.error.message}</div>
-  ) : !props.isLoaded ?
-  (
-    delayed ? 
-    (
-      null
-    ) : (
-      <div className="loading">Loading . . .</div>
-    )
-  )
-  :
-  (
+  
+  if (props.error) return <div>Error: {props.error.message}</div>;
+  if (!props.isLoaded && !delayed) return <div className="loading">Loading . . .</div>
+  
+  return (
     <>
       <div className='order-info'>
         {items.length > 0 ? 
         (
-          <div className="stats">
-            <p className="order-info-number-display">Selected: {isChecked.length}</p>
-            <p className="order-info-number-display">Count: {items.length}</p>
+          <div className='order-info__stats'>
+            <p className='order-info__stats__paragraph'>Selected: {isChecked.length}</p>
+            <p className='order-info__stats__paragraph'>Count: {items.length}</p>
           </div>
         )
         :
@@ -247,8 +237,8 @@ const Ignored = props => {
           null
         )}
         {activeLink ? (
-          <div className='action-links'>
-            <form className='link'>
+          <div className='order-info__action-links'>
+            <form className='link order-info__action-links__form'>
               {props && props.restrictedActions ? getActions('ignored', props.restrictedActions, isChecked, takeAction) : null}
             </form>
           </div>
@@ -267,27 +257,37 @@ const Ignored = props => {
               (
                 typeof props.order === 'number' || props.order.length === 1 ? 
                 (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>Order {props.order} has been {message(props.action)}.</p>
+                  <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                    <p className='order-info__retried-order-set__paragraph'>
+                      Order {props.order} has been {message(props.action)}.
+                    </p>
                   </div>
                 ) 
                 : 
                 (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>The following orders have been {message(props.action)}:&nbsp;</p>
-                    <div className='orders-in-array'>
+                  <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                    <p className='order-info__retried-order-set__paragraph'>
+                      The following orders have been {message(props.action)}:&nbsp;
+                    </p>
+                    <div className='order-info__retried-order-set__orders-in-array'>
                       {props.order.map((id, key) => (
                         props.order.length === 1 ? 
                         ( 
-                          <p key={key}>{id}</p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id}
+                          </p>
                         )
                         : key === props.order.length - 1 ?
                         (
-                          <p key={key}>{id}.</p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id}.
+                          </p>
                         )
                         :
                         (
-                          <p key={key}>{id},<span>&nbsp;</span></p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id},<span>&nbsp;</span>
+                          </p>
                         )                          
                       ))}
                     </div>
@@ -310,27 +310,37 @@ const Ignored = props => {
             (
               typeof props.order === 'number' || props.order.length === 1 ? 
               (
-                <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                  <p>The following error occurred when order {props.order} was {message(props.action)}: {error}.</p>
+                <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                  <p className='order-info__retried-order-set__paragraph'>
+                    The following error occurred when order {props.order} was {message(props.action)}: {error}.
+                  </p>
                 </div>
               ) 
               : 
               (
-                <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                  <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
-                  <div className='orders-in-array'>
+                <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                  <p className='order-info__retried-order-set__paragraph'>
+                    There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;
+                  </p>
+                  <div className='order-info__retried-order-set__orders-in-array'>
                     {props.order.map((id, key) => (
                       props.order.length === 1 ? 
                       ( 
-                        <p key={key}>{id}</p>
+                        <p className='order-info__retried-order-set__orders-in-array-paragraph' key={key}>
+                          {id}
+                        </p>
                       )
                       : key === props.order.length - 1 ?
                       (
-                        <p key={key}>{id}.</p>
+                        <p className='order-info__retried-order-set__orders-in-array-paragraph' key={key}>
+                          {id}.
+                        </p>
                       )
                       :
                       (
-                        <p key={key}>{id},<span>&nbsp;</span></p>
+                        <p className='order-info__retried-order-set__orders-in-array-paragraph' key={key}>
+                          {id},<span>&nbsp;</span>
+                        </p>
                       )                          
                     ))}
                   </div>

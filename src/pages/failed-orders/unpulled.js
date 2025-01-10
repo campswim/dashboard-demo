@@ -181,6 +181,7 @@ const UnPulled = props => {
     const handleResize = () => setWidth(window.innerWidth); 
     window.addEventListener('resize', handleResize);
     setToggleShorterError(window.innerWidth < 768);
+    return () => window.removeEventListener('resize', handleResize);
   }, [width]);
 
   if (props.getQuery !== 'failedPulls') return null;
@@ -189,12 +190,12 @@ const UnPulled = props => {
     
   return (
     <>
-      <div className="order-info">
+      <div className='order-info'>
         {items.length > 0 ? 
         (
-          <div className='stats'>
-            <p className="order-info-number-display">Selected: {isChecked.length}</p>
-            <p className="order-info-number-display">Count: {items.length}</p>
+          <div className='order-info__stats'>
+            <p className='order-info__stats__paragraph'>Selected: {isChecked.length}</p>
+            <p className='order-info__stats__paragraph'>Count: {items.length}</p>
           </div>
         )
         :
@@ -203,8 +204,8 @@ const UnPulled = props => {
         )}
         {activeLink ? 
         (
-          <div className="action-links">
-            <form className="link">
+          <div className='order-info__action-links'>
+            <form className='link order-info__action-links__form'>
               {props && props.restrictedActions ? getActions('unpulled', props.restrictedActions, isChecked, takeAction) : null}
             </form>
           </div>
@@ -221,27 +222,33 @@ const UnPulled = props => {
               (
                 typeof props.order === 'number' || props.order.length === 1 ? 
                 ( 
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+                  <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
                     <p>Order {props.order} has been {message(props.action)}.</p>
                   </div>
                 ) 
                 : 
                 (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>The following orders have been {message(props.action)}:&nbsp;</p>
-                    <div className='orders-in-array'>
+                  <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                    <p className='order-info__retried-order-set__paragraph'>The following orders have been {message(props.action)}:&nbsp;</p>
+                    <div className='order-info__retried-order-set__orders-in-array'>
                       {props.order.map((id, key) => (
                         props.order.length === 1 ? 
                         ( 
-                          <p key={key}>{id}</p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id}
+                          </p>
                         )
                         : key === props.order.length - 1 ?
                         (
-                          <p key={key}>{id}.</p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id}.
+                          </p>
                         )
                         :
                         (
-                          <p key={key}>{id},<span>&nbsp;</span></p>
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                            {id},<span>&nbsp;</span>
+                          </p>
                         )                          
                       ))}
                     </div>
@@ -263,27 +270,33 @@ const UnPulled = props => {
             props.order ? 
             (
               typeof props.order === 'number' || props.order.length === 1 ? (
-              <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+              <div className="order-info__retried-order-set" id="retried-order-message" ref={messageRef}>
                 The following error occurred when order {props.order} was {message(props.action)}: {error}.
               </div>
             ) 
             : 
             (
-              <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+              <div className="order-info__retried-order-set" id="retried-order-message" ref={messageRef}>
                 <p>There was a "{error}" error when the following orders were {message(props.action)}:&nbsp;</p>
-                <div className='orders-in-array'>
+                <div className='order-info__retried-order-set__orders-in-array'>
                   {props.order.map((id, key) => (
                     props.order.length === 1 ? 
                     ( 
-                      <p key={key}>{id}</p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                        {id}
+                      </p>
                     )
                     : key === props.order.length - 1 ?
                     (
-                      <p key={key}>{id}.</p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                        {id}.
+                      </p>
                     )
                     :
                     (
-                      <p key={key}>{id},<span>&nbsp;</span></p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>
+                        {id},<span>&nbsp;</span>
+                      </p>
                     )                          
                   ))}
                 </div>
