@@ -233,151 +233,112 @@ const FailedPayment = props => {
   
   // Set the active tab, when it changes.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (props.activeTab && activeTab !== props.activeTab) {
-        setActiveTab(props.activeTab);
-      }
+    if (props.activeTab && activeTab !== props.activeTab) {
+      setActiveTab(props.activeTab);
     }
-    return () => mounted = false;
   }, [activeTab, props.activeTab]);
     
   // Create the page's tabs for each unique payment type.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (props && props.payments) {        
-        props.payments.forEach(type => {          
-          let paymentType = type.PaymentType.split(' ').join('');          
-          const parenthetical = paymentType.includes('(') ? paymentType.split('(')[1] : '';          
-          
-          paymentType = formatHeaders(paymentType.split('(')[0]);
-          paymentType += parenthetical ? ` (${parenthetical}` : '';
-                  
-          if (!jobNamesUnique.includes(paymentType)) setJobNamesUnique([...jobNamesUnique, paymentType]);          
-        });
-      }
+    if (props && props.payments) {        
+      props.payments.forEach(type => {          
+        let paymentType = type.PaymentType.split(' ').join('');          
+        const parenthetical = paymentType.includes('(') ? paymentType.split('(')[1] : '';          
+        
+        paymentType = formatHeaders(paymentType.split('(')[0]);
+        paymentType += parenthetical ? ` (${parenthetical}` : '';
+                
+        if (!jobNamesUnique.includes(paymentType)) setJobNamesUnique([...jobNamesUnique, paymentType]);          
+      });
     }
-    return () => mounted = false;
   }, [jobNamesUnique, props, activeTab]);
 
   // Set the default active tab and each tab's count and tab's index.
   useEffect(() => {
-    let mounted = true;
     const hiddenRowCount = document.getElementsByClassName('hide-dismissed').length;
 
-    if (mounted) {
-      if (!activeTab && jobNamesUnique && jobNamesUnique.length > 0) {
-        setActiveTab(jobNamesUnique[0]);
-      }
-        
-      if (props.payments) {
-        let counter = 0;
+    if (!activeTab && jobNamesUnique && jobNamesUnique.length > 0) {
+      setActiveTab(jobNamesUnique[0]);
+    }
+      
+    if (props.payments) {
+      let counter = 0;
 
-        if (itemsFiltered.current.length > 0) {
-          itemsFiltered.current.forEach(payment => {
-            if (formatHeaders(payment.PaymentType) === formatHeaders(activeTab) || activeTab === 'All') {
-              counter++;
-            }
-          });
+      if (itemsFiltered.current.length > 0) {
+        itemsFiltered.current.forEach(payment => {
+          if (formatHeaders(payment.PaymentType) === formatHeaders(activeTab) || activeTab === 'All') {
+            counter++;
+          }
+        });
 
-          setActiveTabCount(!displayDismissed ? counter - hiddenRowCount : counter);
-        }
+        setActiveTabCount(!displayDismissed ? counter - hiddenRowCount : counter);
       }
-  
-      const activeTabKeyValue = Object.entries(jobNamesUnique).filter(job => job[1] === formatHeaders(activeTab));
-      if (activeTabKeyValue && activeTabKeyValue.length > 0) setActiveTabIndex(parseInt(activeTabKeyValue[0][0]));
     }
 
-    return () => mounted = false;
+    const activeTabKeyValue = Object.entries(jobNamesUnique).filter(job => job[1] === formatHeaders(activeTab));
+    if (activeTabKeyValue && activeTabKeyValue.length > 0) setActiveTabIndex(parseInt(activeTabKeyValue[0][0]));
   }, [activeTab, activeTabIndex, jobNamesUnique, props.payments, displayDismissed]);
   
   // Update the vpWidth variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const handleResize = () => {
-        setVpWidth(window.innerWidth);
-      }
-      window.addEventListener('resize', handleResize)
-    }
-    return () => mounted = false;
+    const handleResize = () => setVpWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize);
   }, [vpWidth]);
   
   // Hide checkboxes if a user is not allowed any actions.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (props?.restrictedActions) {
-        if (props.restrictedActions === 'All') { // Hide the checkboxes, so that a user can't choose any items, thereby blocking her from taking any action on the items.      
-          const headerCheckbox = document.getElementsByClassName('checkbox-th');
-          const rowCheckbox = document.getElementsByClassName('select-one');
-    
-          for (let checkbox of headerCheckbox) {
-            checkbox.classList.add('hidden-checkbox');
-          }
-    
-          for (let checkbox of rowCheckbox) {
-            checkbox.classList.add('hidden-checkbox');
-          }
-        } 
-      }
+    if (props?.restrictedActions) {
+      if (props.restrictedActions === 'All') { // Hide the checkboxes, so that a user can't choose any items, thereby blocking her from taking any action on the items.      
+        const headerCheckbox = document.getElementsByClassName('checkbox-th');
+        const rowCheckbox = document.getElementsByClassName('select-one');
+  
+        for (let checkbox of headerCheckbox) {
+          checkbox.classList.add('hidden-checkbox');
+        }
+  
+        for (let checkbox of rowCheckbox) {
+          checkbox.classList.add('hidden-checkbox');
+        }
+      } 
     }
-    return () => mounted = false;
   }, [props?.restrictedActions, items]);
   
   // Manage the value of the allChecked state variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      
-      if (isChecked.length === activeTabCount && activeTabCount > 0) setAllChecked(true);
-      else setAllChecked(false);
-    }
-    return () => mounted = false;
+    if (isChecked.length === activeTabCount && activeTabCount > 0) setAllChecked(true);
+    else setAllChecked(false);
   }, [isChecked, activeTabCount]);
   
   // Show or hide optional actions: toggle the activeLink state variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const element = document.getElementById('retried-order-message');
-      if (isChecked.length > 0) {
-        const className = element ? element.getAttribute('class') : '';  
-        if (className && !className.includes('hidden')) element.setAttribute('class', `${className}-hidden`);
-        setActiveLink(true);
-      } else {
-        const className = element ? element.getAttribute('class').replace('-hidden', '') : ''; 
-        if (className) element.setAttribute('class', className);
-        setActiveLink(false);
-      }
+    const element = document.getElementById('retried-order-message');
+    if (isChecked.length > 0) {
+      const className = element ? element.getAttribute('class') : '';  
+      if (className && !className.includes('hidden')) element.setAttribute('class', `${className}-hidden`);
+      setActiveLink(true);
+    } else {
+      const className = element ? element.getAttribute('class').replace('-hidden', '') : ''; 
+      if (className) element.setAttribute('class', className);
+      setActiveLink(false);
     }
-    return () => mounted = false;
   }, [isChecked]);
   
   // Hide the message of the action's result after a new tab has been chosen.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (click.current) {
-        showMessage.current = false;
-        click.current = false;
-      }
+    if (click.current) {
+      showMessage.current = false;
+      click.current = false;
     }
-    return () => mounted = false;
   });
   
   // Filter out duplicate-payment errors. (This is mainly for the PaymentTrackingHistory, which is being used for development only.)
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (items && items.length > 0) {
-        itemsFiltered.current = items.filter((item, index, self) => 
-          index === self.findIndex(t => t.PaymentId === item.PaymentId)
-        );
-      }
+    if (items && items.length > 0) {
+      itemsFiltered.current = items.filter((item, index, self) => 
+        index === self.findIndex(t => t.PaymentId === item.PaymentId)
+      );
     }
-    return () => mounted = false;
   }, [items]);
   
   // Automatically scroll the active tab into view.
@@ -392,21 +353,16 @@ const FailedPayment = props => {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
     }
   });
-    
-  return props.error ?
-  (
-    <div className="signin-error">{props.error.message}</div>
-  ) 
-  : !props.isLoaded ? 
-  ( 
-    <div className="loading unprocessed">Loading . . . </div>
-  ) 
-  : props ? 
-  (
-    <div className="unprocessed-jobs-container">
-      {items.length > 0 ? 
+  
+  if (props.error) return <div className='signin-error'>{props.error.message}</div>;
+  if (!props.isLoaded) return <div className='loading unprocessed'>Loading . . . </div>;
+  if (!props) return '';
+
+  return (
+    <div className='unprocessed-jobs-container'>
+      {items.length > 0 && 
       (
-        <div className="order-actions unprocessed">
+        <div className='order-actions unprocessed'>
           <Tabs 
             activeTab={activeTab} 
             tabIndex={activeTabIndex} 
@@ -415,84 +371,73 @@ const FailedPayment = props => {
             caller='payments' 
           />
         </div>
-      )
-      :
-      (
-        null
       )}
-      {dismissedCount.current > 0 && (dismissedTabs.current.includes(activeTab) || activeTab === 'All') ? 
+      {dismissedCount.current > 0 && (dismissedTabs.current.includes(activeTab) || activeTab === 'All') && 
       (
-        <div className="toggle-link">
+        <div className='toggle-link'>
           <button onClick={() => setDisplayDismissed(!displayDismissed)} >
             {displayDismissed ? 'Hide' : 'Show'} Dismissed Errors
           </button>
         </div>
-      )
-      :
-      (
-        null
       )}
-      <div className="order-info no-actions">
-        {items.length > 0 ? 
+      <div className='order-info no-actions'>
+        {items.length > 0 && 
         (
-          <div className="stats">
-            <p className="order-info-number-display">Selected: {isChecked.length}</p>
-            {jobNamesUnique.length > 1 ? <p className="order-info-number-display">Tab: {`${activeTabIndex + 1} of ${jobNamesUnique.length}`}</p> : null}
-            <p className="order-info-number-display">Row Count: {activeTabCount}</p>
+          <div className='order-info__stats'>
+            <p className='order-info__stats__paragraph'>
+              Selected: {isChecked.length}
+            </p>
+            {jobNamesUnique.length > 1 ? <p className='order-info__stats__paragraph'>Tab: {`${activeTabIndex + 1} of ${jobNamesUnique.length}`}</p> : null}
+            <p className='order-info__stats__paragraph'>Row Count: {activeTabCount}</p>
           </div>
-        )
-        :
-        (
-          null
         )}
-        {showDetails ? 
+        {showDetails &&  
         (
-          <OrderDetails details={orderDetails} closeModal={closeModal} getClassNamesFor={getClassNamesFor} /> 
-        )
-        :
+          <OrderDetails 
+            details={orderDetails} 
+            closeModal={closeModal} 
+            getClassNamesFor={getClassNamesFor} 
+          /> 
+        )}
+        {activeLink && props.restrictedActions !== 'All' &&
         (
-          null
-        )
-        }
-        {activeLink && props.restrictedActions !== 'All' ?
-        (
-          <div className='action-links'>
-            <form className='link'>
+          <div className='order-info__action-links'>
+            <form className='link order-info_action-links__form'>
               {props && props.restrictedActions ? getActions('paymentError', props.restrictedActions, isChecked, takeAction, isCheckedOrderNums, dismissed) : null}
             </form>
           </div>
-        ) 
-        : 
-        (
-          null
         )}
-        {(showMessage.current) && !error ?
+        {(showMessage.current) && !error &&
         (
           props.order && (typeof props.order === 'number' || (Array.isArray(props.order) && props.order?.length === 1)) ? 
           (
-            <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-              <p>The payment error of order "{Array.isArray(props.order) ? props.order[0] : props.order}" has been {message(props.action)}.</p>
+            <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+              <p className='order-info__retried-order-set__paragraph'>
+                The payment error of order "{Array.isArray(props.order) ? props.order[0] : props.order}" has been {message(props.action)}.
+              </p>
             </div>
           ) 
           : 
           (
-            <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-              <p>The following orders' payment errors have been {message(props.action)}:&nbsp;</p>
-              <div className='orders-in-array'>
+            <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+              <p className='order-info__retried-order-set__paragraph'>
+                The following orders' payment errors have been {message(props.action)}:&nbsp;
+              </p>
+              <div className='order-info__orders-in-array'>
                 {props.order ? 
                 (
                   props.order.map((id, key) => {
                     return props.order.length === 1 ? 
                     ( 
-                      <p key={key}>{id}</p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}</p>
                     )
                     : key === props.order.length - 1 ?
                     (
-                      <p key={key}>{id}.</p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}.</p>
                     )
                     :
                     (
-                      <p key={key}>{id},<span>&nbsp;</span></p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id},<span>&nbsp;</span></p>
                     )                          
                     })
                   )
@@ -503,37 +448,33 @@ const FailedPayment = props => {
               </div>
             </div>
           )
-        )
-        :
-        (
-          null
         )}
         {error ?
         (
           props.order ? 
           (
             typeof props.order === 'number' || props.order.length === 1 ? (
-            <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+            <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
               The following error occurred when order "{Array.isArray(props.order) ? props.order[0] : props.order}" was {message(props.action)}: {error}
             </div>
           ) 
           : 
           (
-            <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+            <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
               <p>There was a '{error}' error when the following orders were {message(props.action)}:&nbsp;</p>
-              <div className='orders-in-array'>
+              <div className='order-info__retried-order-set__orders-in-array'>
                 {props.order.map((id, key) => (
                   props.order.length === 1 ? 
                   ( 
-                    <p key={key}>{id}</p>
+                    <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}</p>
                   )
                   : key === props.order.length - 1 ?
                   (
-                    <p key={key}>{id}.</p>
+                    <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}.</p>
                   )
                   :
                   (
-                    <p key={key}>{id},<span>&nbsp;</span></p>
+                    <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id},<span>&nbsp;</span></p>
                   )                          
                 ))}
               </div>
@@ -551,9 +492,9 @@ const FailedPayment = props => {
         )}
       </div>
 
-      <table className="unprocessed-jobs-table">
+      <table className='unprocessed-jobs-table'>
         <thead>
-          <tr className="header-row">
+          <tr className='header-row'>
           {items.length !== 0 ? (
             props.restrictedActions && props.restrictedActions === 'All' ?
             (
@@ -686,7 +627,7 @@ const FailedPayment = props => {
                       />
                     </td>
                     )}
-                  <td className="order-number order-link">
+                  <td className='order-number order-link'>
                     {vpWidth < 1280 ?
                     (
                       <Link to='#' onClick={() => takeAction('showDetails', item)} >
@@ -707,31 +648,31 @@ const FailedPayment = props => {
                       </Link>
                     )}
                   </td>
-                  <td className="payment-id desktop">{item.PaymentId ? item.PaymentId : 'N/A'}</td>
+                  <td className='payment-id desktop'>{item.PaymentId ? item.PaymentId : 'N/A'}</td>
                   {activeTab === 'All' ?
                   (
-                    <td className="payment-type desktop">{item.PaymentType ? item.PaymentType : 'N/A'}</td>
+                    <td className='payment-type desktop'>{item.PaymentType ? item.PaymentType : 'N/A'}</td>
                   )
                   :
                   (
                     null
                   )}
-                  <td className="payment-amount">{formatCurrency(item.PaymentAmount, item.CurrencyCode)}</td>
-                  <td className="payment-date desktop">{new Date(parseInt(item.PaymentDate)).toISOString().split('T')[0]}</td>
-                  <td className="payment-attempt-date desktop">{new Date(parseInt(item.AttemptedAt)).toISOString().split('T')[0]}</td>
-                  {activeTab === 'Credit Card' ? <td className="payment-card-number desktop">{item.CardNumber ? item.CardNumber : 'None'}</td> : null}
+                  <td className='payment-amount'>{formatCurrency(item.PaymentAmount, item.CurrencyCode)}</td>
+                  <td className='payment-date desktop'>{new Date(parseInt(item.PaymentDate)).toISOString().split('T')[0]}</td>
+                  <td className='payment-attempt-date desktop'>{new Date(parseInt(item.AttemptedAt)).toISOString().split('T')[0]}</td>
+                  {activeTab === 'Credit Card' ? <td className='payment-card-number desktop'>{item.CardNumber ? item.CardNumber : 'None'}</td> : null}
                   {vpWidth < 1280 ?
                   (
-                    <td className="payment-error whitespace-prewrap">{item.ErrorReason && item.ErrorReason.length > 24? item.ErrorReason.slice(0,25) + '...' : item.ErrorReason && item.ErrorReason.length <= 24 ? item.ErrorReason : 'None'}</td>
+                    <td className='payment-error whitespace-prewrap'>{item.ErrorReason && item.ErrorReason.length > 24? item.ErrorReason.slice(0,25) + '...' : item.ErrorReason && item.ErrorReason.length <= 24 ? item.ErrorReason : 'None'}</td>
                   )
                   :
                   (
-                    <td className="payment-error whitespace-prewrap">{item.ErrorReason ? item.ErrorReason : 'None'}</td>
+                    <td className='payment-error whitespace-prewrap'>{item.ErrorReason ? item.ErrorReason : 'None'}</td>
                   )}
-                  <td className="order-error-dismissed-at desktop" id={`${item.PaymentId}-dismissed-at`}>
+                  <td className='order-error-dismissed-at desktop' id={`${item.PaymentId}-dismissed-at`}>
                     {item.DismissedAt ? new Date(parseInt(item.DismissedAt)).toISOString().split('T')[0] : 'N/A'}
                   </td>
-                  <td className="order-error-dismissed-by desktop" id={`${item.PaymentId}-dismissed-by`}>{item.DismissedBy ? item.DismissedBy : 'N/A'}</td>
+                  <td className='order-error-dismissed-by desktop' id={`${item.PaymentId}-dismissed-by`}>{item.DismissedBy ? item.DismissedBy : 'N/A'}</td>
                 </tr>
               ) : 
               (
@@ -740,16 +681,14 @@ const FailedPayment = props => {
               })
           ) : (
             <tr>
-              <td className="hidden-checkbox"></td>
+              <td className='hidden-checkbox'></td>
               <td>None</td>
             </tr>
           )}
         </tbody>
       </table>
     </div>
-  ) : (
-    ''
-  )
+  );
 };
 
 export default FailedPayment;

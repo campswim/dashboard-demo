@@ -136,19 +136,15 @@ const FailedOrders = () => {
   
   // Set the tab state variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (!click) {
-        if (type && tab !== null) {
-          if (type.includes('Failed')) setTab('failedPushes');
-          else if (type === 'Unpushed') setTab('unpushedNoFail')
-          else setTab('ignoredOrders');  
-        }
-      } else {
-        setTab(null);
+    if (!click) {
+      if (type && tab !== null) {
+        if (type.includes('Failed')) setTab('failedPushes');
+        else if (type === 'Unpushed') setTab('unpushedNoFail')
+        else setTab('ignoredOrders');  
       }
+    } else {
+      setTab(null);
     }
-    return () => mounted = false;
 }, [type, tab, click]);
 
   // Get data from the db.
@@ -245,16 +241,17 @@ const FailedOrders = () => {
   (
     <div className="loading">Loading . . .</div>
   )
-  : isLoaded ?
+  : isLoaded &&
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Failed Orders')) ?
     ( // Render the page.
-      getQuery ? (
+      getQuery && 
+      (
         <>
           <div className='order-actions'>
-            <form>
+            <form class='order-actions__form'>
               <button 
-                className={unpushedTab}
+                className={`${unpushedTab} order-actions__form__button`}
                 id='unpushedNoFail' 
                 value='unpushedNoFail' 
                 onClick={(e) => handleClick(e)}
@@ -262,9 +259,9 @@ const FailedOrders = () => {
                 Unpushed
               </button>
             </form>
-            <form>
+            <form class='order-actions__form'>
               <button 
-                className={failedToPullTab}
+                className={`${failedToPullTab} order-actions__form__button`}
                 id='failedPulls' 
                 value='failedPulls' 
                 onClick={(e) => handleClick(e)}
@@ -272,9 +269,9 @@ const FailedOrders = () => {
                 Failed to Pull
               </button>
             </form>
-            <form>
+            <form class='order-actions__form'>
               <button 
-                className={failedToPushTab}
+                className={`${failedToPushTab} order-actions__form__button`}
                 id='failedPushes' 
                 value='failedPushes' 
                 onClick={(e) => handleClick(e)}
@@ -282,9 +279,9 @@ const FailedOrders = () => {
                 Failed to Push
               </button>
             </form>
-            <form>
+            <form class='order-actions__form'>
               <button 
-                className={ignoredOrdersTab}
+                className={`${ignoredOrdersTab} order-actions__form__button`}
                 id="ignoredOrders" 
                 value="ignoredOrders" 
                 onClick={(e) => handleClick(e)}
@@ -366,19 +363,11 @@ const FailedOrders = () => {
           )}
         </>
       ) 
-      : 
-      (
-        null
-      )  
     )
     :
     (
       <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
     )
-  )
-  :
-  (
-    null
   )
 };
 

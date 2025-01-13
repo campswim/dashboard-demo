@@ -2,7 +2,7 @@
 
 ## Authors
 
-Nathan Cox (<nate@campswim.co>)  
+Nathan Cox
 
 ## Description
 

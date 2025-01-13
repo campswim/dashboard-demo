@@ -428,96 +428,72 @@ const Users = (props) => {
 
   // Get the tabs for the page.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (items.length > 0) {
-        // const tabsObject = {'All Roles': 0};
-        const tabsArray = ['All Roles'];
-        let tempTabs = [...items];
-                
-        // Sort the array by role ID, so that the tabs will always be in the same order.
-        tempTabs.sort((a, b) => {
-          const one = parseInt(a.RoleId);
-          const two = parseInt(b.RoleId);
-        
-          return one > two ? 1 : -1;
-        });
-  
-        // Reduce the array of tempTabs to unique ones only.
-        tempTabs.forEach(item => {
-          // tabsObject[item.Role] = item.RoleId;
-          if (!tabsArray.includes(item.Role)) tabsArray.push(item.Role);
-        });
-  
-        // setTabs(Object.entries(tabsObject));
-        setTabs(tabsArray);
+    if (items.length > 0) {
+      // const tabsObject = {'All Roles': 0};
+      const tabsArray = ['All Roles'];
+      let tempTabs = [...items];
+              
+      // Sort the array by role ID, so that the tabs will always be in the same order.
+      tempTabs.sort((a, b) => {
+        const one = parseInt(a.RoleId);
+        const two = parseInt(b.RoleId);
+      
+        return one > two ? 1 : -1;
+      });
 
-      };
-    }
-    return () => mounted = false;
+      // Reduce the array of tempTabs to unique ones only.
+      tempTabs.forEach(item => {
+        // tabsObject[item.Role] = item.RoleId;
+        if (!tabsArray.includes(item.Role)) tabsArray.push(item.Role);
+      });
+
+      // setTabs(Object.entries(tabsObject));
+      setTabs(tabsArray);
+
+    };
   }, [items]);
   
   // Populate and update users from props.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) if (props.users) setUsers(props.users);
-    return () => mounted = false;
+    if (props.users) setUsers(props.users);
   }, [props.users]);
   
   // Toggle allChecked.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (users && users.length !== 0 && isChecked.length === users.length) setAllChecked(true);
-      else setAllChecked(false);
-    }
-    return () => mounted = false;
+    if (users && users.length !== 0 && isChecked.length === users.length) setAllChecked(true);
+    else setAllChecked(false);
   }, [isChecked, users]);
   
   // Set the active tab, when it changes.
   useEffect(() => {
-    let mounted = true;
-
-    if (mounted) {
-      if (props.activeTab && activeTab !== props.activeTab) {
-        setActiveTab(props.activeTab);
-      }
+    if (props.activeTab && activeTab !== props.activeTab) {
+      setActiveTab(props.activeTab);
     }
-
-    return () => mounted = false;
   }, [activeTab, props.activeTab]);
   
   // Set the active-tab count.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (Array.isArray(props.users)) {
-        let counter = 0;
-        props.users.forEach(user => {
-          if (user.Role === activeTab || activeTab === 'All Roles') counter++;
-        });
-        setActiveTabCount(counter);
-      }
+    if (Array.isArray(props.users)) {
+      let counter = 0;
+      props.users.forEach(user => {
+        if (user.Role === activeTab || activeTab === 'All Roles') counter++;
+      });
+      setActiveTabCount(counter);
     }
-    return () => mounted = false;
   }, [props.users, activeTab]);
   
   // Show or hide optional actions.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const element = document.getElementById('retried-order-message');
-      if (isChecked.length > 0) {
-        const className = element ? element.getAttribute('class') : '';        
-        if (className && !className.includes('hidden')) element.setAttribute('class', `${className}-hidden`);
-        setActiveLink(true);
-      } else {
-        const className = element ? element.getAttribute('class').replace('-hidden', '') : ''; 
-        if (className) element.setAttribute('class', className);
-        setActiveLink(false);
-      }
+    const element = document.getElementById('retried-order-message');
+    if (isChecked.length > 0) {
+      const className = element ? element.getAttribute('class') : '';        
+      if (className && !className.includes('hidden')) element.setAttribute('class', `${className}-hidden`);
+      setActiveLink(true);
+    } else {
+      const className = element ? element.getAttribute('class').replace('-hidden', '') : ''; 
+      if (className) element.setAttribute('class', className);
+      setActiveLink(false);
     }
-    return () => mounted = false;
   }, [isChecked]);
   
   // Set loggedInUser from local storage.
@@ -531,35 +507,20 @@ const Users = (props) => {
 
   // Set the activeTabIndex variable.
   useEffect(() => {
-    let mounted = true;
-
-    if (mounted) {
-      const activeTabKeyValue = Object.entries(tabs).filter(job => job[1] === formatHeaders(activeTab));
-      if (activeTabKeyValue && activeTabKeyValue.length > 0) setActiveTabIndex(parseInt(activeTabKeyValue[0][0]));
-    }
-
-    return () => mounted = false;
+    const activeTabKeyValue = Object.entries(tabs).filter(job => job[1] === formatHeaders(activeTab));
+    if (activeTabKeyValue && activeTabKeyValue.length > 0) setActiveTabIndex(parseInt(activeTabKeyValue[0][0]));
   }, [activeTab, tabs]);
 
   // Set showMessage after a user has been added.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      if (props.action === 'Add User') setShowMessage(true)
-    }
-    return () => mounted = false;
+    if (props.action === 'Add User') setShowMessage(true)
   }, [props.action]);
   
   // Update the vpWidth variable.
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const handleResize = () => {
-        setVpWidth(window.innerWidth);
-      }
-      window.addEventListener('resize', handleResize)
-    }
-    return () => mounted = false;
+    const handleResize = () => setVpWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [vpWidth]);
   
   // Get the user's available roles for sign-up.
@@ -581,31 +542,32 @@ const Users = (props) => {
     }
     return () => mounted = false;
   }, []);
+
+  if (props.error) return <div>Error: {props.error.message}</div>;
+  if (!props.isLoaded) return <div>Loading . . . </div>;
   
-  return props.error ? 
-  ( // Render the sign-in error.
-    <div className="signin-error">{props.error.message}</div>
-  ) 
-  : !props.isLoaded ? 
-  (  // Render the loading message.
-    <div className="loading unprocessed">Loading . . . </div>
-  ) 
-  : loggedInUser?.role === 'Admin' ?
+  return loggedInUser?.role === 'Admin' ?
   ( // If the user has the correct permissions, load the page.
     items ?
     (
       <div className='user-container'>
-        <div className="order-actions user">
-          <Tabs activeTab={activeTab} tabIndex={activeTabIndex} tabs={tabs} handleClick={handleTabClick} caller={'user'} />
+        <div className='order-actions user'>
+          <Tabs 
+            activeTab={activeTab} 
+            tabIndex={activeTabIndex} 
+            tabs={tabs} 
+            handleClick={handleTabClick} 
+            caller={'user'} 
+          />
         </div>
-        <div className="order-info">
-          <div className='stats'>
-            {tabs.length > 1 ? <p className="order-info-number-display">Tab: {`${activeTabIndex + 1} of ${tabs.length}`}</p> : null}
-            <p className="order-info-number-display">Selected: {isChecked.length}</p>
-            <p className="order-info-number-display">Count: {activeTabCount}</p>
+        <div className='order-info'>
+          <div className='order-info__stats'>
+            {tabs.length > 1 ? <p className='order-info__stats__paragraph'>Tab: {`${activeTabIndex + 1} of ${tabs.length}`}</p> : null}
+            <p className='order-info__stats__paragraph'>Selected: {isChecked.length}</p>
+            <p className='order-info__stats__paragraph'>Count: {activeTabCount}</p>
           </div>
-            <div className='action-links'>
-              <form className='link'>
+            <div className='order-info__action-links'>
+              <form className='link order-info__action-links__form'>
                 <Link
                   to={{
                     pathname: '/login',
@@ -640,53 +602,51 @@ const Users = (props) => {
                 )}
               </form>
             </div>
-            {!activeLink && error ? (
-              <div>Error: {error}</div>
-            ) : (
-              ''
-            )}
+            {!activeLink && error && (<div>Error: {error}</div>)}
             {(props.action === 'Delete User' || props.action === 'Add User') && showMessage ? 
             (
               !error ? 
               (
                 props.message && !activeLink ?
                 (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>{props.message}</p>
+                  <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                    <p className='order-info__retried-order-set__paragraph'>{props.message}</p>
                   </div>
                 ) : props.id && !activeLink ? 
                 (
                   !Array.isArray(props.id) ? 
                   (
-                    <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>User #{props.id} has been {message(props.action)}.</p>
+                    <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                      <p className='order-info__retried-order-set__paragraph'>User #{props.id} has been {message(props.action)}.</p>
                     </div>
                   ) 
                   : 
                   (
                     props.id.length === 1 ? 
                     (
-                      <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                        <p>User #{props.id[0]} has been {message(props.action)}.</p>
+                      <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                        <p className='order-info__retried-order-set__paragraph'>User #{props.id[0]} has been {message(props.action)}.</p>
                       </div>
                     ) 
                     : 
                     (
-                      <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                        <p>The following users have been {message(props.action)}:&nbsp;</p>
-                        <div className='orders-in-array'>
+                      <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                        <p className='order-info__retried-order-set__paragraph'>
+                          The following users have been {message(props.action)}:&nbsp;
+                        </p>
+                        <div className='order-info__orders-in-array'>
                           {props.id.map((id, key) => (
                             props.id.length === 1 ?
                             (
-                              <p key={key}>{id}</p>
+                              <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}</p>
                             )
                             : key === props.id.length - 1 ?
                             (
-                              <p key={key}>{id}.</p>
+                              <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}.</p>
                             )
                             :
                             (
-                              <p key={key}>{id},<span>&nbsp;</span></p>
+                              <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id},<span>&nbsp;</span></p>
                             )
                             ))}
                         </div>
@@ -703,22 +663,24 @@ const Users = (props) => {
               (
                 !Array.isArray(props.id) ? 
                 (
-                  <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                    <p>The following error occurred when user #{props.id} was {message(props.action)}: {error}.</p>
+                  <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                    <p className='order-info__retried-order-set__paragraph'>The following error occurred when user #{props.id} was {message(props.action)}: {error}.</p>
                   </div>
                 ) : (
                   props.id.length > 1 ?
                   (
-                    <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>There was a "{error}" error when the following IDs were {message(props.action)}:</p>
-                      <div className='orders-in-array'>
+                    <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                      <p className='order-info__retried-order-set__paragraph'>There was a "{error}" error when the following IDs were {message(props.action)}:</p>
+                      <div className='order-info__retried-order-set__orders-in-array'>
                         {props.id.map((id, key) => (
-                          <p key={key}>{id}</p>))}
+                          <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}</p>))}
                       </div>
                     </div>
                   ) : (
-                    <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
-                      <p>The following error occurred when user #{props.id[0]} was {message(props.action)}: {error}.</p>
+                    <div className='order-info__retried-order-set' id='retried-order-message' ref={messageRef}>
+                      <p className='order-info__retried-order-set__paragraph'>
+                        The following error occurred when user #{props.id[0]} was {message(props.action)}: {error}.
+                      </p>
                     </div>
                   )
                 )
@@ -729,11 +691,23 @@ const Users = (props) => {
           ) : (
             ''
           )}
-          {showDetails ? <OrderDetails details={orderDetails} closeModal={closeModal} handleBlur={handleBlur} handleClick={handleClick} toggleSelect={toggleSelect} handleRoleSelect={handleRoleSelect} getClassNamesFor={getClassNamesFor} caller={{ users: 'user' }} userRoles={userRoles} /> : null}
+          {showDetails && 
+            <OrderDetails 
+              details={orderDetails} 
+              closeModal={closeModal} 
+              handleBlur={handleBlur} 
+              handleClick={handleClick} 
+              toggleSelect={toggleSelect} 
+              handleRoleSelect={handleRoleSelect} 
+              getClassNamesFor={getClassNamesFor} 
+              caller={{ users: 'user' }} 
+              userRoles={userRoles} 
+            />
+          }
         </div>
         <table>
           <thead>
-            <tr className="header-row">
+            <tr className='header-row'>
               {items.length !== 0 ? (
                 <th className='checkbox-th'>
                   <Checkbox
@@ -804,8 +778,8 @@ const Users = (props) => {
                     )}
                   </td>
                   <td
-                    className="editable"
-                    suppressContentEditableWarning="true"
+                    className='editable'
+                    suppressContentEditableWarning='true'
                     data-default-value={item.Name}
                     id={`Name-${key}`}
                     onBlur={(e) => handleBlur(item.Id, key, 'Name', e, null, item.Email)}
@@ -860,7 +834,7 @@ const Users = (props) => {
   ) 
   : 
   (
-    <div className="role-denied">Your profile's assigned role of "{loggedInUser?.role}" does not allow you to access this page.</div>
+    <div className='role-denied'>Your profile's assigned role of "{loggedInUser?.role}" does not allow you to access this page.</div>
   )
 }
 

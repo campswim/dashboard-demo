@@ -85,7 +85,7 @@ const OrderDetails = props => {
   (
     <div className='order-details-modal'>
       <div className='x-close-container'>
-        <span className="x-close" onClick={() => closeModal()}>x</span>
+        <span className='x-close' onClick={() => closeModal()}>x</span>
       </div>
       <div className='order-details-card'>
         {Object.entries(item).map((detail, key) => (
@@ -102,17 +102,17 @@ const OrderDetails = props => {
                       <>
                         <p className={props.getClassNamesFor(detail[0])}>Enabled</p>
                         <p
-                        className="editable"
-                        suppressContentEditableWarning="true"
-                        data-default-value="&#10003;"
-                        id={`checkmark-${key}`}
-                        onBlur={(e) => props.handleBlur(caller === 'maps' ? item.Id : item.Name, key, detail[0], e, caller === 'params' ? item.idx : null, item.Email)}
-                        onClick={(e) => props.handleClick(e.target, key, detail[0], item.Name, item.EnabledDate, item, item.idx)}
-                        onPaste={(e) => {handlePaste(e, `${detail[1] ? detail[1] : 'None'}-${key}`)}}
-                      >
-                        {detail[1] && detail[1] !== 'disable' ? <span data-default-value="&#10003;">&#10003;</span> : <span data-default-value="&#10003;">No</span>}
-                      </p>
-                    </>
+                          className='editable'
+                          suppressContentEditableWarning='true'
+                          data-default-value='&#10003;'
+                          id={`checkmark-${key}`}
+                          onBlur={(e) => props.handleBlur(caller === 'maps' ? item.Id : item.Name, key, detail[0], e, caller === 'params' ? item.idx : null, item.Email)}
+                          onClick={(e) => props.handleClick(e.target, key, detail[0], item.Name, item.EnabledDate, item, item.idx)}
+                          onPaste={(e) => {handlePaste(e, `${detail[1] ? detail[1] : 'None'}-${key}`)}}
+                        >
+                          {detail[1] && detail[1] !== 'disable' ? <span data-default-value='&#10003;'>&#10003;</span> : <span data-default-value='&#10003;'>No</span>}
+                        </p>
+                      </>
                     )
                     : detail[0] === 'Role' ?
                     (
@@ -146,8 +146,8 @@ const OrderDetails = props => {
                       <>
                         <p className={props.getClassNamesFor(detail[0])}>{formatHeaders(detail[0])}</p>
                         <p
-                          className="editable"
-                          suppressContentEditableWarning="true"
+                          className='editable'
+                          suppressContentEditableWarning='true'
                           data-default-value={detail[1]}
                           id={`${detail[0] ? detail[0] : 'None'}-${key}`}
                           onBlur={(e) => props.handleBlur(caller === 'maps' || caller === 'user' ? item.Id : item.Name, caller === 'user' ? item.idx : key, detail[0], e, caller === 'params' || caller === 'user' ? item.idx : null, item.Email)}

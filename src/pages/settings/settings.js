@@ -15,7 +15,7 @@ const SettingsPage = () => {
   const [mapsTab, setMapsTab] = useState('active-button');
   const [paramsTab, setParamsTab] = useState('inactive-button');
   const handleSubmit = event => event.preventDefault();
-
+  
   // Click handler: which tab to show, maps or params.
   const handleClick = event => {    
     let chosenButton;
@@ -98,48 +98,43 @@ const SettingsPage = () => {
     return () => mounted = false;
   }, []);
   
-  return !loggedIn ?
-  (
-    <Redirect to={
-        {
-          pathname: '/login',
-          state: {
-            action: 'Sign In',
-            message: 'Please sign in.'
+  if (error) return <div className='signin-error'>{error?.message ? error.message : error}</div>;
+  if (!loggedIn) return (
+    <Redirect 
+      to={
+        { 
+          pathname: '/login', 
+          state: { 
+            action: 'Sign In', 
+            message: 'Please sign in.' 
           },
         }
       }
     />
-  )
-  : error ?
-  (
-    <div className="signin-error">{error?.message ? error.message : error}</div>
-  )
-  : loggedInUser?.role !== 'Admin' ? 
-  (
-    <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
-  )
-  : isLoaded ?
+  );
+  if (loggedInUser?.role !== 'Admin') return <div className='role-denied'>Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>;
+  
+  return isLoaded &&
   (
     loggedInUser && (loggedInUser.restrictions.pages === 'None' || !loggedInUser.restrictions.pages.includes('Settings')) ?
     (
       <>
         <div className='order-actions'>
-          <form onSubmit={handleSubmit}>
+          <form className='order-actions__form' onSubmit={handleSubmit}>
             <button 
               // ref={mapsTab} 
-              className={mapsTab} 
-              id="maps" 
-              value="maps" 
+              className={`${mapsTab} order-actions__form__button`} 
+              id='maps' 
+              value='maps' 
               onClick={handleClick}
             >
               Warehouse Map
             </button>
             <button 
               // ref={paramsTab} 
-              className={paramsTab}
-              id="params" 
-              value="params" 
+              className={`${paramsTab} order-actions__form__button`}
+              id='params' 
+              value='params' 
               onClick={handleClick}
             >
               Parameters
@@ -172,12 +167,8 @@ const SettingsPage = () => {
     )
     :
     (
-      <div className="role-denied">Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
+      <div className='role-denied'>Your profile's assigned role of "{loggedInUser.role}" does not allow you to access this page.</div>
     )
-  )
-  :
-  (
-    null
   )
 };
 

@@ -111,9 +111,18 @@ const BcMissingItems = () => {
       :
       (
         <>
-          <form className="get-missing-bc-items" id="get-missing-bc-items" onSubmit={(e) => handleSubmit(e)}>
+          <form 
+            className="get-missing-bc-items" 
+            id="get-missing-bc-items" 
+            onSubmit={(e) => handleSubmit(e)}
+          >
             {/* <p>To see a list of items missing in Business Central, indicate the number of days back you'd like to pull item numbers from Exigo and click "Submit."</p> */}
-            <input type='text' id="days-back" placeholder="Number of Days Back" onChange={(e) => setDaysBack(e.target.value)} />
+            <input 
+              type='text' 
+              id="days-back" 
+              placeholder="Number of Days Back" 
+              onChange={(e) => setDaysBack(e.target.value)} 
+            />
             <button className="inactive-button" type="submit">Submit</button>
           </form>
           {error ? <p className="error">{error}</p> : null}

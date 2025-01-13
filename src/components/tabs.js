@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import formatHeaders from '../hooks/format-headers';
 
 const Tabs = props => {
-
   // Scroll the active button into view.
   useEffect(() => {
     const element = document.getElementsByClassName('active-button');
@@ -25,16 +24,16 @@ const Tabs = props => {
     if (!props.tabs.includes('All')) props.tabs.unshift('All');
   }
 
-  return props.tabs ? 
+  return props.tabs && 
   (
-    <div className='tabs-container'>
+    <div className='tabs-container order-actions__tabs-container'>
       {props.tabs.map((tab, key) => (
-          <div key={key} className="page-tab">
-          <form>
+          <div key={key} className='order-actions__tabs-container__page-tab'>
+          <form className='order-actions__tabs-container__page-tab__form'>
             {props.caller !== 'payments' ? 
             (
               <button 
-                className={formatHeaders(props.activeTab) === tab ? 'active-button' : 'inactive-button'} 
+                className={`order-actions__tabs-container__page-tab__form__button ${formatHeaders(props.activeTab) === tab ? 'active-button' : 'inactive-button'}`} 
                 id={`failed-process-tab-${key+1}`}
                 value={tab} 
                 onClick={props.handleClick}
@@ -44,7 +43,12 @@ const Tabs = props => {
             )
             :
             (
-              <button className={props.activeTab === tab ? 'active-button' : 'inactive-button'} id={`failed-process-tab-${key+1}`} value={tab} onClick={props.handleClick}>
+              <button 
+                className={`tabs-container order-actions__tabs-container__page-tab__form__button ${formatHeaders(props.activeTab) === tab ? 'active-button' : 'inactive-button'}`} 
+                id={`failed-process-tab-${key+1}`} 
+                value={tab} 
+                onClick={props.handleClick}
+              >
                 {tab}
               </button>
             )}
@@ -52,10 +56,6 @@ const Tabs = props => {
         </div>
       ))}
     </div>
-  )
-  :
-  (
-    null
   )
 }
 

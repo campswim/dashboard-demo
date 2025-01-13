@@ -206,8 +206,8 @@ const UnPushed = (props) => {
         {items.length > 0 ? 
         (
           <div className='order-info__stats'>
-            {/* <p className="order-info-number-display">Selected: {isChecked.length}</p> */}
-            <p className="order-info__stats__paragraph">Count: {items.length}</p>
+            {/* <p className='order-info__stats__paragraph'>Selected: {isChecked.length}</p> */}
+            <p className='order-info__stats__paragraph'>Count: {items.length}</p>
           </div>
         )
         :

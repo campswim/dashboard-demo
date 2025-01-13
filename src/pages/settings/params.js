@@ -59,7 +59,7 @@ const Params = props => {
     }
 
     // Unbind the event listener on clean up.
-    return () => document.removeEventListener("mousedown", clickSniffer);
+    return () => document.removeEventListener('mousedown', clickSniffer);
   };
 
   // Handles the user clicking in an editable cell.
@@ -345,18 +345,18 @@ const Params = props => {
   useEffect(() => {
     let mounted = true;
     if (mounted) {
-      document.addEventListener("mousedown", clickSniffer);
+      document.addEventListener('mousedown', clickSniffer);
     }
     return () => mounted = false;
   });
   
   return props.error ? 
   ( 
-    <div className="signin-error">{props.error.message}</div> 
+    <div className='signin-error'>{props.error.message}</div> 
   ) 
   : !props.isLoaded ? 
   ( 
-    <div className="loading">Loading . . .</div> 
+    <div className='loading'>Loading . . .</div> 
   ) 
   : error ?
   (
@@ -367,7 +367,7 @@ const Params = props => {
   : props.role === 'Admin' ?
   (
       <>
-        <div className="order-info no-actions">
+        <div className='order-info no-actions'>
           {showDetails ? 
           (
             <OrderDetails 
@@ -384,7 +384,7 @@ const Params = props => {
             null
           )}
         </div>
-        <table className="params-table">
+        <table className='params-table'>
           <thead>
             <tr className='header-row'>
               {headers ?
@@ -446,9 +446,9 @@ const Params = props => {
                 <tr key={key}>
                   <>
                     <td 
-                      className="checkmark editable desktop"
-                      suppressContentEditableWarning="true" 
-                      data-default-value="&#10003;"
+                      className='checkmark editable desktop'
+                      suppressContentEditableWarning='true' 
+                      data-default-value='&#10003;'
                       id={`checkmark-${key}`}
                       onBlur={(e) => handleBlur(item.Name, key, 'EnabledDate', e)} // params: id, row, column, event
                       onClick={(e) => handleClick(e.target, key, 'EnabledDate', item.Name, item.EnabledDate, item, key )} // params: event, row, column, id, enabled date
@@ -469,8 +469,8 @@ const Params = props => {
                       )}
                     </td>
                     <td
-                      className="editable desktop"
-                      suppressContentEditableWarning="true" 
+                      className='editable desktop'
+                      suppressContentEditableWarning='true' 
                       data-default-value={item.Value ? item.Value : 'None'}
                       id={`Value-${key}`}
                       onBlur={(e) => handleBlur(item.Name, key, 'Value', e)}
@@ -487,8 +487,8 @@ const Params = props => {
                     </td>
                     {vpWidth < 1280 ? null : <td className='process-job-ids'>{item.ProcessJobIds ? item.ProcessJobIds.split(',').join(', ') : 'None'}</td>}
                     <td
-                      className="editable desktop"
-                      suppressContentEditableWarning="true" 
+                      className='editable desktop'
+                      suppressContentEditableWarning='true' 
                       data-default-value={item.Category ? item.Category : 'None'}
                       id={`Category-${key}`}
                       onBlur={(e) => handleBlur(item.Name, key, 'Category', e)}
@@ -497,8 +497,8 @@ const Params = props => {
                       {item.Category ? item.Category : 'None'}
                     </td>
                     <td
-                      className="editable desktop"
-                      suppressContentEditableWarning="true" 
+                      className='editable desktop'
+                      suppressContentEditableWarning='true' 
                       data-default-value={item.SubCategory ? item.SubCategory : 'None'}
                       // id={`${item.SubCategory}-${key}`}
                       id={`SubCategory-${key}`}
@@ -509,8 +509,8 @@ const Params = props => {
                     </td>
                     <td className='desktop'>{item.ValueType}</td>
                     <td 
-                      className="notes editable desktop"
-                      suppressContentEditableWarning="true" 
+                      className='notes editable desktop'
+                      suppressContentEditableWarning='true' 
                       data-default-value={item.Notes ? item.Notes : 'None'}
                       // id={`${item.Notes}-${key}`}
                       id={`Notes-${key}`}
@@ -531,7 +531,7 @@ const Params = props => {
   ) 
   :
   (
-    <div className="role-denied">Your profile's assigned role of "{props.role}" does not allow you to access this page.</div>
+    <div className='role-denied'>Your profile's assigned role of "{props.role}" does not allow you to access this page.</div>
   )
 };
 

@@ -336,94 +336,78 @@ const Unprocessed = props => {
     }
     return () => mounted = false;
   });
-    
-  return props.error ?
-  (
-    <div className="signin-error">{props.error.message}</div>
-  ) 
-  : !props.isLoaded ? 
-  ( 
-    <div className="loading unprocessed">Loading . . . </div>
-  ) 
-  : props ? 
-  (
+  
+  if (props.error) return <div className="signin-error">{props.error.message}</div>;
+  if (!props.isLoaded) return <div className="loading unprocessed">Loading . . . </div>;
+  if (!props) return '';
+
+  return (
     <div className="unprocessed-jobs-container">
       <div className="order-actions unprocessed">
-        <Tabs activeTab={activeTab} tabIndex={activeTabIndex} tabs={jobNamesUnique} handleClick={handleClick} caller='unprocessed' />
+        <Tabs 
+          activeTab={activeTab} 
+          tabIndex={activeTabIndex} 
+          tabs={jobNamesUnique} 
+          handleClick={handleClick} 
+          caller='unprocessed' 
+        />
       </div>
-      {dismissedCount.current > 0 && (dismissedTabs.current.includes(activeTab) || activeTab === 'All') ? 
+      {dismissedCount.current > 0 && (dismissedTabs.current.includes(activeTab) || activeTab === 'All') && 
       (
         <div className="toggle-link">
           <button onClick={() => setDisplayDismissed(!displayDismissed)} >
             {displayDismissed ? 'Hide' : 'Show'} Dismissed Errors
           </button>
         </div>
-      )
-      :
-      (
-        null
       )}
       <div className={`order-info ${!activeLink ? 'no-actions' : ''}`}>
-        {items.length > 0 ? 
+        {items.length > 0 && 
         (
-          <div className="stats">
-            <p className="order-info-number-display">Selected: {isChecked.length}</p>
-            {jobNamesUnique.length > 1 ? <p className="order-info-number-display">Tab: {`${activeTabIndex + 1} of ${jobNamesUnique.length}`}</p> : null}
-            <p className="order-info-number-display">Row Count: {activeTabCount}</p>
+          <div className="order-info__stats">
+            <p className="order-info__stats__paragraph">Selected: {isChecked.length}</p>
+            {jobNamesUnique.length > 1 ? <p className="order-info__stats__paragraph">Tab: {`${activeTabIndex + 1} of ${jobNamesUnique.length}`}</p> : null}
+            <p className="order-info__stats__paragraph">Row Count: {activeTabCount}</p>
           </div>
-        )
-        :
-        (
-          null
         )}
-        {showDetails ? 
+        {showDetails && 
         (
           <OrderDetails details={orderDetails} closeModal={closeModal} getClassNamesFor={getClassNamesFor} /> 
-        )
-        :
+        )}
+        {activeLink && props.restrictedActions !== 'All' &&
         (
-          null
-        )
-        }
-        {activeLink && props.restrictedActions !== 'All' ?
-        (
-          <div className='action-links'>
-            <form className='link'>
+          <div className='order-info__action-links'>
+            <form className='link order-info__action-links__form'>
               {props && props.restrictedActions ? getActions('jobError', props.restrictedActions, isChecked, takeAction, isCheckedOrderNums, dismissed) : null}
             </form>
           </div>
-        ) 
-        : 
-        (
-          null
         )}
-        {(showMessage.current) && !error ?
+        {(showMessage.current) && !error &&
         (
           props.order && (typeof props.order === 'number' || (Array.isArray(props.order) && props.order?.length === 1)) ? 
           (
-            <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+            <div className="order-info__retried-order-set" id="retried-order-message" ref={messageRef}>
               <p>The processing error of order "{Array.isArray(props.order) ? props.order[0] : props.order}" has been {message(props.action)}.</p>
             </div>
           ) 
           : 
           (
-            <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+            <div className="order-info__retried-order-set" id="retried-order-message" ref={messageRef}>
               <p>The following orders' processing errors have been {message(props.action)}:&nbsp;</p>
-              <div className='orders-in-array'>
+              <div className='order-info__orders-in-array'>
                 {props.order ? 
                 (
                   props.order.map((id, key) => {
                     return props.order.length === 1 ? 
                     ( 
-                      <p key={key}>{id}</p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}</p>
                     )
                     : key === props.order.length - 1 ?
                     (
-                      <p key={key}>{id}.</p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}.</p>
                     )
                     :
                     (
-                      <p key={key}>{id},<span>&nbsp;</span></p>
+                      <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id},<span>&nbsp;</span></p>
                     )                          
                     })
                   )
@@ -434,37 +418,33 @@ const Unprocessed = props => {
               </div>
             </div>
           )
-        )
-        :
-        (
-          null
         )}
         {error ?
         (
           props.order ? 
           (
             typeof props.order === 'number' || props.order.length === 1 ? (
-            <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+            <div className="order-info__retried-order-set" id="retried-order-message" ref={messageRef}>
               The following error occurred when order "{Array.isArray(props.order) ? props.order[0] : props.order}" was {message(props.action)}: {error}
             </div>
           ) 
           : 
           (
-            <div className="retried-order-set" id="retried-order-message" ref={messageRef}>
+            <div className="order-info__retried-order-set" id="retried-order-message" ref={messageRef}>
               <p>There was a '{error}' error when the following orders were {message(props.action)}:&nbsp;</p>
-              <div className='orders-in-array'>
+              <div className='order-info__orders-in-array'>
                 {props.order.map((id, key) => (
                   props.order.length === 1 ? 
                   ( 
-                    <p key={key}>{id}</p>
+                    <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id}</p>
                   )
                   : key === props.order.length - 1 ?
                   (
-                    <p key={key}>{id}.</p>
+                    <p className='order-info__retried-order-set__orders-in-array__paragraph'key={key}>{id}.</p>
                   )
                   :
                   (
-                    <p key={key}>{id},<span>&nbsp;</span></p>
+                    <p className='order-info__retried-order-set__orders-in-array__paragraph' key={key}>{id},<span>&nbsp;</span></p>
                   )                          
                 ))}
               </div>
@@ -629,9 +609,7 @@ const Unprocessed = props => {
         </tbody>
       </table>
     </div>
-  ) : (
-    ''
-  )
+  );
 };
 
 export default Unprocessed;

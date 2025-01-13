@@ -222,11 +222,11 @@ const Map = props => {
   
   return props.error ? 
   ( 
-    <div className="signin-error">{props.error.message}</div>
+    <div className='signin-error'>{props.error.message}</div>
   ) 
   : !props.isLoaded ? 
   ( 
-    <div className="loading">Loading . . .</div> 
+    <div className='loading'>Loading . . .</div> 
   ) 
   : error ? 
   (
@@ -237,11 +237,11 @@ const Map = props => {
   : props.role === 'Admin' ?
   (
     <>
-      <div className="order-info no-actions">
+      <div className='order-info no-actions'>
         {showDetails ? <OrderDetails details={orderDetails} closeModal={closeModal} handleBlur={handleBlur} handleClick={handleClick} getClassNamesFor={getClassNamesFor} caller={{ settings: 'maps' }} /> : null}
       </div>
-      <div className="map-table-large">
-        <table className="map-table">
+      <div className='map-table-large'>
+        <table className='map-table'>
           <thead>
             <tr className='header-row'>
               {headers ? 
@@ -290,7 +290,7 @@ const Map = props => {
           <tbody>
           {items.map((item, key) => (
               <tr key={key}>
-                <td className="map-id">
+                <td className='map-id'>
                   {vpWidth < 1280 ?
                   (
                     <Link to='#' onClick={() => action('showDetails', item)} >
@@ -303,10 +303,10 @@ const Map = props => {
                   )}
                 </td>
                 <td>{item.IsoCountryCode}</td>
-                <td className="desktop">{item.ErpCompanyId}</td>
+                <td className='desktop'>{item.ErpCompanyId}</td>
                 <td
-                  className="editable desktop"
-                  suppressContentEditableWarning="true"
+                  className='editable desktop'
+                  suppressContentEditableWarning='true'
                   data-default-value={item.SourceWarehouse}
                   // id={`${item.SourceWarehouse}-${key}`}
                   id={`SourceWarehouse-${key}`}
@@ -316,8 +316,8 @@ const Map = props => {
                   {item.SourceWarehouse ? item.SourceWarehouse : 'None'}
                 </td>
                 <td
-                  className="editable desktop"
-                  suppressContentEditableWarning="true"
+                  className='editable desktop'
+                  suppressContentEditableWarning='true'
                   data-default-value={item.SourceShipMethod ? item.SourceShipMethod : 'None'}
                   // id={`${item.SourceShipMethod ? item.SourceShipMethod : 'None'}-${key}`}
                   id={`SourceShipMethod-${key}`}
@@ -327,8 +327,8 @@ const Map = props => {
                   {item.SourceShipMethod ? item.SourceShipMethod : 'None'}
                 </td>
                 <td
-                  className="editable desktop"
-                  suppressContentEditableWarning="true"
+                  className='editable desktop'
+                  suppressContentEditableWarning='true'
                   data-default-value={item.DestinationWarehouse}
                   // id={`${item.DestinationWarehouse}-${key}`}
                   id={`DestinationWarehouse-${key}`}
@@ -357,7 +357,7 @@ const Map = props => {
   )
   :
   (
-    <div className="role-denied">Your profile's assigned role of "{props.role}" does not allow you to access this page.</div>
+    <div className='role-denied'>Your profile's assigned role of "{props.role}" does not allow you to access this page.</div>
 
   )
 };

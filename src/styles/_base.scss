@@ -141,10 +141,11 @@ a {
 }
 
 .editable {
-  .wait-icon {
+  &__wait-icon {
     display: none;
   }
-  .wait-icon.waiting {
+  
+  &__wait-icon--waiting {
     animation-name: waitIcon;
     animation-duration: 5s;
     animation-iteration-count: infinite;
@@ -176,55 +177,57 @@ a {
   align-items: flex-end;
   margin-bottom: 1rem;
 
-  form {
+  &__form {
     margin-top: auto;
 
-    button {
+    &__button {
       font-size: 1.1rem;
       min-height: 4rem;
     }
   }
 
-  p {
+  &__paragraph {
     margin-bottom: auto;
     margin-left: 0;
     font-size: 1.8rem;
   }
 
-  .tabs-container {
+  &__tabs-container {
     display: flex;
     align-items: flex-end;
     overflow: scroll;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 
-    .page-tab {
-      form {
-        button {
+    &__page-tab {
+      &__form {
+        &__button {
           min-width: 12rem;
           white-space: nowrap;
         }
       }
     }
 
-    .tab-icon {
+    &__tab-icon {
       font-size: 2.5rem;
       color: whitesmoke;
       position: absolute;
-    }
-  
-    .tab-icon.right {
-      right: 0.3rem;
+      
+      &--right {
+        right: 0.3rem;
+      }
     }
   }
 
-  .tabs-container::-webkit-scrollbar { /* Chrome, Safari and Opera */
+  &__tabs-container::-webkit-scrollbar { /* Chrome, Safari and Opera */
     display: none;
   }
 }
 
-.inactive-button.hidden {
-  display: none;
+.inactive-button {
+  &__hidden {
+    display: none;
+  }
 }
 
 .map-id, .params-id, .order-link, .user-link, .jobs-link, .order-link {
@@ -397,12 +400,9 @@ a {
     top: 10rem;
   }
 
-  .order-info {
+  .order-info .no-actions {
     flex-direction: row;
     align-items: flex-start;
-  }
-
-  .order-info.no-actions {
     flex-direction: column;
   }
 }
@@ -420,11 +420,11 @@ a {
     flex-direction: row;
     align-items: flex-start;
 
-    .stats {
+    &__stats {
       justify-content: flex-start;
     }
 
-    .action-links {
+    &__action-links {
       font-size: 1.5rem;
     }
   }
@@ -490,7 +490,7 @@ a {
     flex-direction: row;
     min-height: 5rem;
     
-    .retried-order-set {
+    &__retried-order-set {
       flex-direction: row;
     }
   }
