@@ -18,9 +18,9 @@ The order-staging dashboard tracks orders through their full lifecycle, from ori
       - Manual deploy:
         - change the "REACT_APP_ENV" in the .env file to "production";
         - in the terminal, run "npm run build";
+        - Environment: to avoid errors in Safari when setting third-party cookies, the following rewrite rule needs to be added to the top of the _redirects file in the build folder after "npm run build" but before "netlify deploy --prod":  `/api/* https://dashboard-api-ncompass-demo-f3b2c0dc9f7c.herokuapp.com/graphql/:splat 200`
         - in the terminal, run "netlify deploy" for a preview, indicating "build" as the directory to deploy;
         - if satisfied with the preview, run "netlify deploy --prod" in the terminal, indicating "build" as the directory to deploy.
-      - Environment: to avoid errors in Safari when setting third-party cookies, the following rewrite rule needs to be added to the top of the _redirects file in the build folder after "npm run build" but before "netlify deploy --prod":  `/api/* https://dashboard-api-ncompass-demo-f3b2c0dc9f7c.herokuapp.com/graphql/:splat 200`
 
 2. Back-end
     - URL
