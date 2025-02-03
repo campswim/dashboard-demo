@@ -32,7 +32,8 @@ const OrdersChart = ({ data }) => {
 
   // Prepare datasets for Chart.js.
   const dataByMonth = useSortByMonth(data);
-  const monthsFormatted = Object.keys(dataByMonth?.months).map(month => {
+  const monthsSorted = insertionSort(Object.keys(dataByMonth.months));
+  const monthsFormatted = monthsSorted.map(month => {
     const monthTemp = month.split('-')[1];
     const yearTemp = month.split ('-')[0];
     const order = Number(monthTemp.trim());
@@ -41,9 +42,8 @@ const OrdersChart = ({ data }) => {
     return { order, dateFormatted };
 
   });
-  const monthsSorted = insertionSort(monthsFormatted);
-  const labels = insertionSort(Object.keys(dataByMonth.months));
-  const labelsFormatted = monthsSorted.map(month => month.dateFormatted);
+  const labels = monthsSorted;
+  const labelsFormatted = monthsFormatted.map(month => month.dateFormatted);
   const orderTypes = [...new Set(Object.values(dataByMonth.months).flatMap(items => Object.keys(items)))];
   const datasets = orderTypes.map(orderType => {
     return {
